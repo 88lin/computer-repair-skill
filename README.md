@@ -189,6 +189,30 @@ python tests/validate_skill.py
 
 新增或修改 Playbook 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 
+## 🎁 AI 免费福利
+
+<div align="center">
+  <h3>把值得领取的免费 AI 资源一次收齐</h3>
+
+  <p>
+    想低成本体验更强的 AI Agent 和国产模型？这份指南整理了高校师生权益、Pro 试用、模型额度与限时活动，
+    并按适用人群、领取方式和使用场景集中说明，方便学习、科研、编程、办公与内容创作时按需查找。
+  </p>
+
+  <p>
+    <a href="https://blog.88lin.eu.org/article/36">
+      <strong>查看免费 AI 资源与领取指南 →</strong>
+    </a>
+  </p>
+
+  <a href="https://blog.88lin.eu.org/article/36">
+    <img src="https://cdn.jsdmirror.com/gh/88lin/picx-images-hosting@master/qoder-cover-no-link-1600x900.webp" alt="免费 AI 资源与领取指南" width="78%" />
+  </a>
+</div>
+
+> [!TIP]
+> 活动名额、模型、额度和有效期可能调整，领取前请以文章中的最新说明和对应官方页面为准。
+
 ## 来源与许可证
 
 本项目包含 37 个经宿主 Agent 适配的上游 Playbook，以及 6 个由本项目维护的 Windows/Linux 扩展：
