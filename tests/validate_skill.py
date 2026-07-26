@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""验证 Noah Computer Care Skill 的结构、来源、链接和发布完整性。"""
+"""验证 Computer Care Skill 的结构、来源、链接和发布完整性。"""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from urllib.parse import unquote
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SKILL_DIR = REPO_ROOT / "skills" / "noah-computer-care"
+SKILL_DIR = REPO_ROOT / "skills" / "computer-care"
 REFERENCES_DIR = SKILL_DIR / "references"
 EXPECTED_PLAYBOOK_COUNT = 43
 EXPECTED_BUNDLED_COUNT = 37
@@ -40,6 +40,7 @@ SECRET_PATTERNS = {
     "OpenAI-style key": re.compile(r"\bsk-[A-Za-z0-9_-]{24,}\b"),
     "private key": re.compile(r"-----BEGIN (?:[A-Z0-9 ]+ )?PRIVATE KEY-----"),
 }
+FORBIDDEN_PRODUCT_MARKER = re.compile("no" + "ah", re.IGNORECASE)
 
 
 def configure_console_encoding() -> None:
@@ -119,7 +120,7 @@ def validate_skill_metadata(validation: Validation) -> None:
     skill_path = SKILL_DIR / "SKILL.md"
     metadata = parse_frontmatter(skill_path, validation)
     validation.check(set(metadata) == {"name", "description"}, "SKILL.md frontmatter 只能包含 name 和 description。")
-    validation.check(metadata.get("name") == "noah-computer-care", "SKILL.md 的 name 必须是 noah-computer-care。")
+    validation.check(metadata.get("name") == "computer-care", "SKILL.md 的 name 必须是 computer-care。")
     validation.check(bool(metadata.get("description")), "SKILL.md 缺少非空 description。")
 
     skill_lines = read_text(skill_path, validation).splitlines()
@@ -129,7 +130,7 @@ def validate_skill_metadata(validation: Validation) -> None:
     agent_text = read_text(agent_path, validation)
     for field in ("display_name:", "short_description:", "default_prompt:"):
         validation.check(field in agent_text, f"agents/openai.yaml 缺少 {field[:-1]}。")
-    validation.check("$noah-computer-care" in agent_text, "agents/openai.yaml 的 default_prompt 必须显式调用 Skill。")
+    validation.check("$computer-care" in agent_text, "agents/openai.yaml 的 default_prompt 必须显式调用 Skill。")
 
 
 def validate_playbooks(validation: Validation) -> None:
@@ -167,11 +168,11 @@ def validate_playbooks(validation: Validation) -> None:
         source = metadata.get("source")
         if source == "bundled":
             bundled_count += 1
-            validation.check(metadata.get("author") == "noah-team", f"{path.name} 的上游 author 应为 noah-team。")
+            validation.check(metadata.get("author") == "upstream-maintainers", f"{path.name} 的上游 author 应为 upstream-maintainers。")
         elif source == "local":
             local_files.add(path.name)
             validation.check(
-                metadata.get("author") == "noah-computer-care-maintainers",
+                metadata.get("author") == "computer-care-maintainers",
                 f"{path.name} 的本地扩展 author 无效。",
             )
             body = read_text(path, validation)
@@ -233,6 +234,7 @@ def validate_release_files(validation: Validation) -> None:
         REPO_ROOT / "CONTRIBUTING.md",
         REPO_ROOT / "SECURITY.md",
         REPO_ROOT / "LICENSE",
+        SKILL_DIR / "NOTICE",
         REPO_ROOT / ".github" / "workflows" / "validate.yml",
         REPO_ROOT / "scripts" / "install.ps1",
         REPO_ROOT / "scripts" / "install.sh",
@@ -244,6 +246,10 @@ def validate_release_files(validation: Validation) -> None:
     skill_license = read_text(SKILL_DIR / "LICENSE", validation)
     validation.check(root_license == skill_license, "根目录 LICENSE 与 Skill 内 LICENSE 不一致。")
     validation.check("GNU AFFERO GENERAL PUBLIC LICENSE" in root_license, "LICENSE 不是完整的 GNU AGPL 文本。")
+
+    root_notice = read_text(REPO_ROOT / "NOTICE", validation)
+    skill_notice = read_text(SKILL_DIR / "NOTICE", validation)
+    validation.check(root_notice == skill_notice, "根目录 NOTICE 与 Skill 内 NOTICE 不一致。")
 
     authored_files = [
         REPO_ROOT / "README.md",
@@ -267,6 +273,11 @@ def validate_release_files(validation: Validation) -> None:
         if path.suffix.lower() not in {"", ".md", ".py", ".ps1", ".sh", ".yaml", ".yml"}:
             continue
         text = read_text(path, validation)
+        if path.name != "NOTICE":
+            validation.check(
+                not FORBIDDEN_PRODUCT_MARKER.search(text),
+                f"发现旧产品标识：{path.relative_to(REPO_ROOT)}",
+            )
         for label, pattern in SECRET_PATTERNS.items():
             match = pattern.search(text)
             validation.check(not match, f"发现疑似 {label}：{path.relative_to(REPO_ROOT)}")

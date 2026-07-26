@@ -11,7 +11,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$SkillName = "noah-computer-care"
+$SkillName = "computer-care"
 
 function Expand-InstallPath {
     <# 将环境变量、用户目录和相对路径转换为可审计的绝对路径。 #>

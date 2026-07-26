@@ -6,7 +6,7 @@
 
 ## 私下报告漏洞
 
-请使用 GitHub 的 [Private vulnerability reporting](https://github.com/88lin/noah-computer-care/security/advisories/new) 提交安全报告，不要在公开 Issue、Discussion 或 Pull Request 中披露漏洞、凭据或可复现的敏感设备信息。
+请使用 GitHub 的 [Private vulnerability reporting](https://github.com/88lin/computer-care/security/advisories/new) 提交安全报告，不要在公开 Issue、Discussion 或 Pull Request 中披露漏洞、凭据或可复现的敏感设备信息。
 
 报告尽量包含：
 
@@ -20,6 +20,6 @@
 
 ## 信任边界
 
-Noah Computer Care 是提供给 Agent 的指令与参考资料，不是权限隔离器。宿主 Agent 的审批、沙箱、操作系统权限和用户确认始终是最终安全边界。
+Computer Care 是提供给 Agent 的指令与参考资料，不是权限隔离器。宿主 Agent 的审批、沙箱、操作系统权限和用户确认始终是最终安全边界。
 
 本项目不会要求关闭安全软件、绕过审批或回显秘密。Playbook 中出现的系统命令必须先按当前设备事实复核；安装、删除、提权、重启及其他状态变更必须由用户明确确认。

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Computer Care"
+  short_description: "Cross-platform computer diagnosis and repair"
+  default_prompt: "Use $computer-care to diagnose this computer problem, propose the smallest fix, apply it after approval, and verify the result."

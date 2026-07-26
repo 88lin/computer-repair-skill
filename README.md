@@ -1,9 +1,9 @@
-# Noah Computer Care
+# Computer Care
 
-[![Validate Skill](https://github.com/88lin/noah-computer-care/actions/workflows/validate.yml/badge.svg)](https://github.com/88lin/noah-computer-care/actions/workflows/validate.yml)
+[![Validate Skill](https://github.com/88lin/computer-care/actions/workflows/validate.yml/badge.svg)](https://github.com/88lin/computer-care/actions/workflows/validate.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
-一个可直接安装到 Agent 的跨平台电脑诊断与修复 Skill。它把 Noah for Tinkerers 的公开排障知识转换为独立的 `SKILL.md` 包，不需要安装 Noah 应用，不启动额外模型，也不调用 Noah API。
+一个可直接安装到 Agent 的跨平台电脑诊断与修复 Skill。它把经过整理的公开排障知识转换为独立的 `SKILL.md` 包，不需要安装配套桌面应用，不启动额外模型，也不调用专用云端 API。
 
 宿主 Agent 负责推理和调用本机工具；本 Skill 提供只读优先的工作流、安全边界、平台命令映射和 43 个可按需加载的 Playbook。
 
@@ -29,8 +29,8 @@
 先克隆仓库：
 
 ```bash
-git clone https://github.com/88lin/noah-computer-care.git
-cd noah-computer-care
+git clone https://github.com/88lin/computer-care.git
+cd computer-care
 ```
 
 ### Windows / PowerShell
@@ -69,16 +69,16 @@ cd noah-computer-care
 ./scripts/install.sh --target custom --destination "/path/to/skills"
 ```
 
-`Destination` 指向 Skills 根目录，安装器会在其中创建 `noah-computer-care`。目标已存在时默认停止；显式传入 `-Force` 或 `--force` 才会更新，并先把旧版本移动到相邻的 `external/noah-computer-care/backups` 目录。
+`Destination` 指向 Skills 根目录，安装器会在其中创建 `computer-care`。目标已存在时默认停止；显式传入 `-Force` 或 `--force` 才会更新，并先把旧版本移动到相邻的 `external/computer-care/backups` 目录。
 
-也可以手动把 [`skills/noah-computer-care`](skills/noah-computer-care) 整个目录复制到任意兼容 Agent 的 Skills 根目录。
+也可以手动把 [`skills/computer-care`](skills/computer-care) 整个目录复制到任意兼容 Agent 的 Skills 根目录。
 
 ## 使用
 
 安装后重启或刷新 Agent 的 Skills 列表，然后直接描述问题，例如：
 
 ```text
-用 noah-computer-care 检查这台 Windows 电脑为什么经常断网。
+用 computer-care 检查这台 Windows 电脑为什么经常断网。
 ```
 
 ```text
@@ -90,11 +90,12 @@ cd noah-computer-care
 ## 项目结构
 
 ```text
-skills/noah-computer-care/
+skills/computer-care/
 ├── SKILL.md                 # 核心路由与强制安全工作流
 ├── agents/openai.yaml       # Codex 展示元数据
 ├── references/              # 平台工具映射与 43 个 Playbook
-└── LICENSE                  # 随 Skill 分发的 AGPL-3.0 许可证
+├── LICENSE                  # 随 Skill 分发的 AGPL-3.0 许可证
+└── NOTICE                   # 随 Skill 分发的上游归属记录
 scripts/
 ├── install.ps1              # Windows 安装器
 └── install.sh               # macOS/Linux 安装器
@@ -113,11 +114,11 @@ python tests/validate_skill.py
 
 新增或修改 Playbook 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 
-## 上游与许可证
+## 来源与许可证
 
-本项目派生自 [noahapp/noah-for-tinkerers](https://github.com/noahapp/noah-for-tinkerers)，上游基准提交为 `e5e5536bcb925358d65d8dc6812ee6c49722373b`：
+本项目包含 37 个经宿主 Agent 适配的上游 Playbook，以及 6 个由本项目维护的 Windows/Linux 扩展：
 
-- 37 个上游 Playbook 保留 `author: noah-team` 和 `source: bundled` 元数据。
-- 6 个 Windows/Linux 扩展标记为 `author: noah-computer-care-maintainers` 和 `source: local`。
+- 上游 Playbook 标记为 `author: upstream-maintainers` 和 `source: bundled`。
+- 6 个 Windows/Linux 扩展标记为 `author: computer-care-maintainers` 和 `source: local`。
 
-详细来源见 [NOTICE](NOTICE)。项目按 [GNU AGPL-3.0](LICENSE) 分发。
+上游项目、基准提交和原作者归属记录在 [NOTICE](NOTICE) 中。项目按 [GNU AGPL-3.0](LICENSE) 分发。

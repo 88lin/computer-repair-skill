@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-skill_name="noah-computer-care"
+skill_name="computer-care"
 target="codex"
 destination=""
 force=0
