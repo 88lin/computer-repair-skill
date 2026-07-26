@@ -42,6 +42,14 @@ SECRET_PATTERNS = {
 }
 
 
+def configure_console_encoding() -> None:
+    """在 Windows CI 等非 UTF-8 终端中稳定输出中文验证结果。"""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8", errors="replace")
+
+
 class Validation:
     """集中收集错误，确保一次运行能报告全部问题。"""
 
@@ -266,6 +274,7 @@ def validate_release_files(validation: Validation) -> None:
 
 def main() -> int:
     """按依赖顺序执行所有验证，并以单一退出码交给本地终端或 CI。"""
+    configure_console_encoding()
     validation = Validation()
     validate_skill_metadata(validation)
     validate_playbooks(validation)

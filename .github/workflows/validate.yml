@@ -13,6 +13,8 @@ jobs:
   validate:
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      PYTHONUTF8: "1"
     strategy:
       fail-fast: false
       matrix:
