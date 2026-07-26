@@ -1,0 +1,72 @@
+name: Validate Skill
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Skill
+        run: python tests/validate_skill.py
+
+      - name: Test Bash installer
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          destination="$RUNNER_TEMP/noah-skills"
+          ./scripts/install.sh --target custom --destination "$destination"
+          test -f "$destination/noah-computer-care/SKILL.md"
+          if ./scripts/install.sh --target custom --destination "$destination"; then
+            echo "安装器不应静默覆盖现有 Skill" >&2
+            exit 1
+          fi
+          ./scripts/install.sh --target custom --destination "$destination" --force
+          find "$RUNNER_TEMP/external/noah-computer-care/backups" -mindepth 1 -maxdepth 1 | grep -q .
+
+      - name: Test PowerShell installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $destination = Join-Path $env:RUNNER_TEMP "noah-skills"
+          ./scripts/install.ps1 -Target custom -Destination $destination
+          if (-not (Test-Path (Join-Path $destination "noah-computer-care/SKILL.md"))) {
+            throw "首次安装缺少 SKILL.md"
+          }
+
+          $refused = $false
+          try {
+            ./scripts/install.ps1 -Target custom -Destination $destination -ErrorAction Stop
+          }
+          catch {
+            $refused = $true
+          }
+          if (-not $refused) {
+            throw "安装器不应静默覆盖现有 Skill"
+          }
+
+          ./scripts/install.ps1 -Target custom -Destination $destination -Force
+          $backupRoot = Join-Path $env:RUNNER_TEMP "external/noah-computer-care/backups"
+          if (-not (Get-ChildItem -LiteralPath $backupRoot -Directory)) {
+            throw "强制更新没有生成备份"
+          }
