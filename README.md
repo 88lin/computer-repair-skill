@@ -215,9 +215,4 @@ python tests/validate_skill.py
 
 ## 来源与许可证
 
-本项目包含 37 个经宿主 Agent 适配的上游 Playbook，以及 6 个由本项目维护的 Windows/Linux 扩展：
-
-- 上游 Playbook 标记为 `author: upstream-maintainers` 和 `source: bundled`。
-- 6 个 Windows/Linux 扩展标记为 `author: computer-care-maintainers` 和 `source: local`。
-
-上游项目、基准提交和原作者归属记录在 [NOTICE](NOTICE) 中。项目按 [GNU AGPL-3.0](LICENSE) 分发。
+项目按 [GNU AGPL-3.0](LICENSE) 分发。
