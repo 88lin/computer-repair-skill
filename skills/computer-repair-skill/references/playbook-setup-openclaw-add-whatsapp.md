@@ -14,11 +14,13 @@ emoji: 🦞
 Connect WhatsApp to OpenClaw. Uses WhatsApp Web protocol (Baileys).
 
 ## Prerequisites
+
 OpenClaw must be installed (`openclaw --version` should work).
 
 ## Step 1: Link WhatsApp Account
 
 Run:
+
 ```bash
 openclaw channels login --channel whatsapp
 ```
@@ -47,11 +49,13 @@ Ask who should be allowed to message the bot:
 - **Disabled**: WhatsApp DMs disabled.
 
 Set via CLI:
+
 ```bash
 openclaw config set channels.whatsapp.dmPolicy "pairing"
 ```
 
 Or for allowlist:
+
 ```json5
 // In ~/.openclaw/openclaw.json
 {
@@ -69,11 +73,13 @@ Or for allowlist:
 By default, groups require the bot to be @mentioned.
 
 To change:
+
 ```bash
 openclaw config set channels.whatsapp.groupPolicy "open"
 ```
 
 Configure mention patterns for custom trigger words:
+
 ```json5
 {
   agents: {
@@ -89,6 +95,7 @@ Configure mention patterns for custom trigger words:
 ## Step 4: Verify
 
 Restart gateway if it was running:
+
 ```bash
 openclaw gateway restart
 ```
@@ -111,11 +118,13 @@ Check logs if issues: `openclaw logs --follow`
 ## Multi-Account Setup
 
 For multiple WhatsApp numbers, use account IDs:
+
 ```bash
 openclaw channels login --channel whatsapp --account work
 ```
 
 Configure per-account in config:
+
 ```json5
 {
   channels: {
@@ -132,6 +141,7 @@ Configure per-account in config:
 ```
 
 ## Tools referenced
+
 - `shell_run` — openclaw CLI commands
 - `ui_user_question` with options — access policy choice
 - `ui_user_question` with `text_input` — phone numbers

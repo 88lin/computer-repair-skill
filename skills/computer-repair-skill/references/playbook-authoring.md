@@ -53,6 +53,7 @@ Run `shell_run` with `npm prefix -g` and advise the user to add it.
 ```
 
 The transformation:
+
 1. **Commands** become tool invocations (the host Agent executes them)
 2. **Browser/GUI actions** become WAIT_FOR_USER steps (user does them, confirms)
 3. **Credentials** become `secure_input` (collected safely, never in LLM context)
@@ -125,12 +126,14 @@ Steps are declared with level-2 markdown headers:
 ```
 
 **Rules:**
+
 - Use `## Step N: Label` format (N starts at 1)
 - The host Agent uses these headers to track progress (Step 2 of 5, etc.)
 - Each step maps to one or more interactive turns with the user
 - Steps execute sequentially — no branching within a playbook
 
 **Accepted formats** (all equivalent, but prefer `## Step N: Label`):
+
 ```markdown
 ## Step 1: Check Environment
 ## Step 1 — Check Environment
@@ -188,6 +191,7 @@ this" — the instructions must be self-contained in the card.
 ### Pattern 3: Collect User Input
 
 **For choices (predefined options):**
+
 ```markdown
 ## Step 5: Choose Access Policy
 
@@ -201,6 +205,7 @@ Use `ui_user_question` with options.
 ```
 
 **For free-text input:**
+
 ```markdown
 ## Step 3: Enter Bot Name
 
@@ -209,6 +214,7 @@ Use `ui_user_question` with `text_input` (placeholder: "e.g. My AI Assistant").
 ```
 
 **For credentials:**
+
 ```markdown
 ## Step 4: Enter Credentials
 
@@ -276,10 +282,12 @@ format "API_KEY={{value}}".
 ```
 
 **When to use `secure_input`:**
+
 - API keys, tokens, secrets
 - Passwords
 
 **When to use `text_input` instead:**
+
 - Usernames, email addresses, URLs
 - App IDs that aren't secret (e.g., `cli_xxx`)
 - File paths, domain names
@@ -303,16 +311,19 @@ playbooks/
 ```
 
 **The main `playbook.md`:**
+
 - Contains the primary step sequence
 - References sub-modules via `activate` instructions
 - Lists all available modules at the end
 
 **Sub-modules:**
+
 - Same format as any playbook (frontmatter + steps)
 - `name` field uses path format: `setup-myapp/add-slack`
 - Can be activated from the main playbook or independently
 
 **The main playbook should end with an "Available Modules" section:**
+
 ```markdown
 ## Available Modules
 
@@ -406,6 +417,7 @@ helps verify the playbook doesn't reference nonexistent tools.
 When writing playbooks, you can reference these tools:
 
 ### UI Tools (how the host Agent communicates with the user)
+
 | Tool | Purpose |
 |---|---|
 | `ui_spa` | Show situation + plan + action button. Two modes: `RUN_STEP` (the host Agent executes) or `WAIT_FOR_USER` (user acts) |
@@ -414,12 +426,14 @@ When writing playbooks, you can reference these tools:
 | `ui_info` | Informational message (can't fix, safety refusal, general info) |
 
 ### Action Tools
+
 | Tool | Purpose |
 |---|---|
 | `shell_run` | Execute a shell command. Use for any CLI operation. |
 | `write_secret` | Write a `secure_input` value to a file with `{{value}}` substitution |
 
 ### Knowledge Tools
+
 | Tool | Purpose |
 |---|---|
 | `activate_playbook` | Load a playbook or sub-module by name |
@@ -427,6 +441,7 @@ When writing playbooks, you can reference these tools:
 | `knowledge_read` | Read a knowledge file by path |
 
 ### Platform-Specific Tools (examples — availability varies by OS)
+
 | Tool | Platform | Purpose |
 |---|---|---|
 | `mac_network_info` | macOS | Network interface details |
@@ -449,12 +464,14 @@ not always available. Playbooks with `platform: all` should stick to
 Playbooks are instructions for an AI agent, not documentation for humans.
 
 **Do:**
+
 - Write imperatively: "Run X", "Tell the user Y", "Verify Z"
 - Be specific: "Run `shell_run` with `node --version`"
 - Include failure handling: "If X fails, try Y"
 - Include the exact text/URLs the user needs to see
 
 **Don't:**
+
 - Write conversationally: ~~"Now we'll install the package"~~
 - Be vague: ~~"Check if it's working"~~ → "Run `openclaw --version`, expect version ≥ 2026.2"
 - Assume success: always include what to check and what failure looks like
@@ -490,6 +507,7 @@ Before submitting a playbook:
 > 1. 左侧菜单进入 **权限管理**
 > 2. 点击 **批量导入**
 > 3. 粘贴以下 JSON：
+>
 > ```json
 > { "scopes": { "tenant": ["im:message", "im:message:send_as_bot", ...] } }
 > ```
@@ -520,7 +538,8 @@ Tell the user to configure permissions in the Feishu developer console:
 Use WAIT_FOR_USER — the user does this in the Feishu developer console.
 ```
 
-### Why this conversion works:
+### Why this conversion works
+
 - The action (pasting JSON in a web console) can't be automated → WAIT_FOR_USER
 - The instructions are self-contained (user doesn't need the original tutorial)
 - Bilingual labels help both Chinese and English users find the right UI element

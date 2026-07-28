@@ -14,6 +14,7 @@ emoji: 🦞
 Add Telegram support to OpenClaw via a Telegram Bot.
 
 ## Prerequisites
+
 OpenClaw must be installed (`openclaw --version` should work).
 
 ## Step 1: Create a Telegram Bot
@@ -33,12 +34,14 @@ Use WAIT_FOR_USER — the user does this in Telegram.
 Collect the bot token via `secure_input` (secret_name: "telegram_bot_token").
 
 Set it in config:
+
 ```bash
 openclaw config set channels.telegram.botToken "<token>"
 openclaw config set channels.telegram.enabled true
 ```
 
 Or write directly to `~/.openclaw/openclaw.json`:
+
 ```json5
 {
   channels: {
@@ -52,6 +55,7 @@ Or write directly to `~/.openclaw/openclaw.json`:
 ```
 
 And set the env var:
+
 ```bash
 openclaw config set env.TELEGRAM_BOT_TOKEN "<token>"
 ```
@@ -71,6 +75,7 @@ from `@userinfobot` on Telegram.
 ## Step 4: Restart and Test
 
 Restart the gateway to pick up channel changes:
+
 ```bash
 openclaw gateway restart
 ```
@@ -90,14 +95,17 @@ If the user wants the bot in a group:
 2. Add the bot to the Telegram group.
 
 3. Configure group policy:
+
    ```bash
    openclaw config set channels.telegram.groupPolicy "open"
    ```
+
    Or use "allowlist" with specific sender IDs.
 
 By default, the bot requires an @mention in groups.
 
 ## Tools referenced
+
 - `shell_run` — openclaw CLI commands
 - `ui_user_question` with `secure_input` — bot token
 - `ui_user_question` with options — access policy

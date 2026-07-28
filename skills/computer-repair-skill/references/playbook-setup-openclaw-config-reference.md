@@ -80,6 +80,7 @@ All channels share the same field patterns:
 ```
 
 **DM policies:**
+
 - `pairing` — new senders need approval (expires 1h, max 3 pending)
 - `allowlist` — only `allowFrom` senders allowed
 - `open` — anyone can message
@@ -191,6 +192,7 @@ Then reference as: `"my-provider/model-name"`
 ## File Inclusion
 
 Split large configs across files:
+
 ```json5
 {
   agents: { $include: "./agents.json5" },
@@ -219,6 +221,7 @@ openclaw dashboard                 # open Control UI in browser
 ```
 
 ## Tools referenced
+
 - `shell_run` — `openclaw config get/set/unset`, `openclaw doctor`, gateway and channel status
 - `win_read_file` / `mac_read_file` / `linux_read_file` — inspect `config.json` and included fragments directly
 - `ui_info` — explain a field, its default and its blast radius without changing anything

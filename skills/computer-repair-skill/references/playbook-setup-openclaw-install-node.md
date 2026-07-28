@@ -18,16 +18,19 @@ OpenClaw requires Node.js 22+. This module installs it.
 Check the platform first.
 
 **macOS:**
+
 - **Homebrew** (recommended if brew is available): `brew install node@22`
 - **nvm**: install nvm then `nvm install 22`
 - **Direct download** from nodejs.org
 
 **Windows:**
+
 - **nvm-windows**: `nvm install 22 && nvm use 22`
 - **Direct download** from nodejs.org (LTS installer)
 - **winget**: `winget install OpenJS.NodeJS.LTS`
 
 **Linux:**
+
 - **nvm** (recommended): install nvm then `nvm install 22`
 - **Package manager**: check distro-specific instructions
 
@@ -61,6 +64,7 @@ If it shows an old version, check PATH ordering. On macOS with Homebrew,
 may need `brew link --overwrite node@22`.
 
 ## Tools referenced
+
 - `shell_run` — install and verify Node.js
 - `ui_user_question` — installation method choice
 - `ui_spa` with WAIT_FOR_USER — for manual download

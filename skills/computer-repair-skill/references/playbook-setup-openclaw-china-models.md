@@ -20,52 +20,60 @@ unavailable, or who prefer domestic models.
 Ask the user which provider they want to use:
 
 ### Volcano Engine (火山引擎 / 豆包)
+
 - Provider ID: `volcengine`
 - Models: Doubao Seed 1.8, Kimi K2.5, GLM 4.7, DeepSeek V3.2
 - Has separate coding-optimized models under `volcengine-plan`
 - API key env var: `VOLCANO_ENGINE_API_KEY`
-- Sign up: https://www.volcengine.com/
+- Sign up: <https://www.volcengine.com/>
 
 ### BytePlus (International alternative to Volcano Engine)
+
 - Provider ID: `byteplus`
 - Same models as Volcano Engine, for international users
 - API key env var: `BYTEPLUS_API_KEY`
 
 ### Moonshot AI (月之暗面 / Kimi)
+
 - Uses OpenAI-compatible endpoint
 - Models: Kimi K2.5, K2 Turbo Preview, thinking variants
 - API key env var: `MOONSHOT_API_KEY`
 - Base URL: `https://api.moonshot.ai/v1`
-- Sign up: https://platform.moonshot.cn/
+- Sign up: <https://platform.moonshot.cn/>
 
 ### Z.AI / GLM (智谱 AI)
+
 - Provider ID: `zai`
 - Models: GLM-5 and variants
 - API key env var: `ZAI_API_KEY`
-- Sign up: https://open.bigmodel.cn/
+- Sign up: <https://open.bigmodel.cn/>
 
 ### Qwen Portal (通义千问 — 免费)
+
 - Free tier via OAuth (no API key needed)
 - Models: Qwen Coder + Vision
 - Auth via device code flow (see Step 3)
 
 ### DeepSeek (深度求索)
+
 - Uses OpenAI-compatible endpoint
 - Models: DeepSeek V3, DeepSeek Coder
 - API key env var: `DEEPSEEK_API_KEY`
 - Base URL: `https://api.deepseek.com/v1`
-- Sign up: https://platform.deepseek.com/
+- Sign up: <https://platform.deepseek.com/>
 
 ## Step 2: Get API Key
 
 For most providers, the user needs an API key. Collect it via `secure_input`.
 
 Then set it in the OpenClaw config:
+
 ```bash
 openclaw config set env.<ENV_VAR_NAME> "<api_key>"
 ```
 
 For example, for Volcano Engine:
+
 ```bash
 openclaw config set env.VOLCANO_ENGINE_API_KEY "<key>"
 ```
@@ -73,18 +81,22 @@ openclaw config set env.VOLCANO_ENGINE_API_KEY "<key>"
 ## Step 3: Configure the Model
 
 **For built-in providers** (volcengine, byteplus, zai):
+
 ```bash
 openclaw config set agents.defaults.model.primary "volcengine/doubao-seed-1.8"
 ```
 
 **For Qwen Portal** (free, OAuth):
+
 ```bash
 openclaw models auth login --provider qwen-portal --set-default
 ```
+
 This opens a device code flow — use WAIT_FOR_USER.
 
 **For OpenAI-compatible providers** (Moonshot, DeepSeek):
 These need a custom provider entry in `~/.openclaw/openclaw.json`:
+
 ```json5
 {
   models: {
@@ -111,6 +123,7 @@ These need a custom provider entry in `~/.openclaw/openclaw.json`:
 ```
 
 For DeepSeek:
+
 ```json5
 {
   models: {
@@ -139,6 +152,7 @@ For DeepSeek:
 ## Step 4: Verify
 
 Check that the model is accessible:
+
 ```bash
 openclaw models status
 ```
@@ -151,6 +165,7 @@ model may need switching. Check `openclaw logs --follow` for details.
 ## Step 5: Optional — Add Fallback Models
 
 For reliability, configure fallback models from a different provider:
+
 ```json5
 {
   agents: {
@@ -165,6 +180,7 @@ For reliability, configure fallback models from a different provider:
 ```
 
 ## Tools referenced
+
 - `shell_run` — openclaw CLI commands, config edits
 - `ui_user_question` with options — provider selection
 - `ui_user_question` with `secure_input` — API keys

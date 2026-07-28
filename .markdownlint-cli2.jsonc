@@ -1,0 +1,45 @@
+// markdownlint-cli2 配置：本仓库的 Markdown 质量门。
+// 运行方式：npx markdownlint-cli2（globs 已在下方声明，无需再传参）
+// 自动修复：npx markdownlint-cli2 --fix
+{
+  "config": {
+    "default": true,
+
+    // MD013 line-length：关闭。
+    // 本仓库正文以中文为主，且大量 Playbook 步骤内联长命令与长 URL。
+    // Markdown 渲染时软换行，硬换行只会让 diff 噪音变大、让命令无法整行复制。
+    // 行宽不设限，但缩进/换行符/尾随空格仍由 .editorconfig 与校验器强制。
+    "MD013": false,
+
+    // MD024 no-duplicate-heading：只在同级兄弟标题之间禁止重复。
+    // CHANGELOG.md 按 Keep a Changelog 规范，每个版本下都会出现 ### Added / ### Fixed。
+    "MD024": { "siblings_only": true },
+
+    // MD033 no-inline-html：README 顶部的居中封面、徽章与折叠区块必须用 HTML。
+    // 只放行排版类元素；script/style/iframe 等仍然禁止。
+    "MD033": {
+      "allowed_elements": [
+        "a",
+        "br",
+        "details",
+        "div",
+        "img",
+        "kbd",
+        "picture",
+        "source",
+        "summary"
+      ]
+    },
+
+    // MD041 first-line-h1：README 首行是居中封面 <div>，h1 在其后。
+    "MD041": false
+  },
+
+  "globs": ["**/*.md"],
+
+  "ignores": [
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/.git/**"
+  ]
+}

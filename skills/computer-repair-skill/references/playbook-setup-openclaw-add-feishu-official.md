@@ -20,10 +20,12 @@ documents, manage calendars, tasks, and spreadsheets.
 official plugin automatically disables the built-in one.
 
 ## When to activate
+
 User wants the Feishu official plugin, needs document/calendar/task capabilities
 via Feishu, or wants AI to operate as their identity (not as a bot).
 
 ## Prerequisites
+
 - OpenClaw installed and running (`openclaw --version` ≥ 2026.2)
 - A Feishu enterprise app with bot capability (if you don't have one yet,
   do Steps 1-3 of `setup-openclaw/add-feishu` first — the app is shared
@@ -32,6 +34,7 @@ via Feishu, or wants AI to operate as their identity (not as a bot).
 ## Step 1: Install the Official Plugin
 
 Run `shell_run` with:
+
 ```bash
 openclaw plugins install @larksuiteoapi/feishu-openclaw-plugin
 ```
@@ -54,6 +57,7 @@ Collect the App ID via `text_input` (placeholder: "cli_xxxxxxxxx").
 Collect the App Secret via `secure_input` (secret_name: "feishu_app_secret").
 
 Run `shell_run` with:
+
 ```bash
 openclaw config set channels.feishu.accounts.main.appId "<app_id>"
 ```
@@ -87,6 +91,7 @@ Tell the user:
 > 2. You'll receive a pairing code — copy it
 
 If pairing code received, run `shell_run` with:
+
 ```bash
 openclaw pairing approve feishu <code>
 ```
@@ -116,6 +121,7 @@ Expected: Feishu channel connected.
 ## Step 6: Done
 
 Show a done card summarizing:
+
 - Feishu official plugin installed and authorized
 - The bot operates as the user's identity (OAuth)
 - Capabilities: messages, documents, spreadsheets, calendar, tasks
@@ -126,6 +132,7 @@ Show a done card summarizing:
 - To switch back to built-in plugin: uninstall official plugin and restart gateway
 
 ## Tools referenced
+
 - `shell_run` — plugin install, config, gateway restart, pairing
 - `ui_user_question` with `text_input` — App ID
 - `ui_user_question` with `secure_input` — App Secret

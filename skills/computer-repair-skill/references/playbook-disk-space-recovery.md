@@ -12,13 +12,16 @@ emoji: 💾
 # Disk Space Recovery
 
 ## When to activate
+
 Explicit: "clean up my storage", "free disk space", "find space hogs", "check storage", "storage almost full", "low storage", "can't install update". Symptom-driven: Mac feels slow AND free space is below the healthy target.
 
 ## Scope
+
 **In**: cache-class data — package managers, Xcode/simulators/DerivedData, app caches (Slack, Discord, Code, Cursor), Trash, old logs, stale incomplete downloads, old macOS installers.
 **Out (redirect)**: moving files to cloud — that means *offload* (copy → verify the copy exists → only then delete local), never straight-delete; uninstalling apps (Applications folder for now); Photos/Mail/Messages bodies (TCC — System Settings → Storage). If a quota forces touching irreplaceable data, stop and surface it — do not delete it to hit a number.
 
 ## Heuristics
+
 - ≥20% free → healthy, don't push cleanup.
 - 10–20% → tight, cleanup recommended.
 - <10% → critical; APFS performance degrades.
@@ -27,6 +30,7 @@ Explicit: "clean up my storage", "free disk space", "find space hogs", "check st
 - ~0 bytes freed → run the holder diagnostic, surface the process, ask user to quit. Don't auto-quit. Don't loop.
 
 ## Pipeline
+
 1. **Measure**: `mac_disk_usage` + `disk_audit`. If healthier than target AND the prompt was symptom-driven (not explicit), say so and stop.
 2. **Propose** in SPA findings: group as auto-safe, ask-once (Simulator full reset, Docker prune, old installers), won't-touch (held by a running app, or on Critical exclusions). One batch confirm.
 3. **Execute**: `mac_clear_caches` for `~/Library/Caches/`; recipes below via `shell_run` for the rest. The host Agent's shell policy gates destructive `rm`/`sudo`.
@@ -36,6 +40,7 @@ Explicit: "clean up my storage", "free disk space", "find space hogs", "check st
 ## Recipes
 
 **Cache workhorses** (run as one block; do NOT `set -e` — each line may fail benignly when a tool isn't installed):
+
 ```bash
 command -v npm && npm cache clean --force && rm -rf ~/.npm/_cacache ~/.npm/_npx ~/.npm/_logs
 command -v pnpm && pnpm store prune
@@ -56,30 +61,38 @@ pgrep -x Mail || find ~/Library/Containers/com.apple.mail/Data/Library/Mail\ Dow
 pgrep -x Xcode || rm -rf ~/Library/Developer/Xcode/DerivedData/* ~/Library/Developer/Xcode/{iOS,watchOS,tvOS}\ DeviceSupport/* ~/Library/Caches/com.apple.dt.Xcode/*
 find /Applications -maxdepth 1 -name 'Install macOS*.app' -mtime +14 -exec rm -rf {} +
 ```
+
 The macOS installer line is in the ask-once group; user confirms before this runs.
 
 **iOS Simulator full reset** (lock-prone; do in order, do not loop):
+
 ```bash
 pgrep -fl 'Simulator|CoreSimulator|com.apple.iphonesimulator' || echo clear
 xcrun simctl delete unavailable
 xcrun simctl shutdown all 2>/dev/null; xcrun simctl delete all
 rm -rf ~/Library/Developer/CoreSimulator/Caches/*
 ```
+
 On `currently in use` / `Failed to eject`: run the holder diagnostic, surface the process name, STOP. Don't `launchctl bootout`, don't `killall`.
 
 **Holder diagnostic** (use when a row returns ~0 freed; replace the path with the actual cleanup target):
+
 ```bash
 lsof +D /absolute/path/to/check 2>/dev/null | awk 'NR>1 {print $1}' | sort -u | head
 ```
 
 **Cloud provider detection** (when user mentions cloud):
+
 ```bash
 ls -la ~/Library/CloudStorage/ ~/Library/Mobile\ Documents/ 2>/dev/null
 ```
+
 Folder hints: `GoogleDrive-*`, `Dropbox`, `OneDrive*`, `com~apple~CloudDocs` (iCloud).
 
 ## Critical exclusions
+
 Deletes inside protected trees (Application Support, Containers, Messages, etc.) are **gated by the harness**: you must inspect a folder (`ls`/`du`) before deleting it, and blind wildcard sweeps like `rm -rf .../Application Support/*` are held back — enumerate and remove specific, inspected subdirs instead. Refuse even with user blessing:
+
 - `~/.claude/`, `~/.local/share/claude/`, `~/Library/Application Support/Codex/`, `~/Library/Logs/com.openai.codex/` — AI assistant state and history (Claude Code, Codex Desktop).
 - `~/Library/Application Support/{Code,Cursor,Zed}/User/` — editor settings (Cache* subdirs are fine).
 - `~/Library/Application Support/{1Password,Bitwarden,Dashlane}/` — credential vaults.
@@ -95,23 +108,28 @@ Deletes inside protected trees (Application Support, Containers, Messages, etc.)
 - `/Volumes/*/.Trashes/` — external-drive trash.
 
 ## Caveats
+
 - **Purgeable space** is freed automatically (real available = free + purgeable). **System Data** in About This Mac is mostly auto-managed.
 - A background scanner feeds `disk_audit` when idle; trigger a fresh scan from Diagnostics if results look stale.
 
 ## Key signals
+
 - "Can't install macOS update" → needs 15–30 GB free; run pipeline, retry update.
 - "Disk was fine yesterday" → runaway log or crash loop. Audit `~/Library/Logs` and `~/Library/Logs/DiagnosticReports`.
 - "Already emptied Trash" → big consumers are dev artifacts (Xcode, simulators, Docker) and iOS backups.
 - After the standard pipeline, anything still pinning the drive is usually user media (Photos, iOS backups) or genuinely-needed working files — surface them, don't push deletion.
 
 ## Tools referenced
+
 - `mac_disk_usage` — top-line stats.
 - `disk_audit` — categorized breakdown.
 - `mac_clear_caches` — clears `~/Library/Caches/`.
 - `shell_run` — runs the recipes; policy gates destructive `rm`/`sudo`.
 
 ## Escalation
+
 If the pipeline doesn't free enough:
+
 - iCloud / Optimize Mac Storage for Documents, Desktop, Photos.
 - For developers, Xcode + simulators + Docker can legitimately use 100+ GB — don't push to delete working files.
 - External or larger internal drive is the real answer if still stuck.

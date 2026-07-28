@@ -14,6 +14,7 @@ emoji: 🩺
 Runs a comprehensive health check across the device and produces a baseline summary. Covers disk, memory, uptime, OS updates, firewall, backup status, and network connectivity. Useful for onboarding, periodic audits, or establishing a reference point before changes.
 
 ## When to activate
+
 New device setup, periodic health audit, pre-migration baseline, user reports general slowness, or "just check everything is OK."
 
 ## Standard check path
@@ -23,7 +24,9 @@ New device setup, periodic health audit, pre-migration baseline, user reports ge
 > platform's branch. Never hand a macOS-only command to a Windows or Linux user.
 
 ### 1. Check disk space
+
 Check overall disk stats with `win_disk_usage` / `mac_disk_usage` / `linux_disk_usage`.
+
 - **Green**: <80% used.
 - **Yellow**: 80-90% used. Mention the platform-matched cleanup playbook:
   `windows-disk-space-recovery` (Windows), `disk-space-recovery` (macOS),
@@ -31,7 +34,9 @@ Check overall disk stats with `win_disk_usage` / `mac_disk_usage` / `linux_disk_
 - **Red**: >90% used. SSDs degrade above 90%. Flag for immediate cleanup.
 
 ### 2. Check memory usage
+
 Check RAM usage using system memory info.
+
 - Report total RAM, used, and available.
 - **Windows**: `Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory`; commit charge via `Get-Counter '\Memory\% Committed Bytes In Use'`.
 - **macOS**: `vm_stat` plus memory pressure — `memory_pressure -Q` if available.
@@ -41,6 +46,7 @@ Check RAM usage using system memory info.
 - **Red**: <10% available or heavy swap usage. Identify top consumers.
 
 ### 3. Check system uptime
+
 - **Windows**: `(Get-CimInstance Win32_OperatingSystem).LastBootUpTime` — there is no `uptime` command in PowerShell. Also check for fast startup masking a "restart": `powercfg /a`.
 - **macOS / Linux**: `uptime`.
 - **Green**: <14 days.
@@ -48,6 +54,7 @@ Check RAM usage using system memory info.
 - **Red**: >30 days. Strongly recommend a restart.
 
 ### 4. Check OS version and update status
+
 Report the current OS version, then check for pending updates read-only.
 
 - **Windows**:
@@ -67,6 +74,7 @@ Report the current OS version, then check for pending updates read-only.
 - **Red**: security updates pending.
 
 ### 5. Check firewall status
+
 - **Windows**: `Get-NetFirewallProfile | Select-Object Name, Enabled` — all three profiles (Domain/Private/Public) should be `True`.
 - **macOS**: `defaults read /Library/Preferences/com.apple.alf globalstate` — 1 or 2 means enabled, 0 means disabled.
 - **Linux**: whichever front end is actually in use — `ufw status`, `firewall-cmd --state`, `nft list ruleset`, or `iptables -S` (most need root). Confirm which one is active first with `systemctl is-active ufw firewalld nftables`.
@@ -75,6 +83,7 @@ Report the current OS version, then check for pending updates read-only.
 - Report the finding; **do not disable a firewall** and do not silently enable one — enabling can break LAN printing, file shares, or remote access. Confirm with the user first.
 
 ### 6. Check backup status
+
 - **Windows**: there is no single canonical backup mechanism — check several and report what exists:
   - Restore points: `Get-ComputerRestorePoint`.
   - File History service: `Get-Service -Name fhsvc`.
@@ -88,9 +97,11 @@ Report the current OS version, then check for pending updates read-only.
 - **Red**: no backup configured, or last backup is older than 7 days.
 
 ### 7. Check network connectivity
+
 Run the quick connectivity checks from the platform-matched networking playbook —
 `windows-network-diagnostics` (Windows), `network-diagnostics` (macOS), or
 `linux-network-diagnostics` (Linux):
+
 - Ping `8.8.8.8` — basic internet.
 - DNS check for `google.com` — DNS working.
 - HTTP check for `https://www.google.com` — full connectivity.
@@ -99,6 +110,7 @@ Run the quick connectivity checks from the platform-matched networking playbook 
 - **Red**: no connectivity.
 
 ### 8. Summarize health baseline
+
 Present a summary with a status for each category:
 
 | Check | Status | Detail |
@@ -114,6 +126,7 @@ Present a summary with a status for each category:
 Give an overall assessment: healthy, needs attention, or needs immediate action. List specific recommendations in priority order.
 
 ## Caveats
+
 - This is a point-in-time snapshot. Conditions change — memory usage fluctuates, network can be intermittent.
 - **"Purgeable" disk space** on macOS is technically available. Don't flag disk as critical if most of the used space is purgeable.
 - **High memory usage isn't always bad.** macOS aggressively caches files in RAM. "Memory pressure" is a better indicator than raw usage. Check for swap usage as the real signal.
@@ -125,18 +138,22 @@ Give an overall assessment: healthy, needs attention, or needs immediate action.
 > The full baseline covers ~90% of common device health issues. Most frequent finding: pending OS updates and stale backups.
 
 ## Key signals
+
 - **"My computer feels slow"** → focus on steps 2 (memory) and 3 (uptime). A reboot often helps.
 - **"Just got a new laptop"** → run all steps to establish a clean baseline.
 - **"Preparing for a big project"** → ensure disk space is healthy and backups are current.
 - **"Something feels off"** → run all steps — the summary table makes issues obvious.
 
 ## Escalation
+
 If multiple categories are red:
+
 - Prioritize disk space (>90%) and missing backups — these risk data loss.
 - If OS updates have been pending for weeks, check for MDM or policy blocks preventing updates.
 - If the device is consistently unhealthy, it may need a fresh OS install or hardware evaluation.
 
 ## Tools referenced
+
 - `win_disk_usage` / `mac_disk_usage` / `linux_disk_usage` — disk space stats
 - `win_system_info` / `mac_system_info` / `linux_system_info` — OS version, RAM, uptime
 - `shell_run` — uptime, firewall state, update search, backup state (read-only)

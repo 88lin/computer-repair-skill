@@ -11,11 +11,13 @@ source: local
 # Windows Application Lifecycle Audit
 
 ## When to activate
+
 Use when the user wants to remove bloatware, review installed applications,
 install a named package, compare WinGet and Chocolatey candidates, or check
 whether an uninstall left services, startup entries or files behind.
 
 ## Quick check
+
 Record Windows edition/build, current user, management status, package-manager
 availability and the exact application name the user means. Enumerate installed
 desktop and Appx packages without reading application data. Do not treat a
@@ -24,6 +26,7 @@ display name as a unique identifier.
 ## Standard diagnostic path
 
 ### 1. Establish exact identity
+
 For every candidate record:
 
 - display name, package ID/family name, version and architecture;
@@ -38,6 +41,7 @@ The same display name from two sources is two separate candidates until the
 publisher, ID and version match.
 
 ### 2. Review the candidate before changing state
+
 For installation, inspect the official source, exact version, installer URL,
 SHA-256 and signature, license and requested elevation. Prefer the native
 package manager's metadata and interactive confirmation. Never run a remote
@@ -49,6 +53,7 @@ dependencies, mail, browser, cloud-sync, development, accessibility and
 enterprise software in review-only status until the user identifies them.
 
 ### 3. Build a single-item plan
+
 Show the exact package ID, version, source, command, elevation, expected
 dependencies, restart requirement and rollback path. Do not use display-name
 wildcards, batch uninstall, `--silent` flags or automatic source fallback
@@ -62,6 +67,7 @@ disk space. If the application stores user data, use
 does not equal data migration.
 
 ### 4. Apply and verify one item
+
 After explicit confirmation, use the verified native uninstaller or package
 manager. Capture the exit code and output, report whether a reboot is pending,
 and stop on a failed or ambiguous result instead of retrying with force.
@@ -72,12 +78,14 @@ leftover files or registry keys until they are separately identified, hashed or
 exported, and approved.
 
 ## Verification
+
 Compare the before/after package inventory, persistence snapshot and disk
 usage. For installation, verify publisher, version and launch behavior. For
 removal, verify that the exact package is absent while shared dependencies,
 security controls, update services and unrelated applications remain present.
 
 ## Caveats
+
 - WinGet or Chocolatey metadata can change; record the source and query time.
 - Package IDs are not proof of trust. Verify publisher, signature and hash for
   downloaded installers.
@@ -89,11 +97,13 @@ security controls, update services and unrelated applications remain present.
   they are safe. Treat each item as an independent change.
 
 ## Escalation
+
 Escalate unsigned installers, unknown publishers, drivers, security or MDM
 agents, shared runtimes, license-managed software, package-manager source
 errors, or a request to remove Edge, Defender, OneDrive or Windows components.
 
 ## Tools referenced
+
 - `win_package_inventory`
 - `win_package_metadata`
 - `win_app_list`

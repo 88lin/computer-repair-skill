@@ -17,6 +17,7 @@ Telegram, Feishu/飞书, Discord, etc.). It runs locally on the user's machine
 as a background service.
 
 ## When to activate
+
 User wants to install OpenClaw, set up an AI assistant on WhatsApp/Telegram/
 Feishu/Discord, configure an AI chatbot on messaging apps, or mentions
 "openclaw", "龙虾", or "longxia".
@@ -24,6 +25,7 @@ Feishu/Discord, configure an AI chatbot on messaging apps, or mentions
 ## Step 1: Check Environment
 
 Run `node --version` to check Node.js.
+
 - Need Node.js 22+. If missing or old, activate `setup-openclaw/install-node`.
 - Check if `openclaw` is already installed: `which openclaw` or `openclaw --version`.
 - If already installed, skip to Step 3.
@@ -31,6 +33,7 @@ Run `node --version` to check Node.js.
 ## Step 2: Install OpenClaw
 
 If the user already has Node.js 22+, prefer the official npm package:
+
 ```bash
 npm install -g openclaw@latest
 ```
@@ -66,11 +69,13 @@ PATH. Check with `npm prefix -g` and add `$(npm prefix -g)/bin` to PATH.
 
 The wizard handles model selection, authentication, channel setup, and daemon
 installation all in one flow:
+
 ```bash
 openclaw onboard --install-daemon
 ```
 
 This is interactive — use WAIT_FOR_USER. The wizard will:
+
 1. Ask for a model provider and API key (or OAuth login)
 2. Choose a workspace directory (default: `~/.openclaw/workspace`)
 3. Configure the gateway (port 18789 by default)
@@ -84,6 +89,7 @@ for detailed guidance on Volcano Engine, Moonshot, DeepSeek, etc.
 ## Step 4: Verify Gateway
 
 Check that the gateway is running:
+
 ```bash
 openclaw gateway status
 ```
@@ -91,6 +97,7 @@ openclaw gateway status
 Expected: "Runtime: running" and "RPC probe: ok".
 
 If not running, start it:
+
 ```bash
 openclaw gateway
 ```
@@ -107,15 +114,18 @@ Ask which platform the user uses — common choices by region:
 - **International**: WhatsApp or Telegram
 
 **Feishu (飞书)**: Two options (mutually exclusive):
+
 - **Built-in plugin** (simpler, bot identity): activate `setup-openclaw/add-feishu`
 - **Official plugin** (user identity, documents/calendar/tasks): activate `setup-openclaw/add-feishu-official`
 If unsure, ask the user if they need the bot to operate Feishu documents,
 calendar, or tasks. If yes → official plugin. If just chat → built-in.
 
 **WhatsApp**:
+
 ```bash
 openclaw channels login --channel whatsapp
 ```
+
 This shows a QR code. Tell the user:
 > Open WhatsApp on your phone → Settings → Linked Devices → Link a Device →
 > Scan the QR code shown in the terminal.
@@ -131,11 +141,13 @@ After linking, verify: `openclaw channels status --probe`
 Send a test message on the connected channel. The AI should respond.
 
 Check logs if something doesn't work:
+
 ```bash
 openclaw logs --follow
 ```
 
 Run diagnostics:
+
 ```bash
 openclaw doctor
 ```
@@ -143,6 +155,7 @@ openclaw doctor
 ## Step 7: Done
 
 Show a done card summarizing:
+
 - OpenClaw version
 - Gateway port (default 18789)
 - Connected channels
@@ -174,12 +187,14 @@ When setup is complete, ask the user if they'd like to configure any
 of these optional modules.
 
 ## Escalation
+
 - If install fails: check Node.js version, try `npm install -g openclaw@latest` directly
 - If gateway won't start: run `openclaw doctor` and check port conflicts
 - If channel won't link: run `openclaw doctor` and check logs
 - If `openclaw` command not found after install: check PATH includes npm global bin
 
 ## Tools referenced
+
 - `shell_run` — install openclaw, run CLI commands
 - `ui_user_question` with options — channel choice, model provider
 - `ui_user_question` with `secure_input` — API keys

@@ -19,11 +19,14 @@ activate `setup-openclaw/add-feishu-official` instead.
 Feishu is the most common messaging platform for Chinese teams.
 
 ## When to activate
+
 User wants to connect Feishu/飞书 to OpenClaw, set up a Feishu chatbot,
 or mentions "feishu" or "飞书".
 
 ## Prerequisites
+
 OpenClaw must be installed and the gateway must be running:
+
 - `openclaw --version` should return ≥ 2026.2
 - `openclaw gateway status` should show "running"
 
@@ -45,6 +48,7 @@ Use WAIT_FOR_USER — the user does this in their browser.
 Tell the user to enable the bot feature:
 
 > In your app settings:
+>
 > 1. Find **应用能力** (App Capabilities) > **机器人** (Bot) in the left menu
 > 2. **Enable** bot capability (开启机器人能力)
 > 3. Give the bot a display name
@@ -102,6 +106,7 @@ Use WAIT_FOR_USER — the user does this in the Feishu developer console.
 Tell the user to find their credentials:
 
 > In your app settings, go to **凭证与基础信息** (Credentials & Basic Info):
+>
 > - Copy the **App ID** (格式如 `cli_xxxxxxxxx`)
 > - Copy the **App Secret**
 >
@@ -126,6 +131,7 @@ Run `shell_run` with `openclaw channels add` — but this is interactive.
 Instead, configure directly:
 
 Run `shell_run` with:
+
 ```bash
 openclaw config set channels.feishu.enabled true
 ```
@@ -139,17 +145,20 @@ file_path "~/.openclaw/openclaw.json",
 format: use `openclaw config set channels.feishu.accounts.main.appSecret "{{value}}"` via shell_run.
 
 Alternatively, use `write_secret` with:
+
 - secret_name: "feishu_app_secret"
 - file_path: expansion of `~/.openclaw/secrets/feishu_app_secret`
 - format: "{{value}}"
 
 Then set the env reference:
+
 ```bash
 openclaw config set channels.feishu.accounts.main.appSecret "${FEISHU_APP_SECRET}"
 openclaw config set env.FEISHU_APP_SECRET "$(cat ~/.openclaw/secrets/feishu_app_secret)"
 ```
 
 Restart gateway:
+
 ```bash
 openclaw gateway restart
 ```
@@ -188,6 +197,7 @@ Have the user send a message to the bot in Feishu:
 >    it means pairing mode is active
 
 If a pairing code was returned, run:
+
 ```bash
 openclaw pairing approve feishu <code>
 ```
@@ -199,6 +209,7 @@ Run `shell_run` with `openclaw channels status --probe`.
 Expected: Feishu channel shows "connected" or "ready".
 
 If not working, run `shell_run` with `openclaw logs --follow` and look for errors:
+
 - "permission denied" → Check `im:message:send_as_bot` permission is granted
 - "app not published" → Step 5 was skipped or approval pending
 - "event subscription" → Step 7 was skipped or not saved
@@ -206,6 +217,7 @@ If not working, run `shell_run` with `openclaw logs --follow` and look for error
 ## Step 9: Done
 
 Show a done card summarizing:
+
 - Feishu bot connected to OpenClaw
 - Bot name and App ID
 - Access policy: pairing mode (default — new users get a code, approve with `openclaw pairing approve feishu <code>`)
@@ -248,11 +260,13 @@ Set via: `openclaw config set channels.feishu.dmPolicy "open"`
 Default: all groups allowed, but @mention required.
 
 Allow a specific group without @mention:
+
 ```bash
 openclaw config set channels.feishu.groups.oc_GROUP_ID.requireMention false
 ```
 
 Restrict to specific groups:
+
 ```bash
 openclaw config set channels.feishu.groupPolicy "allowlist"
 openclaw config set channels.feishu.groupAllowFrom '["oc_xxx", "oc_yyy"]'
@@ -264,6 +278,7 @@ openclaw config set channels.feishu.groupAllowFrom '["oc_xxx", "oc_yyy"]'
 ### Performance Tuning
 
 Reduce API quota usage for high-traffic bots:
+
 ```bash
 openclaw config set channels.feishu.typingIndicator false
 openclaw config set channels.feishu.resolveSenderNames false
@@ -278,6 +293,7 @@ openclaw gateway install
 The bot starts automatically when the computer boots.
 
 ## Tools referenced
+
 - `shell_run` — openclaw CLI commands (config, gateway, pairing, logs)
 - `ui_user_question` with `text_input` — App ID collection
 - `ui_user_question` with `secure_input` — App Secret collection

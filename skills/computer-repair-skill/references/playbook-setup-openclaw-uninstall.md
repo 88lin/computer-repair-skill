@@ -16,12 +16,14 @@ remove service definitions, delete configuration and state, uninstall the CLI,
 and clean up any leftover profiles. This is destructive and irreversible.
 
 ## When to activate
+
 User wants to uninstall OpenClaw, remove OpenClaw, mentions "openclaw killer",
 or wants to completely clean up / get rid of OpenClaw / 龙虾.
 
 ## Step 1: Confirm Uninstall
 
 Ask the user to confirm they want to completely remove OpenClaw. Explain:
+
 - This will stop the gateway service
 - Delete all configuration and state (`~/.openclaw/`)
 - Uninstall the CLI tool
@@ -54,6 +56,7 @@ with `action_type: "RUN_STEP"` as you work through each sub-task.
 ### 3a. Stop and remove gateway service
 
 First check if the `openclaw` CLI is available:
+
 - **Windows**: `Get-Command openclaw -ErrorAction SilentlyContinue`
 - **macOS / Linux**: `which openclaw`
 
@@ -64,6 +67,7 @@ Run `shell_run` with `openclaw gateway uninstall`. Ignore errors.
 **If CLI is NOT available (manual path):**
 
 On Windows — discover what actually exists rather than assuming a mechanism:
+
 - Scheduled task: `Get-ScheduledTask -TaskName '*openclaw*' -ErrorAction SilentlyContinue`
 - Service: `Get-Service -Name '*openclaw*' -ErrorAction SilentlyContinue`
 - Startup entry: `Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' | Select-Object openclaw*`
@@ -72,12 +76,14 @@ On Windows — discover what actually exists rather than assuming a mechanism:
 - Live process check: `Get-Process -Name '*openclaw*' -ErrorAction SilentlyContinue`
 
 On macOS:
+
 - Check for service: `launchctl list | grep openclaw`
 - Stop it: `launchctl bootout gui/$(id -u)/ai.openclaw.gateway` (ignore errors)
 - Remove plist: `rm -f ~/Library/LaunchAgents/ai.openclaw.gateway.plist`
 - Also clean legacy: `rm -f ~/Library/LaunchAgents/com.openclaw.gateway.plist`
 
 On Linux:
+
 - Stop service: `systemctl --user disable --now openclaw-gateway.service` (ignore errors)
 - Remove unit file: `rm -f ~/.config/systemd/user/openclaw-gateway.service`
 - Reload: `systemctl --user daemon-reload`
@@ -88,16 +94,19 @@ The main state directory is `.openclaw` in the user's home (or `OPENCLAW_STATE_D
 if that variable is set — check it first on every platform).
 
 **List before deleting** so the user sees what is going away:
+
 - **Windows**: `Get-ChildItem "$env:USERPROFILE\.openclaw" -Force | Select-Object Name, Length, LastWriteTime`
 - **macOS / Linux**: `ls -la ~/.openclaw`
 
 Then remove it:
+
 - **Windows**: `Remove-Item -Recurse -Force "$env:USERPROFILE\.openclaw"`
 - **macOS / Linux**: `rm -rf ~/.openclaw`
 
 This removes config, state, workspace, and all stored data.
 
 Also check for multi-profile directories (legacy feature):
+
 - **Windows**: `Get-ChildItem "$env:USERPROFILE" -Directory -Filter '.openclaw-*' -Force`
 - **macOS / Linux**: `ls -d ~/.openclaw-* 2>/dev/null || echo "none"`
 
@@ -116,6 +125,7 @@ are identical on all three platforms:
 If none succeed, warn the user the CLI may need manual removal.
 
 Verify removal:
+
 - **Windows**: `Get-Command openclaw -ErrorAction SilentlyContinue` should return nothing.
 - **macOS / Linux**: `which openclaw` should return "not found".
 
@@ -136,6 +146,7 @@ before promising removal steps for it; this list follows what upstream documente
 ## Step 4: Done
 
 Show a done card summarizing what was removed:
+
 - Config snapshot: saved to `<path>` / declined by user
 - Gateway service: stopped and removed
 - Configuration: state directory deleted
@@ -148,6 +159,7 @@ If a config snapshot was taken, remind the user it may contain credentials and
 should be stored securely or deleted.
 
 ## Escalation
+
 - If gateway service won't stop:
   - **Windows**: `Get-Process -Name '*openclaw*' | Stop-Process` — show the matched processes to the user first.
   - **macOS / Linux**: `pgrep -af openclaw` to review matches, then `kill <PID>` for the specific PIDs. Avoid `kill $(pgrep -f openclaw)` blind — the pattern can match your own shell or an unrelated process.
@@ -157,6 +169,7 @@ should be stored securely or deleted.
 - If CLI uninstall fails: remove the resolved binary or shim directly — `Get-Command openclaw | Select-Object Source` on Windows, `rm -f "$(which openclaw)"` on macOS/Linux — after confirming the path is inside a package-manager prefix and not a system directory.
 
 ## Tools referenced
+
 - `shell_run` — stop services, delete files, uninstall packages
 - `ui_user_question` with options — confirm uninstall
 - `ui_spa` with RUN_STEP — show progress during automated cleanup
