@@ -31,6 +31,28 @@
   链接模式），采集脚本在三平台真实执行并断言输出合法；两个 job 最后都断言
   `git status --porcelain` 为空，作为"只写目标目录"的证据。Windows 侧额外用
   Windows PowerShell 5.1 再跑一遍采集脚本。
+- 新增 12 个专项 Playbook，总数 58 → 70，同时新增 4 个分类：
+  - 硬件健康与崩溃分析（4）：`storage-health-smart`、`windows-crash-dump-triage`、
+    `memory-diagnostics`、`thermal-battery-health`。
+  - 外设、蓝牙与显示（2）：`bluetooth-peripheral-triage`、`display-gpu-triage`。
+  - macOS 与 Linux 维修（4）：`macos-persistence-audit`、`linux-persistence-audit`、
+    `macos-filevault-recovery-triage`、`linux-boot-failure-triage`。
+  - 安全事件响应（2）：`malware-triage`、`ransomware-first-response`。
+
+  补上的是此前只有 Windows 版本、或三平台都缺的场景：磁盘 SMART 健康、崩溃与内存分析、
+  温度与电池损耗、macOS/Linux 持久化审计、Linux 启动失败、FileVault 恢复分诊，
+  以及恶意软件与勒索软件的第一响应。安全红线沿用既有约束：转储文件只列元数据不读正文、
+  恢复密钥不回显不入报告、SMART 自检与引导链改写不进只读流程、勒索事件先隔离再取证。
+- `references/tools-{windows,macos,linux}.md` 新增 28 个只读工具别名（别名宇宙 96 → 124），
+  按硬件与存储健康、崩溃与启动证据、持久化与软件清单、显示与蓝牙外设分组。每个别名都给出
+  推荐实现与风险标注，并显式列出**不属于**该别名的状态变更命令（`smartctl -t`、
+  `grub-install`、`fdesetup changerecovery`、`verifier.exe` 等），以及字段不可信的已知情况
+  （`AdapterRAM` 32 位截断、USB 桥接盒不透传 SMART、Apple silicon 无内存插槽明细）。
+- lint 工具链接入：`.markdownlint-cli2.jsonc`（每条规则决策附中文理由）、`ruff.toml`
+  （target py39、line-length 110、E/F/W/I/UP/B/C4/SIM/RET/PTH/RUF）、shellcheck、
+  PSScriptAnalyzer 和 actionlint，五套检查全部进 CI。首次接入时修复 markdownlint
+  1888 条违规、shellcheck 4 条（SC1007 ×3、SC2088）与 PSScriptAnalyzer 4 条
+  （`PSAvoidUsingWriteHost`，改为可重定向的 `Write-Status` 包装）。
 - `tests/check_portability.py`：跨平台可移植性静态守卫，接入 CI 的 lint job。前三条规则
   各自对应一个只在非 Linux runner 上才会炸的真实故障：Bash 脚本里紧跟非 ASCII 字符的
   `$var` 必须写成 `${var}`；`shell: powershell` 步骤的 run 块必须是纯 ASCII；
@@ -56,6 +78,10 @@
   子脚本的 `exit 1` 不是异常，`catch` 不会触发，只看异常会漏掉真实失败。
 - 重复安装不再无条件产生备份：已安装版本与仓库内容逐字节一致时，`--force` 直接报告
   "无需变更"并退出。
+- 校验器会读入 `.ruff_cache/` 等工具缓存目录里的二进制文件并报 UTF-8 解码失败，
+  导致整体判失败。新增 `IGNORED_DIR_NAMES`，遍历时按路径分量剔除 15 类缓存目录，
+  并补参数化回归测试：在缓存目录里写入非 UTF-8 字节、CRLF、缺末尾换行和无语言标注的
+  代码围栏，断言校验器仍退出 0。
 - macOS 自带的 Bash 3.2 会把紧跟在 `$var` 后面的中文首字节并进变量名（BSD libc 的
   `isalnum()` 在 UTF-8 locale 下对 0x80-0xFF 返回真），于是 `set -u` 下
   `fail "目标已存在：$target_path。"` 不会打印那句提示，而是以
@@ -73,6 +99,17 @@
 
 - README 安装章节重写：补齐全部新选项、更正备份路径、说明安装清单，并诚实标注
   `scripts/` 是可选辅助工具 —— Skill 的核心仍然是 Markdown Playbook。
+- CI 的校验器调用收紧为 `python tests/validate_skill.py --strict`。1.1.0 时仓库还有
+  10 个"已登记但没有任何 Playbook 使用"的工具别名，只能作为 warning 放行；本次新增的
+  12 个 Playbook 把这 10 个别名全部消耗完，`--strict` 下 0 error / 0 warning。
+- `.github/workflows/validate.yml` 重写为 5 个 job（validate / lint / powershell /
+  installer / collector）。validate 跑 ubuntu、windows、macos 三平台矩阵，并断言登记生成器
+  幂等（`--write` 之后 `git diff --exit-code` 必须干净）；全部 action 固定到 commit SHA，
+  下载的 shellcheck 与 actionlint 用 `sha256sum --check --strict` 校验完整性；顶层收紧
+  `permissions: contents: read` 并加 `concurrency` 取消同分支重复运行。`star-history.yml`
+  同样收紧权限、固定 SHA，并在缺少 token 时写 job summary 跳过，而不是每周失败。
+- `tests/test_validate_skill.py` 的 README 计数漂移用例改为从 README 现值推导总数，
+  不再写死数字，避免每次增删 Playbook 都要同步改测试。
 
 ## [1.1.0] - 2026-07-28
 
@@ -99,8 +136,9 @@
 - `tests/validate_skill.py` 重写。行为差异：
   - 删除全部硬编码簿记（Playbook 总数、上游/本地数量、21 项本地文件字面量集合），
     改为从 frontmatter 派生并与登记生成器交叉核对。
-  - 新增 error / warning 分级与 `--strict` 开关。CI 目前**不加** `--strict`：
-    仓库里还有 10 个"已登记但无人使用"的工具别名，等对应 Playbook 补齐后再收紧。
+  - 新增 error / warning 分级与 `--strict` 开关。本版 CI **不加** `--strict`：
+    当时仓库里还有 10 个"已登记但无人使用"的工具别名，只能先作为 warning 放行
+    （后续已补齐并收紧，见 `[Unreleased]`）。
   - 工具契约改为**双向**校验：声明的别名必须已在映射表登记，正文用到的登记别名
     必须声明，且每个 Playbook 至少声明一个已登记别名。
   - 工具别名宇宙改为只从映射表**表格首列**解析，不再把正文里的原始命令

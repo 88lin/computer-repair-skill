@@ -459,8 +459,15 @@ def test_tool_caches_are_not_scanned(repo: Path, cache_dir: str) -> None:
 
 
 def test_readme_count_drift_rejected(repo: Path) -> None:
-    """手改 README 里的生成数字必须被抓到 —— 硬编码簿记漂移的根因。"""
-    patch_text(repo / "README.md", "| **合计** | **58** |", "| **合计** | **57** |")
+    """手改 README 里的生成数字必须被抓到 —— 硬编码簿记漂移的根因。
+
+    总数会随 Playbook 增减而变化，所以从 README 现值推导，不写死数字。
+    """
+    readme = repo / "README.md"
+    match = re.search(r"(?m)^\| \*\*合计\*\* \| \*\*(\d+)\*\* \|", readme.read_text(encoding="utf-8"))
+    assert match, "README 缺少生成的合计行"
+    total = int(match.group(1))
+    patch_text(readme, f"| **合计** | **{total}** |", f"| **合计** | **{total - 1}** |")
     assert_fails(repo, "README.md 的分类计数已漂移")
 
 

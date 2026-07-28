@@ -53,7 +53,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Validate Skill
-        run: python tests/validate_skill.py
+        run: python tests/validate_skill.py --strict
 
       - name: Check derived registry is in sync
         run: python tests/playbook_registry.py --check
