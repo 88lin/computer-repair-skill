@@ -346,6 +346,13 @@ PYTHONUTF8=1 python tests/validate_skill.py
 
 不要假设可以。进入 PE/WinRE 前让 Agent 把 BitLocker 状态、备份检查、命令清单和停工条件保存下来；离线阶段由人按清单处理，回到正常系统后再让 Agent 复核。
 
+## ⭐ Star History
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/88lin/computer-repair-skill/star-history/assets/my-star-history/star-history-dark.svg">
+  <img alt="Star History" src="https://raw.githubusercontent.com/88lin/computer-repair-skill/star-history/assets/my-star-history/star-history-light.svg">
+</picture>
+
 ## 📄 来源与许可证
 
 项目按 [GNU AGPL-3.0](LICENSE) 分发。来源、归属和第三方许可证信息见 [NOTICE](NOTICE)；安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
