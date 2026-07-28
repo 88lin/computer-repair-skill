@@ -6,11 +6,59 @@ baseline. The baseline commit and original attribution are preserved in the
 project history; current files use generic host-Agent wording and
 "author: upstream-maintainers". This project adds a portable Agent Skill
 workflow, host-tool mappings, safety guidance, installers, validation, and
-21 Windows/Linux playbooks marked "source: local".
+33 playbooks marked "source: local".
 
 Upstream baseline repository:
 https://github.com/noahapp/noah-for-tinkerers
 Baseline commit: e5e5536bcb925358d65d8dc6812ee6c49722373b
+
+Deviations from the upstream baseline
+------------------------------------
+
+The 37 "source: bundled" playbooks are adaptations, not verbatim copies. The
+changes below were made on top of the baseline commit and are recorded here so
+downstream users can tell adapted behavior from upstream behavior.
+
+- Metadata. Every bundled playbook gained a "category" field used by this
+  project's routing index and validator, and "last_reviewed" was refreshed to
+  the review date. The "## Tools referenced" sections were rewritten to name
+  the semantic tool aliases defined in "references/tool-contract.md" and the
+  per-platform tool maps, replacing free-text tool descriptions.
+- Cross-platform routing. Playbooks that shipped macOS-only commands under a
+  cross-platform title now branch explicitly per platform, and references to
+  other playbooks resolve to the platform-matched variant instead of always
+  pointing at the macOS one. The largest such changes are in
+  "playbook-health-baseline-check.md" and "playbook-local-data-audit.md",
+  which gained Windows and Linux command paths and per-platform path maps.
+- Windows Update ("playbook-windows-update-troubleshooting.md"). Removed
+  "Get-WindowsUpdate" and "Hide-WindowsUpdate", which come from the
+  third-party PSWindowsUpdate module and fail on a stock machine; replaced
+  "net stop x && net start x" chains, which Windows PowerShell 5.1 does not
+  support, with "Stop-Service"/"Start-Service"; added an availability probe
+  before the MSDT troubleshooter, which Microsoft has been deprecating and
+  removing since 2023, plus a Settings-based fallback; and corrected the
+  "Get-HotFix" listing to select the columns it sorts on.
+- OpenClaw uninstall ("playbook-setup-openclaw-uninstall.md"). A
+  configuration-snapshot offer was inserted before any deletion and later
+  steps were renumbered accordingly; wildcard recursive deletes were replaced
+  by explicit literal paths shown to the user first; and the state directory
+  is listed before removal.
+- Safety wording. State-changing steps were aligned with
+  "references/safety-policy.md": confirm before deleting, rename instead of
+  delete where a rollback is possible, never disable security controls, and
+  never echo secrets.
+- Formatting only. Fenced blocks gained language tags and the files were
+  normalized for markdownlint. These changes do not alter behavior.
+
+Beyond the bundled playbooks, one project-level metadata change departs from the
+upstream baseline. "skills/computer-repair-skill/SKILL.md" now declares the
+optional "license: AGPL-3.0" frontmatter field, and the validator requires that
+value to match the LICENSE file shipped alongside it. The upstream contributing
+guide restricted the frontmatter to the required "name" and "description"
+fields. "license" is part of the agent-skill frontmatter specification and is
+ignored by clients that do not read it; it is declared here so a redistributed
+copy of this skill states its license without depending on the surrounding
+files.
 
 The following repositories were reviewed on 2026-07-28 at the listed commit.
 Only behavioral observations and safety boundaries were used; no source code,

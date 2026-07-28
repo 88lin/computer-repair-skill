@@ -32,10 +32,10 @@
 
 | 平台 | 主要覆盖 |
 |---|---|
-| Windows | 网络、性能、存储盘点、应用安装/卸载与清理、驱动与音视频、启动/WinRE、BitLocker/分区、硬件维护、新机验收、浏览器策略、Windows Update、配置审查、打印机、安全与数据恢复 |
-| macOS | 网络、VPN、性能、磁盘、应用、系统更新、打印机、Homebrew、Time Machine、邮箱配置 |
-| Linux | 网络、性能、磁盘与 inode、CUDA、通用安全与备份检查 |
-| 跨平台 | DNS、邮件、身份服务、SSH、Wi-Fi、Outlook、OpenClaw、凭据与本地数据审计 |
+| Windows | 网络、性能、存储盘点、应用安装/卸载与清理、驱动与音视频、启动/WinRE、BitLocker/分区、硬件维护、新机验收、浏览器策略、Windows Update、配置审查、打印机、蓝屏与崩溃转储分诊、安全与数据恢复 |
+| macOS | 网络、VPN、性能、磁盘、应用、系统更新、打印机、Homebrew、Time Machine、邮箱配置、launchd 持久化审计、FileVault 分诊 |
+| Linux | 网络、性能、磁盘与 inode、CUDA、通用安全与备份检查、systemd 持久化审计、启动失败分诊 |
+| 跨平台 | DNS、邮件、身份服务、SSH、Wi-Fi、Outlook、OpenClaw、凭据与本地数据审计、SMART 磁盘健康、内存故障、温度与电池损耗、蓝牙与外设、显示器与显卡、恶意软件与勒索软件响应 |
 
 ## 🚀 安装
 

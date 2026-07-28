@@ -12,6 +12,19 @@
 
 ### Added
 
+- `SECURITY.md` 新增 `scripts/` 威胁模型：安装器的三处写入范围（目标 Skills 目录、
+  `.computer-repair-skill-backups`、安装清单 `.computer-repair-skill-install.json`）、
+  采集脚本的只读边界（不改状态、不联网、除 `--output` 外不写盘、逐行过滤疑似凭据），
+  以及"脚本不是权限边界、请先审阅再运行"的明确声明。
+- `NOTICE` 新增"Deviations from the upstream baseline"章节，逐类记录 37 个
+  `source: bundled` 文件相对基准提交 `e5e5536` 的行为偏离：元数据与工具契约规范化、
+  跨平台分支与平台匹配路由、Windows Update 流程（移除第三方 `PSWindowsUpdate`
+  cmdlet、`net stop && net start` 改 `Stop-Service`/`Start-Service`、MSDT 可用性探测、
+  `Get-HotFix` 列选修正）、OpenClaw 卸载前的配置快照与去通配删除、安全措辞对齐，
+  以及纯格式改动。
+- `CONTRIBUTING.md` 新增"新增分类"章节，写明分类登记的真源顺序：先在
+  `tests/playbook_registry.py` 的 `CATEGORIES` 登记，再填 frontmatter，再手工加索引
+  章节与 README 能力小节，最后跑生成器回写数字。
 - 安装器新增 `--verify` / `--uninstall`（含 `--purge`）/ `--list-targets` / `--link` /
   `--dry-run` / `--backup-dir` / `--quiet`，PowerShell 版为对应的 `-Verify` / `-Uninstall` /
   `-Purge` / `-ListTarget` / `-Link` / `-DryRun` / `-BackupDir` / `-Quiet`。
@@ -63,6 +76,12 @@
 
 ### Fixed
 
+- 更正 `NOTICE` 中过时的本地 Playbook 数量：`21 Windows/Linux playbooks` 改为
+  `33 playbooks`，与 frontmatter 派生的 37 上游 / 33 本地一致。
+- `CONTRIBUTING.md` 原先声明"只使用 `name` 和 `description`"，与已加入的
+  `license: AGPL-3.0` 矛盾，现按实际允许字段更正；同时删掉正文里写死的 Playbook
+  总数，改为指向生成器派生，避免再次漂移。
+
 - 备份目录从仓库相邻的 `external/computer-repair-skill/backups` 改为
   `<Skills 根目录>/.computer-repair-skill-backups/<时间戳>/`。旧路径会在仓库外
   凭空造出目录树，且与 `--destination` 无关，用户很难预料备份去了哪里。
@@ -96,6 +115,15 @@
   字符串提前闭合，整段脚本解析失败。
 
 ### Changed
+
+- `SKILL.md` 的 `description` 扩写到覆盖本版新增的路由域（崩溃与转储、SMART 磁盘健康、
+  内存故障、过热与电池损耗、蓝牙外设、显示与显卡、恶意软件与勒索软件、Linux 启动失败、
+  BitLocker/FileVault、launchd/systemd 持久化），586 字符 / 75 分词，仍在自设的
+  600 字符 / 80 分词上限内。
+- `README.md` 能力范围表补齐四个新增覆盖面；`CONTRIBUTING.md` 的"本地验证"从单条
+  `python tests/validate_skill.py` 扩为完整清单：`--strict`、生成器 `--check`/`--write`、
+  `pytest tests/`、五套 lint（markdownlint-cli2 / ruff / shellcheck / PSScriptAnalyzer /
+  actionlint），以及安装器和采集脚本的平台自测命令。
 
 - README 安装章节重写：补齐全部新选项、更正备份路径、说明安装清单，并诚实标注
   `scripts/` 是可选辅助工具 —— Skill 的核心仍然是 Markdown Playbook。

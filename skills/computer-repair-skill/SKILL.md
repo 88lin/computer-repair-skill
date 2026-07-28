@@ -1,6 +1,6 @@
 ---
 name: computer-repair-skill
-description: Use this skill when a user asks to diagnose, repair, clean up, recover, configure, secure, or maintain a Windows, macOS, or Linux computer. It covers slow or unstable systems, storage, apps, updates, networking, printers, backups, credentials, drivers, hardware, startup/WinRE, BitLocker, partitions, data recovery, developer tools, and OpenClaw setup or troubleshooting. Do not use for general programming, software design, buying advice, or product questions that do not require inspecting or changing a computer.
+description: Use this skill when a user asks to diagnose, repair, recover, secure, or maintain a Windows, macOS, or Linux computer: slowdowns, crashes and dumps, SMART disk health, memory faults, overheating, battery wear, storage, apps, updates, networking, printers, Bluetooth peripherals, displays, GPU drivers, backups, credentials, startup/WinRE, Linux boot failure, BitLocker/FileVault, partitions, data recovery, malware, ransomware, launchd/systemd persistence, developer tools, and OpenClaw. Do not use for programming, software design, buying advice, or questions needing no device access.
 license: AGPL-3.0
 ---
 
