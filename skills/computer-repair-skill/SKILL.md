@@ -1,6 +1,6 @@
 ---
 name: computer-repair-skill
-description: Read-only-first diagnosis and repair for Windows, macOS, and Linux computers. Use for performance, storage, applications, networks, updates, printers, backups, security, credentials, developer or OpenClaw setup, and Windows drivers, startup/WinRE, BitLocker, partitions, browser policies, hardware, data recovery, or configuration review. Require approval before changes and verify results.
+description: Use this skill when a user asks to diagnose, repair, clean up, recover, configure, secure, or maintain a Windows, macOS, or Linux computer. It covers slow or unstable systems, storage, apps, updates, networking, printers, backups, credentials, drivers, hardware, startup/WinRE, BitLocker, partitions, data recovery, developer tools, and OpenClaw setup or troubleshooting. Do not use for general programming, software design, buying advice, or product questions that do not require inspecting or changing a computer.
 ---
 
 # Computer Repair Skill

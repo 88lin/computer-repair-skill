@@ -15,6 +15,7 @@ SKILL_DIR = REPO_ROOT / "skills" / "computer-repair-skill"
 REFERENCES_DIR = SKILL_DIR / "references"
 EXPECTED_PLAYBOOK_COUNT = 58
 EXPECTED_BUNDLED_COUNT = 37
+REQUIRED_SKILL_FIELDS = {"name", "description"}
 MAX_SKILL_DESCRIPTION_CHARS = 600
 MAX_SKILL_DESCRIPTION_WORDS = 80
 MAX_PLAYBOOK_DESCRIPTION_CHARS = 120
@@ -71,9 +72,8 @@ SECRET_PATTERNS = {
     "OpenAI-style key": re.compile(r"\bsk-[A-Za-z0-9_-]{24,}\b"),
     "private key": re.compile(r"-----BEGIN (?:[A-Z0-9 ]+ )?PRIVATE KEY-----"),
 }
-# Keep the old upstream product marker out of repository text without placing
-# the literal marker in this validator, which would trigger the same scan.
-FORBIDDEN_PRODUCT_MARKER = re.compile("no" + "ah", re.IGNORECASE)
+FORBIDDEN_PRODUCT_MARKER = re.compile(r"noah", re.IGNORECASE)
+PRODUCT_MARKER_SCAN_EXCLUSIONS = {Path(__file__).resolve()}
 
 
 def is_single_emoji(value: str) -> bool:
@@ -174,7 +174,7 @@ def validate_skill_metadata(validation: Validation) -> None:
     """检查 Skill 触发元数据、长度和 Codex 展示元数据。"""
     skill_path = SKILL_DIR / "SKILL.md"
     metadata = parse_frontmatter(skill_path, validation)
-    validation.check(set(metadata) == {"name", "description"}, "SKILL.md frontmatter 只能包含 name 和 description。")
+    validation.check(set(metadata) == REQUIRED_SKILL_FIELDS, "SKILL.md frontmatter 只能包含 name 和 description。")
     validation.check(metadata.get("name") == "computer-repair-skill", "SKILL.md 的 name 必须是 computer-repair-skill。")
     description = metadata.get("description", "").strip()
     validation.check(bool(description), "SKILL.md 缺少非空 description。")
@@ -185,6 +185,10 @@ def validate_skill_metadata(validation: Validation) -> None:
     validation.check(
         len(description.split()) <= MAX_SKILL_DESCRIPTION_WORDS,
         f"SKILL.md description 过长：{len(description.split())} 个空格分词，最多 {MAX_SKILL_DESCRIPTION_WORDS} 个。",
+    )
+    validation.check(
+        description.startswith("Use this skill when "),
+        "SKILL.md description 应使用 'Use this skill when ...' 表达触发意图。",
     )
 
     skill_lines = read_text(skill_path, validation).splitlines()
@@ -259,6 +263,7 @@ def validate_playbooks(validation: Validation) -> None:
         if source == "bundled":
             bundled_count += 1
             validation.check(metadata.get("author") == "upstream-maintainers", f"{path.name} 的上游 author 应为 upstream-maintainers。")
+            validation.check("emoji" in metadata, f"{path.name} 应保留 bundled 上游 Playbook 的 emoji。")
         elif source == "local":
             local_files.add(path.name)
             validation.check(
@@ -419,6 +424,12 @@ def validate_release_files(validation: Validation) -> None:
     skill_notice = read_text(SKILL_DIR / "NOTICE", validation)
     validation.check(root_notice == skill_notice, "根目录 NOTICE 与 Skill 内 NOTICE 不一致。")
 
+    powershell_installer = REPO_ROOT / "scripts" / "install.ps1"
+    validation.check(
+        powershell_installer.read_bytes().startswith(b"\xef\xbb\xbf"),
+        "scripts/install.ps1 应保留 UTF-8 BOM，以兼容 Windows PowerShell 5.1 的中文文本。",
+    )
+
     authored_files = [
         REPO_ROOT / "README.md",
         REPO_ROOT / "NOTICE",
@@ -441,7 +452,9 @@ def validate_release_files(validation: Validation) -> None:
         if path.suffix.lower() not in {"", ".md", ".py", ".ps1", ".sh", ".yaml", ".yml"}:
             continue
         text = read_text(path, validation)
-        if path.name != "NOTICE":
+        # NOTICE preserves required attribution. This validator contains the
+        # literal marker by definition, so exclude it from its own scan.
+        if path.name != "NOTICE" and path.resolve() not in PRODUCT_MARKER_SCAN_EXCLUSIONS:
             validation.check(
                 not FORBIDDEN_PRODUCT_MARKER.search(text),
                 f"发现旧产品标识：{path.relative_to(REPO_ROOT)}",

@@ -10,6 +10,13 @@
 - 不提交密码、令牌、私钥、Cookie、真实设备标识或未经脱敏的日志。
 - 不在网页读取失败后根据标题或 URL 补造内容。
 
+## 维护 Skill 入口元数据
+
+- 按 [Agent Skills 规范](https://agentskills.io/specification)维护 `SKILL.md` frontmatter。本项目只使用各支持端均可识别的必填字段 `name` 和 `description`；不要添加没有实际用途的可选字段。
+- 按[触发描述优化指南](https://agentskills.io/skill-creation/optimizing-descriptions)让 `description` 以 `Use this skill when ...` 表达用户意图，覆盖常见自然语言症状，并写明容易误触的相邻场景。本项目将描述限制为 600 个字符、80 个空格分词，严于规范的 1024 字符上限。
+- 宿主能力、权限、网络和交互要求写在 `SKILL.md` 正文的能力检查中，避免可选 frontmatter 字段造成客户端兼容差异。
+- 保持 `SKILL.md` 在 500 行以内。具体平台、工具和专项流程放在 `references/`，并在核心工作流中明确说明何时加载，避免一次读取全部资料。
+
 ## 修改上游 Playbook
 
 `source: bundled` 的文件来自 `NOTICE` 记录的上游基准提交，面向 Agent 的措辞和 author 标记已做中性化适配。项目维护的本地扩展使用 `source: local` 标记；来源和归属以 `NOTICE` 为准。同步上游时保留现有行为与中性命名，并在 Pull Request 中注明上游提交、变更文件和行为差异。

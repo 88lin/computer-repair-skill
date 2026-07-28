@@ -1,6 +1,7 @@
 * text=auto eol=lf
 *.md text eol=lf
 *.py text eol=lf
+# scripts/install.ps1 keeps a UTF-8 BOM for Windows PowerShell 5.1.
 *.ps1 text eol=lf
 *.sh text eol=lf
 *.yaml text eol=lf
