@@ -103,7 +103,7 @@ macOS / Linux：
 ./scripts/install.sh --target agents
 ```
 
-其中 `codex`、`claude`、`agents` 会使用对应的默认 Skills 根目录。需要自定义位置时：
+其中 `codex`、`claude`、`agents` 会使用对应的默认 Skills 根目录。完整预设列表用 `-ListTarget` / `--list-targets` 查看。需要自定义位置时：
 
 ```powershell
 .\scripts\install.ps1 -Target custom -Destination "D:\path\to\skills"
@@ -113,7 +113,26 @@ macOS / Linux：
 ./scripts/install.sh --target custom --destination "/path/to/skills"
 ```
 
-目标目录已存在时，安装器默认拒绝覆盖；确认升级时显式加 `-Force` 或 `--force`，旧版本会先备份到相邻的 `external/computer-repair-skill/backups`。
+安装器的行为约定：
+
+| 需求 | PowerShell | Bash |
+| --- | --- | --- |
+| 看会做什么，但不落盘 | `-DryRun` | `--dry-run` |
+| 列出全部预设及其目标目录 | `-ListTarget` | `--list-targets` |
+| 覆盖已存在的安装（先自动备份） | `-Force` | `--force` |
+| 复核已安装副本是否被改动 | `-Verify` | `--verify` |
+| 卸载（默认保留备份） | `-Uninstall` | `--uninstall` |
+| 卸载并一并删除备份 | `-Uninstall -Purge` | `--uninstall --purge` |
+| 用链接指向仓库，便于本地改 Playbook | `-Link` | `--link` |
+| 只输出错误 | `-Quiet` | `--quiet` |
+
+几点值得先知道：
+
+- **默认绝不覆盖。** 目标目录已存在时安装器直接报错退出，不做任何写入；确认升级请显式加 `-Force` / `--force`。
+- **备份放在 Skills 根目录内。** 路径是 `<Skills 根目录>/.computer-repair-skill-backups/<时间戳>/`，不会写到仓库或其他位置；`--backup-dir` 可以改到别处。
+- **安装后有清单。** `<Skills 根目录>/.computer-repair-skill-install.json` 记录版本、来源 commit 和每个文件的 sha256。`--verify` 用它判断文件是否被改动，`--uninstall` 用它确认目录归属 —— 所以卸载不会误删你自己放进去的文件（遇到清单外文件会先列出来并要求 `--force`）。
+- **重复安装是幂等的。** 已安装版本与仓库内容逐字节一致时，`--force` 会直接说"无需变更"并退出，不会多产生一份备份。
+- **两个安装器写出的清单逐行同构**，可以互相校验：用 PowerShell 装的副本，能用 `install.sh --verify` 复核，反之亦然。
 
 </details>
 
@@ -306,9 +325,48 @@ assets/
 └── computer-repair-cover.svg  # README 封面图
 scripts/
 ├── install.ps1              # Windows 安装器
-└── install.sh               # macOS/Linux 安装器
+├── install.sh               # macOS/Linux 安装器
+├── collect-health.ps1       # Windows 只读证据采集（可选）
+└── collect-health.sh        # macOS/Linux 只读证据采集（可选）
 tests/validate_skill.py      # 无第三方依赖的仓库验证器
 ```
+
+`scripts/` 是**可选的辅助工具**，不是这个 Skill 的核心。核心始终是 `SKILL.md` 与 `references/` 下的
+Markdown Playbook：Agent 靠它们判断做什么、先确认什么、怎么验证。脚本只解决两件周边事情 ——
+把 Skill 放到正确的目录，以及在动手之前把机器现状抓成一份可复核的证据。两个脚本都是纯文本、
+可逐行审阅的，没有任何编译产物或下载步骤。
+
+## 🩺 只读证据采集（可选）
+
+排障的第一步通常是"先看清楚现在是什么状态"。`scripts/collect-health.*` 把这一步固化成一条命令，
+输出结构化 JSON（喂给 Agent）或 Markdown（贴进工单）：
+
+```powershell
+.\scripts\collect-health.ps1 -Format markdown -OutputPath health.md
+.\scripts\collect-health.ps1 -ListSection
+.\scripts\collect-health.ps1 -Section storage,logs,power
+```
+
+```bash
+./scripts/collect-health.sh --format markdown --output health.md
+./scripts/collect-health.sh --list-sections
+./scripts/collect-health.sh --sections storage,logs,power
+```
+
+共 11 个小节：`overview`、`hardware`、`storage`、`memory`、`process`、`network`、`services`、
+`updates`、`security`、`logs`、`power`。
+
+采集脚本的边界写在脚本头部，并由 CI 逐条验证：
+
+- **只查不改。** 全部命令都是查询类，不安装、不卸载、不删除、不改注册表、不重启服务、不动电源或安全策略。
+- **不联网。** 需要联网才能回答的检查（例如"待安装更新清单"）会被显式标记为 `skipped`，并指向对应 Playbook，而不是偷偷发请求。
+- **不回显秘密。** 输出前逐行过滤，凡命中 `password` / `token` / `secret` / `api_key` / `psk` 等关键字的行整行替换为占位符。
+- **除 `--output` 指定的文件外不写任何路径。** CI 在三个平台跑完采集后都会断言仓库工作区一字未变。
+- `--no-identity` 只保证报告头部不记录主机名与用户名；探针的原始输出（例如 `uname -a`）仍可能包含主机信息，交付前请人工复核。
+
+两个版本刻意保留一处差异：`exit_code` 在 Bash 版是 `sh -c` 的退出码，在 PowerShell 版是"0 = 无错误、
+非 0 = 原生命令退出码或存在 PowerShell 错误记录记 1"；两者都用 `124` 表示超时（沿用 GNU `timeout` 的约定），
+`null` 表示该检查被主动跳过。
 
 ## 🧪 开发与验证
 
@@ -350,7 +408,11 @@ pwsh -c 'Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Severity Error,Warning'
 
 验证器会检查 Skill frontmatter、Agent 元数据、Playbook 描述唯一性与分类登记、工具别名双向契约、跨平台路由（禁止把 Windows/Linux 用户导向 macOS-only 流程）、远程脚本管道执行等安全红线、路由索引与 README 派生计数、本地 Markdown 链接与图片、许可证一致性、格式卫生（行尾、代码块语言标注、表格转义）、占位符和疑似凭据。
 
-GitHub Actions 会在 **Ubuntu、Windows 和 macOS** 三个平台重复执行验证器、生成器一致性检查和回归测试，另外单独运行 Python/Shell/Markdown/workflow 静态检查、PowerShell 分析，并真实测试安装器的首次安装、拒绝覆盖、备份和强制更新路径。
+GitHub Actions 会在 **Ubuntu、Windows 和 macOS** 三个平台重复执行验证器、生成器一致性检查和回归测试，另外单独运行 Python/Shell/Markdown/workflow 静态检查和 PowerShell 分析。安装器与采集脚本不是只跑语法检查，而是在三个平台真实执行一遍完整序列：
+
+- 安装器：`--dry-run` 零副作用 → 首次安装 → 清单字段与 sha256 校验 → 重复安装必须被拒绝 → `--verify` 通过 → 篡改文件后 `--verify` 必须失败 → `--force` 修复并只产生一份备份 → 同内容再 `--force` 必须幂等 → 放入清单外文件后 `--verify` 与 `--uninstall` 必须都被拦住 → `--uninstall --purge --force` 不留残留 → `--link` 模式安装、校验、卸载且不误删源目录。
+- 采集脚本：三平台执行一遍，断言输出是合法结构化文档、11 个小节齐全、`read_only` 与 `network_access` 标记正确；Windows 侧额外用 Windows PowerShell 5.1 再跑一遍，确认在旧运行时下也能输出正确编码的报告。
+- 两个 job 的最后一步都断言 `git status --porcelain` 为空 —— 这是"脚本只写目标目录"这句话的证据，而不是承诺。
 
 新增或修改 Playbook 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 

@@ -100,6 +100,12 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Check cross-platform portability
+        # 四条静态规则：前三条各自对应一个只在非 Linux runner 上才会炸的真实故障
+        #（Bash 变量引用的花括号、5.1 步骤的纯 ASCII、write_text 的显式 LF），
+        # 第四条是同一类问题在 PowerShell 侧的镜像，目前零违规，纯防回归。
+        run: python tests/check_portability.py
+
       - name: Lint Python (ruff)
         run: |
           python -m pip install --disable-pip-version-check "ruff==${RUFF_VERSION}"
@@ -180,7 +186,8 @@ jobs:
           Write-Output "PSScriptAnalyzer: 无 Error/Warning。"
 
   # ---------------------------------------------------------------------------
-  # 安装器端到端行为。三平台真跑，不是只跑语法。
+  # 安装器端到端行为。三平台真跑，不是只跑语法：
+  # 首装 / 拒绝覆盖 / 校验 / 检出篡改 / --force 备份 / 幂等 / 卸载 / 链接模式全覆盖。
   # ---------------------------------------------------------------------------
   installer:
     name: installer (${{ matrix.os }})
@@ -200,42 +207,362 @@ jobs:
         shell: bash
         run: |
           destination="$RUNNER_TEMP/computer-repair-skills"
-          ./scripts/install.sh --target custom --destination "$destination"
-          test -f "$destination/computer-repair-skill/SKILL.md"
-          test -f "$destination/computer-repair-skill/NOTICE"
-          if ./scripts/install.sh --target custom --destination "$destination"; then
+          target="$destination/computer-repair-skill"
+          manifest="$destination/.computer-repair-skill-install.json"
+          backup_root="$destination/.computer-repair-skill-backups"
+          install=(./scripts/install.sh --target custom --destination "$destination")
+
+          echo "::group::预设清单"
+          ./scripts/install.sh --list-targets | grep -q "custom"
+          echo "::endgroup::"
+
+          echo "::group::--dry-run 必须零副作用"
+          "${install[@]}" --dry-run
+          if [ -e "$destination" ]; then
+            echo "::error::--dry-run 创建了 $destination" >&2
+            exit 1
+          fi
+          echo "::endgroup::"
+
+          echo "::group::首次安装"
+          "${install[@]}"
+          test -f "$target/SKILL.md"
+          test -f "$target/NOTICE"
+          test -f "$manifest"
+          python3 - "$manifest" <<'PY'
+          import json
+          import sys
+
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              data = json.load(handle)
+          assert data["schema"] == 1, data["schema"]
+          assert data["install_mode"] == "copy", data["install_mode"]
+          assert data["file_count"] == len(data["files"]) > 0, data["file_count"]
+          assert all(item["path"] and len(item["sha256"]) == 64 for item in data["files"])
+          print(f'清单合法：{data["file_count"]} 个文件，版本 {data["version"]}')
+          PY
+          echo "::endgroup::"
+
+          echo "::group::重复安装必须被拒绝"
+          if "${install[@]}"; then
             echo "::error::安装器不应静默覆盖现有 Skill" >&2
             exit 1
           fi
-          ./scripts/install.sh --target custom --destination "$destination" --force
-          find "$RUNNER_TEMP/external/computer-repair-skill/backups" -mindepth 1 -maxdepth 1 | grep -q .
+          echo "::endgroup::"
+
+          echo "::group::--verify 通过，篡改后必须失败"
+          "${install[@]}" --verify
+          printf '\n<!-- tampered -->\n' >> "$target/SKILL.md"
+          if "${install[@]}" --verify; then
+            echo "::error::--verify 没能检出被篡改的文件" >&2
+            exit 1
+          fi
+          echo "::endgroup::"
+
+          echo "::group::--force 修复并把备份放在目标目录内"
+          "${install[@]}" --force
+          "${install[@]}" --verify
+          test -d "$backup_root"
+          before="$(find "$backup_root" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')"
+          test "$before" -eq 1
+          echo "::endgroup::"
+
+          echo "::group::同版本同内容的 --force 必须幂等，不再新增备份"
+          "${install[@]}" --force
+          after="$(find "$backup_root" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')"
+          if [ "$after" != "$before" ]; then
+            echo "::error::幂等安装仍新增了备份（$before -> ${after}）" >&2
+            exit 1
+          fi
+          echo "::endgroup::"
+
+          echo "::group::清单外文件必须被 --verify 与 --uninstall 拦住"
+          printf 'stray\n' > "$target/stray-local-note.md"
+          if "${install[@]}" --verify; then
+            echo "::error::--verify 没能发现清单外文件" >&2
+            exit 1
+          fi
+          if "${install[@]}" --uninstall; then
+            echo "::error::--uninstall 不应在存在清单外文件时直接删除" >&2
+            exit 1
+          fi
+          echo "::endgroup::"
+
+          echo "::group::--uninstall --purge 不留残留"
+          "${install[@]}" --uninstall --purge --force
+          test ! -e "$target"
+          test ! -e "$manifest"
+          test ! -e "$backup_root"
+          echo "::endgroup::"
+
+          echo "::group::--link 模式"
+          "${install[@]}" --link
+          test -L "$target"
+          test -f "$target/SKILL.md"
+          "${install[@]}" --verify
+          "${install[@]}" --uninstall --purge
+          test ! -e "$target"
+          test -f skills/computer-repair-skill/SKILL.md
+          echo "::endgroup::"
 
       - name: Test PowerShell installer
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          $ErrorActionPreference = "Stop"
           $destination = Join-Path $env:RUNNER_TEMP "computer-repair-skills"
-          ./scripts/install.ps1 -Target custom -Destination $destination
-          if (-not (Test-Path (Join-Path $destination "computer-repair-skill/SKILL.md"))) {
-              throw "首次安装缺少 SKILL.md"
-          }
-          if (-not (Test-Path (Join-Path $destination "computer-repair-skill/NOTICE"))) {
-              throw "首次安装缺少 NOTICE"
+          $target = Join-Path $destination "computer-repair-skill"
+          $manifest = Join-Path $destination ".computer-repair-skill-install.json"
+          $backupRoot = Join-Path $destination ".computer-repair-skill-backups"
+
+          # 三点必须注意，否则测试会假通过：
+          #   1. install.ps1 用脚本作用域 trap 把预期内失败转成一行 "错误：…" 加 exit 1
+          #      （与 scripts/install.sh 的 fail() 对齐）。在同一个进程里用 & 调用时，
+          #      exit 不是异常，调用方的 catch 根本不会触发 —— 退出码才是唯一可靠信号。
+          #   2. $LASTEXITCODE 有粘性：脚本不显式 exit 时它保留上一次的值。这里每次调用
+          #      前清零，install.ps1 两条路径也都显式 exit，两头堵住误判。
+          #   3. 只能用哈希表 splat。数组 splat（@("-Force")）会把开关当成位置参数传，
+          #      开关根本不会生效 —— 这样 -DryRun 之类的断言就成了摆设。
+          function Invoke-Installer {
+              param([hashtable]$Option = @{})
+              $argument = @{ Target = "custom"; Destination = $destination }
+              foreach ($key in $Option.Keys) {
+                  $argument[$key] = $Option[$key]
+              }
+              $global:LASTEXITCODE = 0
+              & ./scripts/install.ps1 @argument
+              if ($LASTEXITCODE -ne 0) {
+                  $flag = ($argument.Keys | Sort-Object) -join ", "
+                  throw "install.ps1 以退出码 $LASTEXITCODE 结束（预期 0）：$flag"
+              }
           }
 
-          $refused = $false
-          try {
-              ./scripts/install.ps1 -Target custom -Destination $destination -ErrorAction Stop
-          }
-          catch {
-              $refused = $true
-          }
-          if (-not $refused) {
-              throw "安装器不应静默覆盖现有 Skill"
+          # Invoke-Installer 已经把非零退出码翻译成 throw，所以这里的 try/catch 同时覆盖
+          # 两种失败形态：trap 转出来的 exit 1，以及万一有路径绕过 trap 直接抛出的异常。
+          function Assert-InstallerFails {
+              param([hashtable]$Option = @{}, [string]$Because)
+              $rejected = $false
+              try {
+                  Invoke-Installer -Option $Option
+              }
+              catch {
+                  $rejected = $true
+                  Write-Output "已按预期拒绝：$($_.Exception.Message)"
+              }
+              if (-not $rejected) {
+                  throw $Because
+              }
           }
 
-          ./scripts/install.ps1 -Target custom -Destination $destination -Force
-          $backupRoot = Join-Path $env:RUNNER_TEMP "external/computer-repair-skill/backups"
-          if (-not (Get-ChildItem -LiteralPath $backupRoot -Directory)) {
-              throw "强制更新没有生成备份"
+          Write-Output "::group::预设清单"
+          # 安装器的状态输出走进程 stdout（[Console]::Out），不进 PowerShell 成功流，
+          # 所以必须开子进程才能捕获文本；在同一进程里用 = 赋值只会拿到空值。
+          $presetText = & pwsh -NoProfile -NonInteractive -File ./scripts/install.ps1 -ListTarget | Out-String
+          if ($LASTEXITCODE -ne 0) {
+              throw "-ListTarget 退出码不为 0：$LASTEXITCODE"
           }
+          if ($presetText -notmatch "custom") {
+              throw "-ListTarget 没有列出 custom 预设"
+          }
+          Write-Output "$presetText"
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::-DryRun 必须零副作用"
+          Invoke-Installer -Option @{ DryRun = $true }
+          if (Test-Path -LiteralPath $destination) {
+              throw "-DryRun 创建了 $destination"
+          }
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::首次安装"
+          Invoke-Installer
+          foreach ($relative in @("SKILL.md", "NOTICE")) {
+              if (-not (Test-Path -LiteralPath (Join-Path $target $relative))) {
+                  throw "首次安装缺少 $relative"
+              }
+          }
+          $data = Get-Content -LiteralPath $manifest -Raw -Encoding UTF8 | ConvertFrom-Json
+          if ($data.schema -ne 1) { throw "清单 schema 不是 1" }
+          if ($data.install_mode -ne "copy") { throw "清单 install_mode 不是 copy" }
+          if ($data.file_count -ne $data.files.Count) { throw "清单 file_count 与 files 数量不一致" }
+          if ($data.file_count -le 0) { throw "清单没有记录任何文件" }
+          foreach ($item in $data.files) {
+              if ($item.sha256.Length -ne 64) { throw "清单里有非法 sha256：$($item.path)" }
+          }
+          Write-Output "清单合法：$($data.file_count) 个文件，版本 $($data.version)"
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::重复安装必须被拒绝"
+          Assert-InstallerFails -Because "安装器不应静默覆盖现有 Skill"
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::-Verify 通过，篡改后必须失败"
+          Invoke-Installer -Option @{ Verify = $true }
+          Add-Content -LiteralPath (Join-Path $target "SKILL.md") -Value "<!-- tampered -->"
+          Assert-InstallerFails -Option @{ Verify = $true } -Because "-Verify 没能检出被篡改的文件"
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::-Force 修复并把备份放在目标目录内"
+          Invoke-Installer -Option @{ Force = $true }
+          Invoke-Installer -Option @{ Verify = $true }
+          $before = @(Get-ChildItem -LiteralPath $backupRoot -Directory).Count
+          if ($before -ne 1) { throw "期望 1 个备份，实际 $before" }
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::同版本同内容的 -Force 必须幂等，不再新增备份"
+          Invoke-Installer -Option @{ Force = $true }
+          $after = @(Get-ChildItem -LiteralPath $backupRoot -Directory).Count
+          if ($after -ne $before) { throw "幂等安装仍新增了备份（$before -> $after）" }
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::清单外文件必须被 -Verify 与 -Uninstall 拦住"
+          Set-Content -LiteralPath (Join-Path $target "stray-local-note.md") -Value "stray"
+          Assert-InstallerFails -Option @{ Verify = $true } -Because "-Verify 没能发现清单外文件"
+          Assert-InstallerFails -Option @{ Uninstall = $true } -Because "-Uninstall 不应在存在清单外文件时直接删除"
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::-Uninstall -Purge 不留残留"
+          Invoke-Installer -Option @{ Uninstall = $true; Purge = $true; Force = $true }
+          foreach ($path in @($target, $manifest, $backupRoot)) {
+              if (Test-Path -LiteralPath $path) { throw "卸载后仍残留 $path" }
+          }
+          Write-Output "::endgroup::"
+
+          Write-Output "::group::-Link 模式"
+          Invoke-Installer -Option @{ Link = $true }
+          $item = Get-Item -LiteralPath $target -Force
+          if (-not ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+              throw "-Link 没有创建符号链接或联接"
+          }
+          if (-not (Test-Path -LiteralPath (Join-Path $target "SKILL.md"))) {
+              throw "链接指向的目录里没有 SKILL.md"
+          }
+          Invoke-Installer -Option @{ Verify = $true }
+          Invoke-Installer -Option @{ Uninstall = $true; Purge = $true }
+          if (Test-Path -LiteralPath $target) { throw "卸载后链接仍存在" }
+          if (-not (Test-Path -LiteralPath "skills/computer-repair-skill/SKILL.md")) {
+              throw "卸载链接时误删了源目录内容"
+          }
+          Write-Output "::endgroup::"
+
+      - name: Assert repository stays untouched
+        # 安装器只应该写目标目录：仓库工作区必须一字未变。
+        shell: bash
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --porcelain
+            echo "::error::安装器改动了仓库工作区" >&2
+            exit 1
+          fi
+
+  # ---------------------------------------------------------------------------
+  # 只读证据采集脚本。三平台真跑一遍，确认输出是合法结构化文档、退出码为 0，
+  # 且脚本除了 --output 指定的文件之外什么都没写。
+  # ---------------------------------------------------------------------------
+  collector:
+    name: collector (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Run Bash collector
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          report="$RUNNER_TEMP/health.json"
+          ./scripts/collect-health.sh --list-sections
+          ./scripts/collect-health.sh --timeout 10 --output "$report"
+          python3 - "$report" <<'PY'
+          import json
+          import sys
+
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              data = json.load(handle)
+          assert data["schema"] == 1, data["schema"]
+          assert data["read_only"] is True
+          assert data["network_access"] is False
+          assert data["platform"] in {"linux", "macos"}, data["platform"]
+          assert len(data["sections"]) == 11, len(data["sections"])
+          probes = [probe for section in data["sections"] for probe in section["probes"]]
+          assert probes, "没有采集到任何探针"
+          skipped = sum(1 for probe in probes if probe["exit_code"] is None)
+          print(f'{len(data["sections"])} 个小节，{len(probes)} 项检查，{skipped} 项主动跳过')
+          PY
+          ./scripts/collect-health.sh --format markdown --sections overview,storage --no-identity > "$RUNNER_TEMP/health.md"
+          grep -q "^# 计算机健康证据采集（只读）" "$RUNNER_TEMP/health.md"
+          grep -q "^## 系统与启动概览（overview）" "$RUNNER_TEMP/health.md"
+          # --no-identity 只承诺报告头部不写主机名，所以这里只断言那一行不存在。
+          # 探针原始输出（uname -a）本来就含主机名，不能拿它当反例。
+          if grep -q "^- 主机：" "$RUNNER_TEMP/health.md"; then
+            echo "::error::--no-identity 仍然写出了主机标识行" >&2
+            exit 1
+          fi
+
+      - name: Run PowerShell collector (PowerShell 7)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $report = Join-Path $env:RUNNER_TEMP "health.json"
+          & ./scripts/collect-health.ps1 -ListSection
+          & ./scripts/collect-health.ps1 -TimeoutSecond 10 -OutputPath $report
+          $data = Get-Content -LiteralPath $report -Raw -Encoding UTF8 | ConvertFrom-Json
+          if ($data.schema -ne 1) { throw "schema 不是 1" }
+          if (-not $data.read_only) { throw "read_only 不是 true" }
+          if ($data.network_access) { throw "network_access 不是 false" }
+          if ($data.platform -ne "windows") { throw "platform 不是 windows：$($data.platform)" }
+          if ($data.sections.Count -ne 11) { throw "小节数不是 11：$($data.sections.Count)" }
+          $probes = @($data.sections | ForEach-Object { $_.probes })
+          if ($probes.Count -lt 1) { throw "没有采集到任何探针" }
+          $skipped = @($probes | Where-Object { $null -eq $_.exit_code }).Count
+          Write-Output "$($data.sections.Count) 个小节，$($probes.Count) 项检查，$skipped 项主动跳过"
+
+      - name: Run PowerShell collector (Windows PowerShell 5.1)
+        if: runner.os == 'Windows'
+        # 5.1 是 Windows 上的兜底运行时：必须证明脚本在它下面也能跑出合法文档。
+        # run 块只跑不断言，而且必须是纯 ASCII：Actions 把它写成不带 BOM 的临时 .ps1，
+        # 5.1 按系统 ANSI 代码页解码，中文字节里的 0x91-0x94 在 CP1252 下会变成排版
+        # 引号，提前闭合字符串并让整段脚本解析失败。中文断言见下一步的 pwsh。
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $report = Join-Path $env:RUNNER_TEMP "health-51.md"
+          & ./scripts/collect-health.ps1 -TimeoutSecond 10 -Format markdown -Section overview,security -NoIdentity -OutputPath $report
+          if (-not (Test-Path -LiteralPath $report)) {
+              throw "Windows PowerShell 5.1 produced no report at $report"
+          }
+          Write-Output "Windows PowerShell 5.1 wrote $((Get-Item $report).Length) bytes."
+
+      - name: Assert Windows PowerShell 5.1 output
+        if: runner.os == 'Windows'
+        # 上一步只证明"跑得完"；断言放在 pwsh 里做 —— PowerShell 7 的临时脚本按
+        # UTF-8 解码，可以安全地写中文针。读的是 5.1 刚写出的同一份报告。
+        shell: pwsh
+        run: |
+          $report = Join-Path $env:RUNNER_TEMP "health-51.md"
+          $text = Get-Content -LiteralPath $report -Raw -Encoding UTF8
+          if ($text -notmatch "计算机健康证据采集") {
+              throw "Markdown 标题缺失或编码错误（5.1 未按 UTF-8 解析脚本？）"
+          }
+          # -NoIdentity 只承诺报告头部不写主机名；探针原始输出仍可能含主机信息。
+          if ($text -match "(?m)^- 主机：") {
+              throw "-NoIdentity 仍然写出了主机标识行"
+          }
+          Write-Output "Windows PowerShell 5.1 输出 $($text.Length) 个字符。"
+
+      - name: Assert repository stays untouched
+        # 采集脚本声称"除 --output 外不写任何路径"，这一步就是那句话的证据。
+        shell: bash
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --porcelain
+            echo "::error::采集脚本改动了仓库工作区" >&2
+            exit 1
+          fi
