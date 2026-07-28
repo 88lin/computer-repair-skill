@@ -40,7 +40,7 @@ source: local
 - 让 frontmatter 的 `description` 不超过 120 个字符且只描述一个明确入口；不要把多个能力堆在同一行。
 - `emoji` 是可选字段；需要使用时只填一个合适的 emoji，没有合适图标就省略。
 - emoji 的来源约定：`source: bundled` 的 Playbook 保留上游已有图标，用于在支持图标的 Skill 浏览器中快速识别；`source: local` 的新 Playbook 默认省略，只有确实有分类价值时才按需添加。emoji 只服务于展示，不参与路由或执行逻辑；校验器会要求它是单个 emoji。
-- 数量统计只包含可执行 Playbook；`playbook-authoring.md` 和 `playbook-index.md` 是参考文档，不计入 58 个 Playbook。
+- 数量统计只包含可执行 Playbook；`playbook-authoring.md` 和 `playbook-index.md` 是参考文档，不计入 70 个 Playbook。
 - 给出激活条件、快速只读检查、标准诊断路径、修复前确认、验证、限制和升级信息。
 - 对平台命令提供明确失败处理，不使用宽泛删除或不可审计的命令拼接。
 - 需要凭据时使用宿主安全输入能力，不在上下文或命令历史中回显秘密。

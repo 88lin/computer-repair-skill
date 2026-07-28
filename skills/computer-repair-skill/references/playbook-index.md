@@ -5,7 +5,7 @@
 同一问题命中多个条目时，优先级依次为：具体产品或组件、具体故障类型、通用健康检查。不要用健康基线替代已存在的专项流程。
 
 <!-- registry:begin:index-summary -->
-本索引登记 58 个可执行 Playbook：37 个来自 `NOTICE` 记录的上游基准，21 个由本项目补充，用于覆盖 Windows、macOS 和 Linux 的网络、性能、存储、安全、启动、硬件、崩溃分析、事件响应和恢复诊断。
+本索引登记 70 个可执行 Playbook：37 个来自 `NOTICE` 记录的上游基准，33 个由本项目补充，用于覆盖 Windows、macOS 和 Linux 的网络、性能、存储、安全、启动、硬件、崩溃分析、事件响应和恢复诊断。
 <!-- registry:end:index-summary -->
 
 ## 健康、性能、存储与备份
@@ -27,6 +27,15 @@
 | `local-data-audit` | all | 离职、设备回收、本地敏感数据盘点 | [playbook-local-data-audit.md](playbook-local-data-audit.md) |
 | `backup-verify-restore` | all | 验证备份、检查时间戳、抽样恢复文件 | [playbook-backup-verify-restore.md](playbook-backup-verify-restore.md) |
 | `setup-backup` | macOS | 配置 Time Machine 或基础备份策略 | [playbook-setup-backup.md](playbook-setup-backup.md) |
+
+## 硬件健康与崩溃分析
+
+| Playbook | 平台 | 触发症状 | 文件 |
+|---|---|---|---|
+| `storage-health-smart` | all | SMART/NVMe 计数器、坏道、磁盘是否将坏 | [playbook-storage-health-smart.md](playbook-storage-health-smart.md) |
+| `windows-crash-dump-triage` | Windows | 蓝屏、意外重启、应用崩溃、转储与事件证据 | [playbook-windows-crash-dump-triage.md](playbook-windows-crash-dump-triage.md) |
+| `memory-diagnostics` | all | 内存报错、随机崩溃、换内存条前的真假判断 | [playbook-memory-diagnostics.md](playbook-memory-diagnostics.md) |
+| `thermal-battery-health` | all | 过热、风扇狂转、降频、电池损耗、睡眠掉电 | [playbook-thermal-battery-health.md](playbook-thermal-battery-health.md) |
 
 ## 网络、DNS、VPN、身份与邮件
 
@@ -54,6 +63,13 @@
 | `windows-printer-repair` | Windows | 离线打印机、卡住作业、Spooler | [playbook-windows-printer-repair.md](playbook-windows-printer-repair.md) |
 | `windows-configuration-review` | Windows | Windows 优化、隐私、电源、去臃肿或配置导入 | [playbook-windows-configuration-review.md](playbook-windows-configuration-review.md) |
 
+## 外设、蓝牙与显示
+
+| Playbook | 平台 | 触发症状 | 文件 |
+|---|---|---|---|
+| `bluetooth-peripheral-triage` | all | 蓝牙配对失败、掉连、音频卡顿、无线键鼠无响应 | [playbook-bluetooth-peripheral-triage.md](playbook-bluetooth-peripheral-triage.md) |
+| `display-gpu-triage` | all | 黑屏、闪屏、花屏、分辨率异常、外接显示器与显卡驱动 | [playbook-display-gpu-triage.md](playbook-display-gpu-triage.md) |
+
 ## Windows 维修、启动与硬件
 
 | Playbook | 平台 | 触发症状 | 文件 |
@@ -76,11 +92,27 @@
 | `windows-persistence-audit` | Windows | 启动项、服务、计划任务、右键菜单和文件关联残留 | [playbook-windows-persistence-audit.md](playbook-windows-persistence-audit.md) |
 | `credential-cleanup` | all | 离职或事件后的凭据盘点与清理 | [playbook-credential-cleanup.md](playbook-credential-cleanup.md) |
 
+## 安全事件响应
+
+| Playbook | 平台 | 触发症状 | 文件 |
+|---|---|---|---|
+| `malware-triage` | all | 疑似中毒、被劫持、陌生启动项、远程支援诈骗 | [playbook-malware-triage.md](playbook-malware-triage.md) |
+| `ransomware-first-response` | all | 文件被批量加密、勒索信、共享盘或云同步受影响 | [playbook-ransomware-first-response.md](playbook-ransomware-first-response.md) |
+
 ## Windows 数据恢复
 
 | Playbook | 平台 | 触发症状 | 文件 |
 |---|---|---|---|
 | `windows-data-recovery-triage` | Windows | 误删、卷不可访问、文件系统损坏、镜像恢复 | [playbook-windows-data-recovery-triage.md](playbook-windows-data-recovery-triage.md) |
+
+## macOS 与 Linux 维修
+
+| Playbook | 平台 | 触发症状 | 文件 |
+|---|---|---|---|
+| `macos-persistence-audit` | macOS | LaunchAgents/Daemons、登录项、配置描述文件、扩展 | [playbook-macos-persistence-audit.md](playbook-macos-persistence-audit.md) |
+| `linux-persistence-audit` | Linux | systemd 单元、定时器、cron、autostart 与包归属 | [playbook-linux-persistence-audit.md](playbook-linux-persistence-audit.md) |
+| `macos-filevault-recovery-triage` | macOS | FileVault 状态、恢复密钥托管、送修或抹盘前分诊 | [playbook-macos-filevault-recovery-triage.md](playbook-macos-filevault-recovery-triage.md) |
+| `linux-boot-failure-triage` | Linux | 引导失败、initramfs、根分区挂不上、启动单元失败 | [playbook-linux-boot-failure-triage.md](playbook-linux-boot-failure-triage.md) |
 
 ## 开发环境与基础设置
 
