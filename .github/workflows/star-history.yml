@@ -1,16 +1,50 @@
 name: Star History
+
 on:
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: "0 0 * * 1"
   workflow_dispatch:
+
+# 图表被推到孤立分支 star-history，但推送用的是 STAR_HISTORY_TOKEN（PAT），
+# 不是 GITHUB_TOKEN，所以这里只需要 checkout 的读权限。
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   star-history:
+    name: star-history
     runs-on: ubuntu-latest
+    # secrets 上下文在 step 级 if 里不可用，但 job 级 env 可以引用 secrets，
+    # 而 env 在 step 级 if 里可用 —— 这是「secret 存在性守卫」的标准写法。
+    env:
+      STAR_HISTORY_TOKEN: ${{ secrets.STAR_HISTORY_TOKEN }}
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: carsteneu/mystarhistory@v1
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # 没配 PAT 时以前是每周静默失败发一封通知邮件；现在改成显式跳过。
+      - name: Skip when STAR_HISTORY_TOKEN is not configured
+        if: ${{ env.STAR_HISTORY_TOKEN == '' }}
+        run: |
+          {
+            echo "### Star History 已跳过"
+            echo
+            echo "仓库未配置 \`STAR_HISTORY_TOKEN\`。"
+            echo "自 2026-07-14 起默认 \`GITHUB_TOKEN\` 无法读取 stargazers 接口，"
+            echo "需要一个仅具备 Metadata:Read + Contents:Read and write 的细粒度 PAT。"
+            echo "配置入口：Settings → Secrets and variables → Actions。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Generate star history chart
+        if: ${{ env.STAR_HISTORY_TOKEN != '' }}
+        # carsteneu/mystarhistory v1.3.5
+        uses: carsteneu/mystarhistory@ec82d645a6df185f4d845b33691a6bcdd02f608a
         with:
           repos: ${{ github.repository }}
           token: ${{ secrets.STAR_HISTORY_TOKEN }}

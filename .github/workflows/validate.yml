@@ -6,34 +6,197 @@ on:
   pull_request:
   workflow_dispatch:
 
+# 只读默认权限。没有任何 job 需要写仓库。
 permissions:
   contents: read
 
+# 同一分支上的新 push 取消旧运行，避免排队浪费；main 上不取消，保留完整历史。
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  # 这个 Skill 的正文与校验器输出都是中文，Windows runner 默认 cp1252，必须强制 UTF-8。
+  PYTHONUTF8: "1"
+  PYTHON_VERSION: "3.12"
+  # 第三方工具全部固定版本 + 校验 sha256，避免供应链漂移。
+  ACTIONLINT_VERSION: "1.7.12"
+  ACTIONLINT_SHA256: "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+  SHELLCHECK_VERSION: "0.11.0"
+  SHELLCHECK_SHA256: "8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198"
+  MARKDOWNLINT_VERSION: "0.18.1"
+  RUFF_VERSION: "0.12.7"
+  PSSA_VERSION: "1.25.0"
+
 jobs:
+  # ---------------------------------------------------------------------------
+  # 内容契约：Skill 结构、跨平台路由、工具契约、派生计数、格式卫生。
+  # 三平台都跑，因为校验器本身要在三平台的换行/编码/大小写语义下都成立。
+  # ---------------------------------------------------------------------------
   validate:
-    name: ${{ matrix.os }}
+    name: validate (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    env:
-      PYTHONUTF8: "1"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        # actions/setup-python v7.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Validate Skill
         run: python tests/validate_skill.py
 
+      - name: Check derived registry is in sync
+        run: python tests/playbook_registry.py --check
+
+      - name: Install pytest
+        run: python -m pip install --disable-pip-version-check "pytest==8.*"
+
+      - name: Run validator regression tests
+        run: python -m pytest tests/ -q
+
+      - name: Assert generator is idempotent
+        # --write 之后工作区必须干净：否则说明派生内容（索引表、README 计数）
+        # 被手工改过，或生成器不是幂等的。
+        shell: bash
+        run: |
+          python tests/playbook_registry.py --write
+          if ! git diff --exit-code; then
+            echo "::error::playbook_registry.py --write 产生了改动，请提交生成结果。" >&2
+            exit 1
+          fi
+
+  # ---------------------------------------------------------------------------
+  # 静态检查：Python / Shell / Markdown / workflow 本身。
+  # 只在 ubuntu 跑一次 —— 这些工具的结论与 runner 平台无关。
+  # ---------------------------------------------------------------------------
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Set up Python
+        # actions/setup-python v7.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up Node.js
+        # actions/setup-node v7.0.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "22"
+
+      - name: Lint Python (ruff)
+        run: |
+          python -m pip install --disable-pip-version-check "ruff==${RUFF_VERSION}"
+          ruff check tests/
+          ruff format --check tests/
+
+      - name: Lint Markdown (markdownlint-cli2)
+        run: npx --yes "markdownlint-cli2@${MARKDOWNLINT_VERSION}"
+
+      - name: Lint shell scripts (shellcheck)
+        run: |
+          url="https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz"
+          curl -fsSLo /tmp/shellcheck.tar.xz "$url"
+          echo "${SHELLCHECK_SHA256}  /tmp/shellcheck.tar.xz" | sha256sum --check --strict
+          tar -xJf /tmp/shellcheck.tar.xz -C /tmp
+          "/tmp/shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --version
+          "/tmp/shellcheck-v${SHELLCHECK_VERSION}/shellcheck" --severity=style --external-sources scripts/*.sh
+
+      - name: Lint workflows (actionlint)
+        run: |
+          url="https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          curl -fsSLo /tmp/actionlint.tar.gz "$url"
+          echo "${ACTIONLINT_SHA256}  /tmp/actionlint.tar.gz" | sha256sum --check --strict
+          tar -xzf /tmp/actionlint.tar.gz -C /tmp actionlint
+          /tmp/actionlint -version
+          /tmp/actionlint -color
+
+  # ---------------------------------------------------------------------------
+  # PowerShell 质量门。必须在 Windows 上跑：install.ps1 的目标运行时是
+  # Windows PowerShell 5.1 与 PowerShell 7，语法与 cmdlet 可用性都由平台决定。
+  # ---------------------------------------------------------------------------
+  powershell:
+    name: powershell
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Assert install.ps1 keeps its UTF-8 BOM
+        # 没有 BOM 时 Windows PowerShell 5.1 会按 ANSI 解码，脚本里的中文提示全变乱码。
+        shell: pwsh
+        run: |
+          $bytes = [IO.File]::ReadAllBytes("scripts/install.ps1")[0..2]
+          if (-not ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)) {
+              throw "scripts/install.ps1 缺少 UTF-8 BOM。"
+          }
+
+      - name: Parse PowerShell scripts (Windows PowerShell 5.1)
+        # Windows PowerShell 5.1 是最保守的目标运行时；先证明语法能过它的 parser。
+        # run 块必须是纯 ASCII：Actions 把 `shell: powershell` 的正文写成不带 BOM 的
+        # 临时 .ps1，5.1 按系统 ANSI 代码页（CP1252）解码，中文字节里的 0x91-0x94 会
+        # 变成排版引号并提前闭合字符串。中文断言一律放到 `shell: pwsh` 步骤。
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          Get-ChildItem -Path scripts -Filter *.ps1 -Recurse | ForEach-Object {
+              $errors = $null
+              [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$errors)
+              if ($errors) {
+                  $errors | ForEach-Object { Write-Output $_.ToString() }
+                  throw "$($_.Name) failed the Windows PowerShell 5.1 parser."
+              }
+              Write-Output "parsed: $($_.Name)"
+          }
+
+      - name: Analyze PowerShell scripts (PSScriptAnalyzer)
+        shell: pwsh
+        run: |
+          $ProgressPreference = "SilentlyContinue"
+          Install-Module PSScriptAnalyzer -RequiredVersion $env:PSSA_VERSION -Force -Scope CurrentUser -AllowClobber
+          $findings = Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Severity Error, Warning
+          if ($findings) {
+              $findings | Format-Table -AutoSize RuleName, Severity, ScriptName, Line, Message | Out-String -Width 200
+              throw "PSScriptAnalyzer 报告了 $($findings.Count) 项问题。"
+          }
+          Write-Output "PSScriptAnalyzer: 无 Error/Warning。"
+
+  # ---------------------------------------------------------------------------
+  # 安装器端到端行为。三平台真跑，不是只跑语法。
+  # ---------------------------------------------------------------------------
+  installer:
+    name: installer (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
       - name: Test Bash installer
-        if: runner.os == 'Linux'
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           destination="$RUNNER_TEMP/computer-repair-skills"
@@ -41,7 +204,7 @@ jobs:
           test -f "$destination/computer-repair-skill/SKILL.md"
           test -f "$destination/computer-repair-skill/NOTICE"
           if ./scripts/install.sh --target custom --destination "$destination"; then
-            echo "安装器不应静默覆盖现有 Skill" >&2
+            echo "::error::安装器不应静默覆盖现有 Skill" >&2
             exit 1
           fi
           ./scripts/install.sh --target custom --destination "$destination" --force
@@ -54,25 +217,25 @@ jobs:
           $destination = Join-Path $env:RUNNER_TEMP "computer-repair-skills"
           ./scripts/install.ps1 -Target custom -Destination $destination
           if (-not (Test-Path (Join-Path $destination "computer-repair-skill/SKILL.md"))) {
-            throw "首次安装缺少 SKILL.md"
+              throw "首次安装缺少 SKILL.md"
           }
           if (-not (Test-Path (Join-Path $destination "computer-repair-skill/NOTICE"))) {
-            throw "首次安装缺少 NOTICE"
+              throw "首次安装缺少 NOTICE"
           }
 
           $refused = $false
           try {
-            ./scripts/install.ps1 -Target custom -Destination $destination -ErrorAction Stop
+              ./scripts/install.ps1 -Target custom -Destination $destination -ErrorAction Stop
           }
           catch {
-            $refused = $true
+              $refused = $true
           }
           if (-not $refused) {
-            throw "安装器不应静默覆盖现有 Skill"
+              throw "安装器不应静默覆盖现有 Skill"
           }
 
           ./scripts/install.ps1 -Target custom -Destination $destination -Force
           $backupRoot = Join-Path $env:RUNNER_TEMP "external/computer-repair-skill/backups"
           if (-not (Get-ChildItem -LiteralPath $backupRoot -Directory)) {
-            throw "强制更新没有生成备份"
+              throw "强制更新没有生成备份"
           }

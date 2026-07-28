@@ -6,7 +6,7 @@
 
 # 🛠️ Computer Repair Skill
 
-### 让 Agent 像一名谨慎的电脑维修工程师：先取证，再判断；先计划，再修改。
+**让 Agent 像一名谨慎的电脑维修工程师：先取证，再判断；先计划，再修改。**
 
 一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。
 
@@ -319,15 +319,38 @@ Windows PowerShell：
 ```powershell
 $env:PYTHONUTF8 = "1"
 python tests\validate_skill.py
+python tests\playbook_registry.py --check
 ```
 
 macOS / Linux：
 
 ```bash
 PYTHONUTF8=1 python tests/validate_skill.py
+PYTHONUTF8=1 python tests/playbook_registry.py --check
 ```
 
-验证器会检查 Skill frontmatter、Agent 元数据、58 个 Playbook 的描述唯一性、工具契约、路由索引、README 分类数量、本地 Markdown 链接、许可证一致性、占位符和疑似凭据。GitHub Actions 会在 Windows 和 Ubuntu 上重复验证，并测试安装器的首次安装、拒绝覆盖、备份和强制更新路径。
+新增或删除 Playbook 后，用生成器重写派生内容（分类表、小节计数、索引摘要），
+不要手改这些数字：
+
+```bash
+PYTHONUTF8=1 python tests/playbook_registry.py --write
+```
+
+可选的开发期检查（需要额外工具，CI 会全部执行）：
+
+```bash
+pytest tests/                     # 校验器自身的回归测试
+ruff check tests/                 # Python 静态检查
+ruff format --check tests/        # Python 格式检查
+npx markdownlint-cli2             # Markdown 规则（配置见 .markdownlint-cli2.jsonc）
+shellcheck --severity=style scripts/*.sh
+actionlint                        # GitHub Actions workflow 检查
+pwsh -c 'Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Severity Error,Warning'
+```
+
+验证器会检查 Skill frontmatter、Agent 元数据、Playbook 描述唯一性与分类登记、工具别名双向契约、跨平台路由（禁止把 Windows/Linux 用户导向 macOS-only 流程）、远程脚本管道执行等安全红线、路由索引与 README 派生计数、本地 Markdown 链接与图片、许可证一致性、格式卫生（行尾、代码块语言标注、表格转义）、占位符和疑似凭据。
+
+GitHub Actions 会在 **Ubuntu、Windows 和 macOS** 三个平台重复执行验证器、生成器一致性检查和回归测试，另外单独运行 Python/Shell/Markdown/workflow 静态检查、PowerShell 分析，并真实测试安装器的首次安装、拒绝覆盖、备份和强制更新路径。
 
 新增或修改 Playbook 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 
