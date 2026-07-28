@@ -134,7 +134,7 @@ macOS / Linux：
 
 ## ❤️赞助商
 
-这里可以免费使用 AI，白嫖多种 AI 福利和模型，例如 **Qwen3.8-Max-Preview**、**hy3**、**GLM-5.2**、**Kimi K3** 等。欢迎前往[免费 AI 资源指南](https://blog.88lin.eu.org/article/36)体验。
+这里可以免费体验多种 AI 模型，例如 **Qwen3.8-Max-Preview**、**hy3**、**GLM-5.2**、**Kimi K3** 等。点击前往[免费 AI 福利指南](https://blog.88lin.eu.org/article/36)体验。
 
 ## 🧭 如何使用
 

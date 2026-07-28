@@ -16,6 +16,11 @@ The following repositories were reviewed on 2026-07-28 at the listed commit.
 Only behavioral observations and safety boundaries were used; no source code,
 binary or remote installer was copied into this project.
 
+ZyperWave/ZyperWinOptimize and tsgrgo/windows-update-disabler did not contain a
+license file in the reviewed trees. They were used only for behavioral
+observation and safety-boundary review; neither repository is treated as a
+code, asset, binary, or installer source for this project.
+
 - darkmatter2048/WindowsCleaner v2 @ 37b4dfacdec71393990f1a2eae9807bfec0daf48
   CC BY-NC-SA 4.0
 - aakk007/RogueCleaner main @ e498db393a1ceabad85a5750315d9a9e072cf6fa

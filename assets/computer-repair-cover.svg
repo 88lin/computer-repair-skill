@@ -47,14 +47,14 @@
     <text x="166" y="108" font-size="18" font-weight="700" fill="#d7f36b" letter-spacing="1">开源 · 跨平台 · Agent 电脑维修工作流</text>
     <rect x="1142" y="49" width="360" height="42" rx="21" fill="#1b2d48" stroke="#3b5775" stroke-width="1"/>
     <circle cx="1170" cy="70" r="7" fill="#58d5b5" class="pulse"/>
-    <text x="1190" y="76" font-size="16" font-weight="800" fill="#d9e7ef">只读优先 · 确认后变更</text>
+    <text x="1190" y="76" font-size="18" font-weight="800" fill="#d9e7ef">只读优先 · 确认后变更</text>
 
     <text x="88" y="244" font-size="92" font-weight="850" fill="#ffffff">电脑诊断</text>
     <text x="88" y="344" font-size="92" font-weight="850" fill="#ffffff">与安全维修</text>
     <rect x="92" y="380" width="238" height="8" rx="4" fill="#ef805f"/>
-    <text x="88" y="438" font-size="28" font-weight="800" fill="#d7f36b">从证据开始，让修复有据可查。</text>
-    <text x="88" y="481" font-size="21" fill="#c1d0dc">把电脑变慢、断网、更新失败、启动故障交给 Agent，</text>
-    <text x="88" y="515" font-size="21" fill="#c1d0dc">按平台和风险选择流程，先说明影响，再执行最小变更。</text>
+    <text x="88" y="438" font-size="30" font-weight="800" fill="#d7f36b">从证据开始，让修复有据可查。</text>
+    <text x="88" y="481" font-size="22" fill="#c1d0dc">把电脑变慢、系统清理、性能优化、网络修复交给 Agent，</text>
+    <text x="88" y="515" font-size="22" fill="#c1d0dc">按平台和风险选择流程，先说明影响，再执行最小变更。</text>
 
     <g transform="translate(88 575)">
       <path d="M23 20H670" stroke="#3a5571" stroke-width="3"/>
@@ -110,14 +110,14 @@
       <text x="1359" y="248" text-anchor="middle" class="mono" font-size="18" font-weight="800" fill="#101d3d">只读检查</text>
       <g transform="translate(966 542)">
         <rect width="144" height="58" rx="13" fill="#e3f3ed"/>
-        <text x="17" y="24" class="mono" font-size="11" fill="#52747b">网络</text>
-        <text x="17" y="46" font-size="17" font-weight="800" fill="#19836d">稳定</text>
+        <text x="55" y="24" class="mono" font-size="16" fill="#52747b">网络</text>
+        <text x="55" y="46" font-size="17" font-weight="800" fill="#19836d">稳定</text>
         <rect x="160" width="144" height="58" rx="13" fill="#fff0e6"/>
-        <text x="177" y="24" class="mono" font-size="11" fill="#8a6a5f">存储</text>
-        <text x="177" y="46" font-size="17" font-weight="800" fill="#d66d44">关注</text>
+        <text x="215" y="24" class="mono" font-size="16" fill="#8a6a5f">存储</text>
+        <text x="215" y="46" font-size="17" font-weight="800" fill="#d66d44">关注</text>
         <rect x="320" width="144" height="58" rx="13" fill="#e3f3ed"/>
-        <text x="337" y="24" class="mono" font-size="11" fill="#52747b">安全</text>
-        <text x="337" y="46" font-size="17" font-weight="800" fill="#19836d">开启</text>
+        <text x="375" y="24" class="mono" font-size="16" fill="#52747b">安全</text>
+        <text x="375" y="46" font-size="17" font-weight="800" fill="#19836d">开启</text>
       </g>
       <path d="M1060 646v42M1275 646v42" stroke="#263e61" stroke-width="14"/>
       <path d="M962 706h420" stroke="#263e61" stroke-width="26" stroke-linecap="round"/>
