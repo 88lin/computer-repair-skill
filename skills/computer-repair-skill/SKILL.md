@@ -37,6 +37,14 @@ description: Use this skill when a user asks to diagnose, repair, clean up, reco
 - 读取 [playbook-index.md](references/playbook-index.md)，按症状、平台和触发词选择最具体的 Playbook。
 - 只加载当前任务需要的 `references/playbook-*.md`。不要一次读取全部 Playbook。
 - 优先选择精确 Playbook；多个问题确实独立时按影响和依赖顺序逐个执行。
+
+#### 平台路由硬规则
+
+- **绝不把用户路由进 `platform` 与其实际系统不符的 Playbook。** `platform: macos` 的 Playbook 不适用于 Windows 或 Linux 用户，即使其中的检查思路通用。
+- 存在同名平台变体时选择匹配的那一份，例如网络诊断按平台分为 `windows-network-diagnostics`、`network-diagnostics`（macOS）、`linux-network-diagnostics`；磁盘清理、性能取证同理。
+- `platform: all` 的 Playbook 内部仍可能只给出某一平台的命令。执行前确认当前步骤有本平台分支；没有时按 [tool-contract.md](references/tool-contract.md) 与平台映射文件翻译为等价的**只读**命令，并说明这是等价替代而非原文命令。
+- 当前平台确实没有对应 Playbook 时，不要降级到别的平台的 Playbook。改为执行本文件的通用工作流（只读诊断 → 计划 → 确认 → 最小变更 → 验证），并向用户说明缺少专项流程。
+- 翻译平台命令时保持风险等级不变：只读命令必须翻译成只读命令，不得用一个会改状态的命令替代只读检查。
 - 对含 `## Step N:` 的程序型 Playbook，按编号顺序推进并维护当前步骤。对诊断型 Playbook，沿其检查树执行。
 - Playbook 中的语义工具名不代表宿主必须存在同名工具；按工具契约进行映射。
 - 把 Playbook 视为诊断协议，不视为执行授权。当前系统事实、用户约束、宿主权限和本 Skill 的安全策略优先。
@@ -117,4 +125,4 @@ description: Use this skill when a user asks to diagnose, repair, clean up, reco
 
 ## 上游与许可
 
-本 Skill 包含 58 个可按需加载的 Playbook。上游项目、原作者归属和许可证记录在根目录 `NOTICE`；分发和修改时保留 `LICENSE` 与 `NOTICE`。
+本 Skill 包含一组可按需加载的 Playbook，完整清单和分类见 [playbook-index.md](references/playbook-index.md)。上游项目、原作者归属和许可证记录在根目录 `NOTICE`；分发和修改时保留 `LICENSE` 与 `NOTICE`。

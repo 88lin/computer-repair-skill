@@ -36,7 +36,7 @@ HTTP 检查需要记录状态码、最终 URL 和耗时。目标不支持 `HEAD`
 |---|---|---|
 | `win_printer_list` | `Get-Printer` | 只读 |
 | `win_print_queue` | `Get-PrintJob -PrinterName '<PRINTER>'` | 只读 |
-| `win_cancel_print_jobs` | `Get-PrintJob -PrinterName '<PRINTER>' | Remove-PrintJob` | 高影响，先列出作业并确认 |
+| `win_cancel_print_jobs` | `Get-PrintJob -PrinterName '<PRINTER>' \| Remove-PrintJob` | 高影响，先列出作业并确认 |
 | `win_restart_spooler` | `Restart-Service -Name Spooler` | 会中断打印，先确认 |
 
 ```powershell

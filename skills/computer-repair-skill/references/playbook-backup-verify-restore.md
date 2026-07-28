@@ -88,7 +88,7 @@ Remove any test files created during the verification:
 
 ## Escalation
 If verification reveals:
-- No backup tool installed → recommend setting one up immediately. Use the `setup-backup` playbook.
+- No backup tool installed → recommend setting one up immediately. On macOS use the `setup-backup` playbook. On Windows and Linux there is no equivalent playbook yet — instead confirm the platform's own options with the user (Windows: File History, OneDrive folder backup, or a third-party image tool; Linux: Timeshift for system snapshots plus restic/borg/rsync for data) and follow the same copy → verify → confirm sequence from this playbook.
 - Backup destination is full or inaccessible → the admin needs to provision more storage or fix the network path.
 - Restore test fails → the backup may be corrupted. Check backup logs, try restoring from an older snapshot, or reconfigure the backup.
 - Backup is encrypted and password is unknown → this is a critical issue. The backup is unrecoverable. Document and escalate to the admin.

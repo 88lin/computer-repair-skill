@@ -111,6 +111,7 @@ rather than failing the flow. Don't assume a specific macOS version.
 - `shell_run` — `sudo purge` (memory relief)
 - `mac_system_info` / `mac_process_list` / `mac_disk_usage` — only if you need
   raw detail the diagnose tool didn't surface
+- `ui_done` — report the verified before/after result
 
 ## Escalation
 If performance is still poor after diagnosis:

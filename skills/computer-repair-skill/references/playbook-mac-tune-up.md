@@ -108,3 +108,4 @@ If the Mac is still slow after the sweep:
 - `shell_run` — runs each maintenance command (safe / sudo-gated tier)
 - `mac_system_info`, `vm_stat` — before/after measurement
 - `mac_disk_usage` — confirm this isn't actually a disk-full case first
+- `ui_done` — final summary with memory reclaimed per step

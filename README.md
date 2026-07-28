@@ -134,7 +134,7 @@ macOS / Linux：
 
 ## ❤️赞助商
 
-这里可以免费体验多种 AI 模型，例如 **Qwen3.8-Max-Preview**、**hy3**、**GLM-5.2**、**Kimi K3** 等。点击前往[免费 AI 福利指南](https://blog.88lin.eu.org/article/36)体验。
+这里可以免费体验多种主流大模型（通义千问、智谱 GLM、月之暗面 Kimi 等系列）。具体可用型号和额度会随上游调整，点击前往[免费 AI 福利指南](https://blog.88lin.eu.org/article/36)查看当前列表。
 
 ## 🧭 如何使用
 

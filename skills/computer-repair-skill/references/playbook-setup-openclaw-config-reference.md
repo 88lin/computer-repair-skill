@@ -216,3 +216,12 @@ openclaw logs --follow             # real-time logs
 openclaw status                    # overall system status
 openclaw dashboard                 # open Control UI in browser
 ```
+
+## Tools referenced
+- `shell_run` — `openclaw config get/set/unset`, `openclaw doctor`, gateway and channel status
+- `win_read_file` / `mac_read_file` / `linux_read_file` — inspect `config.json` and included fragments directly
+- `ui_info` — explain a field, its default and its blast radius without changing anything
+
+This is a reference document, not a procedure. Read a value before writing it, and
+route any actual change through `setup-openclaw-configure` so the confirm-and-verify
+steps are not skipped.

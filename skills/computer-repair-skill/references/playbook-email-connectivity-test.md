@@ -19,7 +19,7 @@ User can't send or receive email, email client shows connection errors, suspecte
 
 ### 1. Test DNS resolution of mail server
 If the user has a specific mail server, resolve it first using a DNS lookup.
-- If DNS fails, email won't work regardless of port connectivity. Activate the `network-diagnostics` playbook to fix DNS first.
+- If DNS fails, email won't work regardless of port connectivity. Activate the platform-matched networking playbook to fix DNS first — `windows-network-diagnostics` (Windows), `network-diagnostics` (macOS), or `linux-network-diagnostics` (Linux).
 - If no specific server, skip to step 2 and test common providers.
 
 ### 2. Test SMTP connectivity
@@ -28,7 +28,17 @@ Test connectivity to common SMTP ports:
 - **Port 465** (SMTP over SSL) — legacy but still used by some providers.
 - **Port 587** (SMTP submission with STARTTLS) — the standard port for sending email. This one matters most.
 
-Use an HTTP check or `nc -z -w 5 <host> <port>` to test. Report which ports are reachable.
+Use a platform-appropriate TCP reachability check — `nc` does not exist on a stock
+Windows install, and is not guaranteed on a minimal Linux either:
+
+| Platform | Command |
+|---|---|
+| Windows | `Test-NetConnection -ComputerName <host> -Port <port> -InformationLevel Quiet` |
+| macOS | `nc -z -w 5 <host> <port>` |
+| Linux | `nc -z -w 5 <host> <port>`; if netcat is absent, `timeout 5 bash -c '</dev/tcp/<host>/<port>'` and check the exit code |
+
+All three are read-only reachability probes: they open a TCP connection and close
+it without authenticating or sending mail. Report which ports are reachable.
 
 ### 3. Test IMAP and POP3 connectivity
 - **Port 993** (IMAP over SSL) — standard for receiving email with IMAP.
@@ -81,7 +91,8 @@ If all ports are blocked:
 - If the problem persists across networks, check for local firewall software (Little Snitch, Windows Firewall rules).
 
 ## Tools referenced
-- DNS lookup tools — resolve mail server hostnames
-- HTTP check tools — test HTTPS connectivity to web endpoints
-- Shell commands — test TCP connectivity to specific ports via `nc`
-- Ping tools — basic reachability check
+- `win_dns_check` / `mac_dns_check` / `linux_dns_check` — resolve mail server hostnames
+- `win_http_check` / `mac_http_check` / `linux_http_check` — test HTTPS connectivity to web endpoints
+- `shell_run` — TCP port reachability (`Test-NetConnection` on Windows, `nc` on macOS/Linux)
+- `win_ping` / `mac_ping` / `linux_ping` — basic reachability check
+- `ui_info` — present the host/port/status table

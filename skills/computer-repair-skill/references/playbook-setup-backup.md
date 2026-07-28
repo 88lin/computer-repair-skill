@@ -46,5 +46,6 @@ Confirm the first backup has started and show estimated time.
 
 ## Tools referenced
 - `shell_run` — tmutil commands
-- `ui_user_question` — backup destination choice, exclusion paths
+- `ui_user_question` with options — backup destination choice
+- `ui_user_question` with `text_input` — exclusion paths
 - `ui_spa` with WAIT_FOR_USER — plugging in drives

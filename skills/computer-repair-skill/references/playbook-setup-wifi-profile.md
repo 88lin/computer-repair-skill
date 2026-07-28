@@ -27,7 +27,7 @@ For WPA2 Personal: collect the Wi-Fi password using `secure_input` (secret_name:
 For WPA2 Enterprise: collect username via `text_input`, then password via `secure_input`.
 
 ## Step 4: Connect to the network
-Never interpolate the password into a transcript, shell command, process argument, or shell history. On macOS, prefer the system Wi-Fi UI or a host API that accepts the `secure_input` value without logging it; if an interactive prompt is required, let the user enter the password locally. On Windows, create the WLAN profile in a protected temporary location with `write_secret`, apply it with the native WLAN flow, and remove the temporary secret only after connectivity is verified.
+Never interpolate the password into a transcript, shell command, process argument, or shell history. On macOS, prefer the system Wi-Fi UI or a host API that accepts the `secure_input` value without logging it; if an interactive prompt is required, let the user enter the password locally. On Windows, create the WLAN profile in a protected temporary location with `write_secret`, apply it with the native WLAN flow (`netsh wlan add profile filename=<path> user=current`), and remove the temporary secret only after connectivity is verified. On Linux with NetworkManager, let `nmcli` read the secret from a file or agent rather than passing it as an argument — `nmcli --ask device wifi connect '<SSID>'` prompts locally, whereas `nmcli device wifi connect '<SSID>' password '<PSK>'` leaks the key into the process list and shell history.
 
 > Note: the password collected via secure_input can be written to a temp config file using `write_secret` if needed for scripted connection.
 

@@ -76,5 +76,6 @@ If DNS records look correct but email delivery still fails:
 - If the domain is on a blocklist, escalate to the domain administrator for delisting.
 
 ## Tools referenced
-- DNS lookup tools — DNS lookups for MX, TXT, and other record types
-- User input prompts — collect domain name and DKIM selector
+- `win_dns_check` / `mac_dns_check` / `linux_dns_check` — DNS lookups for MX, TXT, and other record types
+- `ui_user_question` with `text_input` — collect domain name and DKIM selector
+- `ui_info` — present the record table and what each missing record implies

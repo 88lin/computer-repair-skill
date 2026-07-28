@@ -8,7 +8,9 @@ Playbook 中的工具名是能力别名。宿主 Agent 无需提供同名工具�
 |---|---|
 | `shell_run` | 使用宿主终端工具运行当前平台命令。先确定 Shell，设置合理超时，保留退出码。状态变更前取得确认。 |
 | `ui_spa` | 在消息中展示诊断、计划、影响、回滚和下一动作。`RUN_STEP` 表示等待用户批准后由 Agent 执行；`WAIT_FOR_USER` 表示用户完成 GUI、手机或交互式步骤。 |
-| `ui_user_question` | 使用宿主提问能力。选项、普通文本和秘密输入三种模式保持互斥。 |
+| `ui_user_question` | 使用宿主提问能力。`options`、`text_input` 和 `secure_input` 三种模式保持互斥。 |
+| `options` | `ui_user_question` 的预设选项模式：给出有限、互斥的候选项，不接收自由文本。 |
+| `text_input` | `ui_user_question` 的普通文本模式：用于非秘密值（邮箱、SSID、App ID、主机名）。禁止用它收集密码或令牌。 |
 | `ui_done` | 仅在验证成功后给出完成摘要和前后数据。 |
 | `ui_info` | 给出事实性说明、剩余阻点或需要人工处理的部分。 |
 | `secure_input` | 使用宿主的遮罩输入或秘密管理功能。缺少此能力时，让用户在本机设置变量或文件，不接收秘密正文。 |
