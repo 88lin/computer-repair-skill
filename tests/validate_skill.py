@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""验证 Computer Care Skill 的结构、来源、链接和发布完整性。"""
+"""验证 Computer Repair Skill 的结构、来源、链接和发布完整性。"""
 
 from __future__ import annotations
 
@@ -11,13 +11,14 @@ from urllib.parse import unquote
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SKILL_DIR = REPO_ROOT / "skills" / "computer-care"
+SKILL_DIR = REPO_ROOT / "skills" / "computer-repair-skill"
 REFERENCES_DIR = SKILL_DIR / "references"
 EXPECTED_PLAYBOOK_COUNT = 58
 EXPECTED_BUNDLED_COUNT = 37
 MAX_SKILL_DESCRIPTION_CHARS = 600
 MAX_SKILL_DESCRIPTION_WORDS = 80
 MAX_PLAYBOOK_DESCRIPTION_CHARS = 120
+OPTIONAL_PLAYBOOK_FIELDS = {"emoji"}
 EXPECTED_LOCAL_PLAYBOOKS = {
     "playbook-windows-application-cleanup.md",
     "playbook-windows-application-lifecycle-audit.md",
@@ -57,6 +58,12 @@ README_SUMMARY_ROW = re.compile(r"(?m)^\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|")
 TOOL_SECTION = re.compile(r"(?ms)^## Tools referenced\s*(.*?)(?=^## |\Z)")
 TOOL_BULLET = re.compile(r"(?m)^\s*-\s+`([a-z][a-z0-9_]*)`")
 TOOL_ALIAS = re.compile(r"`([a-z][a-z0-9_]*)`")
+REMOTE_SHELL_EXECUTION = re.compile(
+    r"(?im)^\s*(?:curl|wget|irm|iwr|Invoke-WebRequest)\b[^\r\n]*\|\s*(?:bash|sh|pwsh|powershell|iex)\b"
+)
+REMOTE_SHELL_COMMAND_SUBSTITUTION = re.compile(
+    r"(?im)(?:/bin/)?(?:bash|sh)\s+-c\s+[\"']?\$\(\s*(?:curl|wget)\b"
+)
 PLACEHOLDER = re.compile(r"\b(?:TODO|FIXME|TBD)\b|YOUR_GITHUB_USER|<owner>", re.IGNORECASE)
 SECRET_PATTERNS = {
     "GitHub token": re.compile(r"\bgh[pousr]_[A-Za-z0-9]{30,}\b"),
@@ -64,7 +71,31 @@ SECRET_PATTERNS = {
     "OpenAI-style key": re.compile(r"\bsk-[A-Za-z0-9_-]{24,}\b"),
     "private key": re.compile(r"-----BEGIN (?:[A-Z0-9 ]+ )?PRIVATE KEY-----"),
 }
+# Keep the old upstream product marker out of repository text without placing
+# the literal marker in this validator, which would trigger the same scan.
 FORBIDDEN_PRODUCT_MARKER = re.compile("no" + "ah", re.IGNORECASE)
+
+
+def is_single_emoji(value: str) -> bool:
+    """Accept one emoji, optionally followed by a variation selector."""
+    value = value.strip()
+    if not value or any(character.isspace() for character in value):
+        return False
+
+    base = [
+        character
+        for character in value
+        if ord(character) not in {0xFE0E, 0xFE0F, 0x200D}
+    ]
+    if len(base) != 1:
+        return False
+
+    codepoint = ord(base[0])
+    return (
+        0x1F000 <= codepoint <= 0x1FAFF
+        or 0x2300 <= codepoint <= 0x23FF
+        or 0x2600 <= codepoint <= 0x27BF
+    )
 
 
 def configure_console_encoding() -> None:
@@ -144,7 +175,7 @@ def validate_skill_metadata(validation: Validation) -> None:
     skill_path = SKILL_DIR / "SKILL.md"
     metadata = parse_frontmatter(skill_path, validation)
     validation.check(set(metadata) == {"name", "description"}, "SKILL.md frontmatter 只能包含 name 和 description。")
-    validation.check(metadata.get("name") == "computer-care", "SKILL.md 的 name 必须是 computer-care。")
+    validation.check(metadata.get("name") == "computer-repair-skill", "SKILL.md 的 name 必须是 computer-repair-skill。")
     description = metadata.get("description", "").strip()
     validation.check(bool(description), "SKILL.md 缺少非空 description。")
     validation.check(
@@ -163,7 +194,7 @@ def validate_skill_metadata(validation: Validation) -> None:
     agent_text = read_text(agent_path, validation)
     for field in ("display_name:", "short_description:", "default_prompt:"):
         validation.check(field in agent_text, f"agents/openai.yaml 缺少 {field[:-1]}。")
-    validation.check("$computer-care" in agent_text, "agents/openai.yaml 的 default_prompt 必须显式调用 Skill。")
+    validation.check("$computer-repair-skill" in agent_text, "agents/openai.yaml 的 default_prompt 必须显式调用 Skill。")
 
 
 def validate_playbooks(validation: Validation) -> None:
@@ -181,8 +212,19 @@ def validate_playbooks(validation: Validation) -> None:
 
     for path in playbooks:
         metadata = parse_frontmatter(path, validation)
+        unexpected = set(metadata) - REQUIRED_PLAYBOOK_FIELDS - OPTIONAL_PLAYBOOK_FIELDS
+        validation.check(
+            not unexpected,
+            f"{path.name} 包含未登记的 frontmatter 字段：{', '.join(sorted(unexpected))}。",
+        )
         missing = REQUIRED_PLAYBOOK_FIELDS - set(metadata)
         validation.check(not missing, f"{path.name} 缺少字段：{', '.join(sorted(missing))}。")
+
+        if "emoji" in metadata:
+            validation.check(
+                is_single_emoji(metadata["emoji"]),
+                f"{path.name} 的 emoji 必须是单个 emoji；没有合适图标时请省略该字段。",
+            )
 
         description = metadata.get("description", "").strip()
         validation.check(bool(description), f"{path.name} 缺少非空 description。")
@@ -220,7 +262,7 @@ def validate_playbooks(validation: Validation) -> None:
         elif source == "local":
             local_files.add(path.name)
             validation.check(
-                metadata.get("author") == "computer-care-maintainers",
+                metadata.get("author") == "computer-repair-skill-maintainers",
                 f"{path.name} 的本地扩展 author 无效。",
             )
             body = read_text(path, validation)
@@ -228,6 +270,13 @@ def validate_playbooks(validation: Validation) -> None:
             validation.check("## Escalation" in body, f"{path.name} 缺少 Escalation 段落。")
         else:
             validation.errors.append(f"{path.name} 的 source 必须是 bundled 或 local。")
+
+        body = read_text(path, validation)
+        validation.check(
+            not REMOTE_SHELL_EXECUTION.search(body)
+            and not REMOTE_SHELL_COMMAND_SUBSTITUTION.search(body),
+            f"{path.name} 包含不允许的远程脚本直接执行；请先下载、审阅并在确认后执行本地文件。",
+        )
 
     validation.check(
         bundled_count == EXPECTED_BUNDLED_COUNT,

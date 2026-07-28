@@ -1,6 +1,6 @@
 # 贡献指南
 
-感谢改进 Computer Care。提交 Issue 或 Pull Request 前，请先确认变更属于电脑诊断、修复、安全工作流、平台工具映射或 Playbook 维护范围。
+感谢改进 Computer Repair Skill。提交 Issue 或 Pull Request 前，请先确认变更属于电脑诊断、修复、安全工作流、平台工具映射或 Playbook 维护范围。
 
 ## 开发原则
 
@@ -12,7 +12,7 @@
 
 ## 修改上游 Playbook
 
-`source: bundled` 的 37 个文件来自 `NOTICE` 记录的上游基准提交，面向 Agent 的措辞和 author 标记已做中性化适配。当前还有 21 个 `source: local` 的 Windows/Linux 扩展，来源取舍记录在 `upstream-source-review.md`。同步上游时保留现有行为与中性命名，并在 Pull Request 中注明上游提交、变更文件和行为差异。
+`source: bundled` 的文件来自 `NOTICE` 记录的上游基准提交，面向 Agent 的措辞和 author 标记已做中性化适配。项目维护的本地扩展使用 `source: local` 标记；来源和归属以 `NOTICE` 为准。同步上游时保留现有行为与中性命名，并在 Pull Request 中注明上游提交、变更文件和行为差异。
 
 项目新增 Playbook 使用以下元数据：
 
@@ -22,7 +22,7 @@ name: example-playbook
 description: Describe the exact task and trigger
 platform: windows
 last_reviewed: YYYY-MM-DD
-author: computer-care-maintainers
+author: computer-repair-skill-maintainers
 source: local
 ---
 ```
@@ -31,6 +31,7 @@ source: local
 
 - 使用 `playbook-<slug>.md` 文件名，并登记到 `references/playbook-index.md`。
 - 让 frontmatter 的 `description` 不超过 120 个字符且只描述一个明确入口；不要把多个能力堆在同一行。
+- `emoji` 是可选字段；需要使用时只填一个合适的 emoji，没有合适图标就省略。
 - 给出激活条件、快速只读检查、标准诊断路径、修复前确认、验证、限制和升级信息。
 - 对平台命令提供明确失败处理，不使用宽泛删除或不可审计的命令拼接。
 - 需要凭据时使用宿主安全输入能力，不在上下文或命令历史中回显秘密。
@@ -46,7 +47,7 @@ python tests/validate_skill.py
 还应在对应平台测试安装器：
 
 ```powershell
-.\scripts\install.ps1 -Target custom -Destination "$env:TEMP\computer-care-skills-test"
+.\scripts\install.ps1 -Target custom -Destination "$env:TEMP\computer-repair-skills-test"
 ```
 
 ```bash

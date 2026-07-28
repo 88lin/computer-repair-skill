@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-skill_name="computer-care"
+skill_name="computer-repair-skill"
 target="codex"
 destination=""
 force=0
@@ -96,7 +96,6 @@ fi
 
 stage_path="$(mktemp -d "$skills_root/.$skill_name.install.XXXXXX")"
 backup_path=""
-install_complete=0
 
 # 异常退出时只清理本次创建的临时目录，并在需要时恢复原版本。
 on_exit() {
@@ -130,7 +129,6 @@ fi
 
 mv -- "$stage_path" "$target_path"
 stage_path=""
-install_complete=1
 trap - EXIT
 
 printf '安装完成：%s\n' "$target_path"

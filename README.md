@@ -1,24 +1,24 @@
 <div align="center">
-  <img src="assets/computer-care-cover.svg" alt="Computer Care：电脑诊断、修复与安全维护" width="100%" />
+  <img src="assets/computer-repair-cover.svg" alt="Computer Repair Skill：电脑诊断、修复与安全维护" width="100%" />
 </div>
 
 <div align="center">
 
-# 🛠️ Computer Care
+# 🛠️ Computer Repair Skill
 
 ### 让 Agent 像一名谨慎的电脑维修工程师：先取证，再判断；先计划，再修改。
 
 一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。
 
-[![Validate Skill](https://github.com/88lin/computer-care/actions/workflows/validate.yml/badge.svg)](https://github.com/88lin/computer-care/actions/workflows/validate.yml)
-[![skills.sh](https://skills.sh/b/88lin/computer-care)](https://skills.sh/88lin/computer-care)
+[![Validate Skill](https://github.com/88lin/computer-repair-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/88lin/computer-repair-skill/actions/workflows/validate.yml)
+[![skills.sh](https://skills.sh/b/88lin/computer-repair-skill)](https://skills.sh/88lin/computer-repair-skill)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
 </div>
 
 > 电脑变慢、断网、更新失败、打印机离线、C 盘爆满、驱动异常、Windows 启动失败、OpenClaw 配置问题……直接用自然语言描述，Agent 会按平台和风险选择合适的排障流程。
 
-## ✨ 为什么选择 Computer Care
+## ✨ 为什么选择 Computer Repair Skill
 
 - **证据优先**：先读取系统状态、日志、配置和硬件事实，再建立候选原因，不凭症状猜结论。
 - **只读优先**：诊断和盘点可以先做；删除、安装、提权、重启、分区和服务修改会先给出影响、回滚与验证方案。
@@ -44,7 +44,7 @@
 打开你正在使用的 Codex、Claude Code、Hermes、OpenClaw、Cursor 或其他支持 Agent Skills 的工具，把下面这句话直接发给它：
 
 ```text
-请安装这个 Agent Skill：https://github.com/88lin/computer-care
+请安装这个 Agent Skill：https://github.com/88lin/computer-repair-skill
 先审查仓库内容和 SKILL.md，再安装到你当前 Agent 的 Skills 目录；如果已经安装旧版本，先备份再更新。
 完成后告诉我实际安装路径、目标 Agent 和验证结果。
 ```
@@ -57,20 +57,20 @@ Agent 需要能访问 GitHub、读取本机文件并执行必要的安装命令�
 电脑已安装 Node.js 和 npm 时，在终端运行：
 
 ```bash
-npx skills add 88lin/computer-care
+npx skills add 88lin/computer-repair-skill
 ```
 
 第一次运行会让你选择安装范围和目标 Agent。常用的全局安装示例：
 
 ```bash
-npx skills add 88lin/computer-care --global
+npx skills add 88lin/computer-repair-skill --global
 ```
 
 只安装给 Codex，或安装给 Claude Code：
 
 ```bash
-npx skills add 88lin/computer-care --global --agent codex
-npx skills add 88lin/computer-care --global --agent claude-code
+npx skills add 88lin/computer-repair-skill --global --agent codex
+npx skills add 88lin/computer-repair-skill --global --agent claude-code
 ```
 
 安装完成后重启或刷新 Agent 的 Skills 列表。Skills CLI 的安装范围、目标 Agent 和链接来源以其当前文档为准：<https://skills.sh/docs>。
@@ -83,8 +83,8 @@ npx skills add 88lin/computer-care --global --agent claude-code
 先下载仓库：
 
 ```bash
-git clone https://github.com/88lin/computer-care.git
-cd computer-care
+git clone https://github.com/88lin/computer-repair-skill.git
+cd computer-repair-skill
 ```
 
 Windows PowerShell：
@@ -113,24 +113,28 @@ macOS / Linux：
 ./scripts/install.sh --target custom --destination "/path/to/skills"
 ```
 
-目标目录已存在时，安装器默认拒绝覆盖；确认升级时显式加 `-Force` 或 `--force`，旧版本会先备份到相邻的 `external/computer-care/backups`。
+目标目录已存在时，安装器默认拒绝覆盖；确认升级时显式加 `-Force` 或 `--force`，旧版本会先备份到相邻的 `external/computer-repair-skill/backups`。
 
 </details>
 
 <details>
 <summary>方式四：手动复制（适合无法使用命令行的用户）</summary>
 
-把仓库中的 [`skills/computer-care`](skills/computer-care) 整个目录复制到目标 Agent 的 Skills 根目录。例如：
+把仓库中的 [`skills/computer-repair-skill`](skills/computer-repair-skill) 整个目录复制到目标 Agent 的 Skills 根目录。例如：
 
 ```text
-~/.codex/skills/computer-care/
-~/.claude/skills/computer-care/
-~/.agents/skills/computer-care/
+~/.codex/skills/computer-repair-skill/
+~/.claude/skills/computer-repair-skill/
+~/.agents/skills/computer-repair-skill/
 ```
 
 目录中必须保留 `SKILL.md`、`agents/` 和 `references/`，不要只复制某一个 Playbook。
 
 </details>
+
+## ❤️赞助商
+
+这里可以免费使用 AI，白嫖多种 AI 福利和模型，例如 **Qwen3.8-Max-Preview**、**hy3**、**GLM-5.2**、**Kimi K3** 等。欢迎前往[免费 AI 资源指南](https://blog.88lin.eu.org/article/36)体验。
 
 ## 🧭 如何使用
 
@@ -162,10 +166,10 @@ Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问�
 
 ## 🧰 功能总览
 
-本 Skill 内置 58 个可按需加载的专项 Playbook。下面的分类数量与[完整路由索引](skills/computer-care/references/playbook-index.md)一致。
+本 Skill 内置 58 个可按需加载的专项 Playbook。下面的分类数量与[完整路由索引](skills/computer-repair-skill/references/playbook-index.md)一致。
 
 | 分类 | 数量 | 主要内容 |
-|---|---:|---|
+|---|---|---|
 | 健康、性能、存储与备份 | 15 | 体检、性能、磁盘/目录盘点、应用缓存、备份和新机验收 |
 | 网络、DNS、VPN、身份与邮件 | 9 | Wi-Fi、路由、DNS、VPN、邮件连通性、SSO 和邮箱配置 |
 | 应用、系统更新与打印 | 7 | 应用崩溃、Outlook、macOS/Windows 更新、打印机和 Windows 配置审查 |
@@ -289,14 +293,14 @@ Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问�
 ## 🧱 项目结构
 
 ```text
-skills/computer-care/
+skills/computer-repair-skill/
 ├── SKILL.md                 # 核心路由与强制安全工作流
 ├── agents/openai.yaml       # Codex 展示元数据
 ├── references/              # 平台工具映射与 58 个专项 Playbook
 ├── LICENSE                  # 随 Skill 分发的 AGPL-3.0 许可证
 └── NOTICE                   # 来源与归属记录
 assets/
-└── computer-care-cover.svg  # README 封面图
+└── computer-repair-cover.svg  # README 封面图
 scripts/
 ├── install.ps1              # Windows 安装器
 └── install.sh               # macOS/Linux 安装器
@@ -336,35 +340,11 @@ PYTHONUTF8=1 python tests/validate_skill.py
 
 **为什么不直接“一键优化 Windows”？**
 
-因为优化配置可能影响更新、隐私、驱动、企业策略和回滚。Computer Care 会先审查差异、风险和回滚路径，再在你确认后执行最小变更。
+因为优化配置可能影响更新、隐私、驱动、企业策略和回滚。Computer Repair Skill 会先审查差异、风险和回滚路径，再在你确认后执行最小变更。
 
 **进入 PE 后还能继续问 Agent 吗？**
 
 不要假设可以。进入 PE/WinRE 前让 Agent 把 BitLocker 状态、备份检查、命令清单和停工条件保存下来；离线阶段由人按清单处理，回到正常系统后再让 Agent 复核。
-
-## 🎁 AI 免费福利
-
-<div align="center">
-  <h3>把值得领取的免费 AI 资源一次收齐</h3>
-
-  <p>
-    想低成本体验更强的 AI Agent 和国产模型？这份指南整理了高校师生权益、Pro 试用、模型额度与限时活动，
-    并按适用人群、领取方式和使用场景集中说明，方便学习、科研、编程、办公与内容创作时按需查找。
-  </p>
-
-  <p>
-    <a href="https://blog.88lin.eu.org/article/36">
-      <strong>查看免费 AI 资源与领取指南 →</strong>
-    </a>
-  </p>
-
-  <a href="https://blog.88lin.eu.org/article/36">
-    <img src="https://cdn.jsdmirror.com/gh/88lin/picx-images-hosting@master/qoder-cover-no-link-1600x900.webp" alt="免费 AI 资源与领取指南" width="78%" />
-  </a>
-</div>
-
-> [!TIP]
-> 活动名额、模型、额度和有效期可能调整，领取前请以文章中的最新说明和对应官方页面为准。
 
 ## 📄 来源与许可证
 

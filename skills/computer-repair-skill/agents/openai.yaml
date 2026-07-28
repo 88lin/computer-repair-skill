@@ -1,0 +1,4 @@
+interface:
+  display_name: "Computer Repair Skill"
+  short_description: "Safe cross-platform diagnosis, cleanup, and repair"
+  default_prompt: "Use $computer-repair-skill to diagnose this computer problem, inspect before changing anything, propose the smallest reversible fix, apply it after approval, and verify the result."

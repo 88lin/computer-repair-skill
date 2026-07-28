@@ -36,27 +36,27 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          destination="$RUNNER_TEMP/computer-care-skills"
+          destination="$RUNNER_TEMP/computer-repair-skills"
           ./scripts/install.sh --target custom --destination "$destination"
-          test -f "$destination/computer-care/SKILL.md"
-          test -f "$destination/computer-care/NOTICE"
+          test -f "$destination/computer-repair-skill/SKILL.md"
+          test -f "$destination/computer-repair-skill/NOTICE"
           if ./scripts/install.sh --target custom --destination "$destination"; then
             echo "安装器不应静默覆盖现有 Skill" >&2
             exit 1
           fi
           ./scripts/install.sh --target custom --destination "$destination" --force
-          find "$RUNNER_TEMP/external/computer-care/backups" -mindepth 1 -maxdepth 1 | grep -q .
+          find "$RUNNER_TEMP/external/computer-repair-skill/backups" -mindepth 1 -maxdepth 1 | grep -q .
 
       - name: Test PowerShell installer
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $destination = Join-Path $env:RUNNER_TEMP "computer-care-skills"
+          $destination = Join-Path $env:RUNNER_TEMP "computer-repair-skills"
           ./scripts/install.ps1 -Target custom -Destination $destination
-          if (-not (Test-Path (Join-Path $destination "computer-care/SKILL.md"))) {
+          if (-not (Test-Path (Join-Path $destination "computer-repair-skill/SKILL.md"))) {
             throw "首次安装缺少 SKILL.md"
           }
-          if (-not (Test-Path (Join-Path $destination "computer-care/NOTICE"))) {
+          if (-not (Test-Path (Join-Path $destination "computer-repair-skill/NOTICE"))) {
             throw "首次安装缺少 NOTICE"
           }
 
@@ -72,7 +72,7 @@ jobs:
           }
 
           ./scripts/install.ps1 -Target custom -Destination $destination -Force
-          $backupRoot = Join-Path $env:RUNNER_TEMP "external/computer-care/backups"
+          $backupRoot = Join-Path $env:RUNNER_TEMP "external/computer-repair-skill/backups"
           if (-not (Get-ChildItem -LiteralPath $backupRoot -Directory)) {
             throw "强制更新没有生成备份"
           }
