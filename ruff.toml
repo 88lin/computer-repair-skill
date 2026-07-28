@@ -1,0 +1,47 @@
+# ruff 配置：只用于本仓库的开发脚本（tests/ 下的校验器与生成器）。
+# 被检查的代码本身保持零第三方运行时依赖，ruff 仅在开发期与 CI 使用。
+#
+# 命令：
+#   ruff check tests/          # 静态检查
+#   ruff format --check tests/ # 格式检查（--check 去掉即为就地格式化）
+
+target-version = "py39"
+line-length = 110
+
+extend-exclude = [
+  ".ruff_cache",
+  "__pycache__",
+]
+
+[lint]
+# RUF001/RUF002/RUF003（ambiguous-unicode）对本仓库无效：注释、docstring 和
+# 面向用户的中文消息里，全角标点（，。：；（））是**正确**的中文排版，
+# 不是误输入的半角字符。把它们换成半角反而是排版错误。
+#
+# E501（line-too-long）也关掉：行宽由 `ruff format` 负责，而 E501 只会在
+# formatter 无法再拆分的地方（长中文消息字符串）反复报警。中文字符在终端里
+# 是双宽显示，用「字符数」衡量行宽本身就不准。
+ignore = ["E501", "RUF001", "RUF002", "RUF003"]
+
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "W",   # pycodestyle warnings
+  "I",   # isort：import 顺序
+  "UP",  # pyupgrade：过时写法
+  "B",   # flake8-bugbear：常见陷阱
+  "C4",  # flake8-comprehensions
+  "SIM", # flake8-simplify
+  "RET", # flake8-return
+  "PTH", # flake8-use-pathlib
+  "RUF", # ruff 自有规则
+]
+
+[lint.per-file-ignores]
+# 测试里刻意注入违规字符串、并大量使用长断言消息片段。
+"tests/test_validate_skill.py" = ["E501"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

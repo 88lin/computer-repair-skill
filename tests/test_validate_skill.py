@@ -138,8 +138,7 @@ def test_registry_write_is_idempotent(repo: Path) -> None:
     """--write 两次必须收敛，否则 CI 的幂等性断言会随机失败。"""
     assert run_registry(repo, "--write")[0] == 0
     snapshot = {
-        path: path.read_bytes()
-        for path in (repo / "README.md", repo / REFERENCES_REL / "playbook-index.md")
+        path: path.read_bytes() for path in (repo / "README.md", repo / REFERENCES_REL / "playbook-index.md")
     }
     assert run_registry(repo, "--write")[0] == 0
     for path, before in snapshot.items():
@@ -247,7 +246,8 @@ def test_tools_referenced_without_registered_alias_rejected(repo: Path) -> None:
     head, _, _ = text.partition("## Tools referenced")
     path.write_text(
         head + "## Tools referenced\n\n- Uses read-only shell inspection helpers.\n",
-        encoding="utf-8", newline="\n",
+        encoding="utf-8",
+        newline="\n",
     )
     assert_fails(repo, "没有声明任何已登记的语义工具别名")
 
@@ -331,7 +331,7 @@ def test_remote_pipe_in_plain_prose_rejected(repo: Path) -> None:
         "Do not run `irm https://example.invalid/x.ps1 | iex`.",
         "Never pipe a remote script with `curl https://example.invalid/x.sh | bash`.",
         "禁止把远程脚本直接管道到 Shell（如 `wget https://example.invalid/x.sh | sh`）。",
-        "不得执行 `bash -c \"$(curl -fsSL https://example.invalid/x.sh)\"`。",
+        '不得执行 `bash -c "$(curl -fsSL https://example.invalid/x.sh)"`。',
     ],
 )
 def test_negated_remote_pipe_prose_allowed(repo: Path, sentence: str) -> None:
@@ -433,6 +433,26 @@ def test_trailing_whitespace_rejected(repo: Path) -> None:
     assert_fails(repo, "行尾空白")
 
 
+@pytest.mark.parametrize(
+    "cache_dir",
+    [".ruff_cache/0.12.7", "__pycache__", ".pytest_cache/v/cache", "node_modules/foo", ".venv/lib"],
+)
+def test_tool_caches_are_not_scanned(repo: Path, cache_dir: str) -> None:
+    """工具缓存里的二进制文件不得让格式卫生扫描误报。
+
+    回归自真实故障：仓库里跑过一次 ruff 之后，`.ruff_cache/` 的二进制缓存
+    被当成待检查文本，校验器报「无法按 UTF-8 读取」并整体判失败。
+    """
+    junk = repo / cache_dir
+    junk.mkdir(parents=True, exist_ok=True)
+    # 无扩展名 + 非 UTF-8 字节 + CRLF + 无末尾换行：同时命中三条格式规则。
+    (junk / "12345").write_bytes(b"\xfd\xfe\xff binary\r\n\r\nno-newline")
+    (junk / "stale.md").write_bytes(b"```\nfence without language\r\n")
+    code, output = run_validator(repo)
+    assert code == 0, output
+    assert cache_dir.split("/")[0] not in output
+
+
 # --------------------------------------------------------------------------- #
 # 派生内容漂移
 # --------------------------------------------------------------------------- #
@@ -450,10 +470,9 @@ def test_index_summary_drift_rejected(repo: Path) -> None:
     begin = text.index("<!-- registry:begin:index-summary -->")
     end = text.index("<!-- registry:end:index-summary -->")
     path.write_text(
-        text[:begin]
-        + "<!-- registry:begin:index-summary -->\n手改过的摘要句。\n"
-        + text[end:],
-        encoding="utf-8", newline="\n",
+        text[:begin] + "<!-- registry:begin:index-summary -->\n手改过的摘要句。\n" + text[end:],
+        encoding="utf-8",
+        newline="\n",
     )
     assert_fails(repo, "playbook-index.md 的登记摘要已漂移")
 
@@ -472,12 +491,14 @@ def test_new_playbook_without_registry_update_rejected(repo: Path) -> None:
     """加一个 Playbook 但不重跑生成器 —— 这正是旧校验器抓不到的场景。"""
     source = playbook_path(repo, LOCAL_PLAYBOOK).read_text(encoding="utf-8")
     clone = source.replace(
-        f"name: {LOCAL_PLAYBOOK[len('playbook-'):-len('.md')]}",
+        f"name: {LOCAL_PLAYBOOK[len('playbook-') : -len('.md')]}",
         "name: windows-extra-probe",
         1,
     )
     clone = re.sub(r"(?m)^description:.*$", "description: A distinct extra probe playbook.", clone, count=1)
-    (repo / REFERENCES_REL / "playbook-windows-extra-probe.md").write_text(clone, encoding="utf-8", newline="\n")
+    (repo / REFERENCES_REL / "playbook-windows-extra-probe.md").write_text(
+        clone, encoding="utf-8", newline="\n"
+    )
     code, output = run_validator(repo)
     assert code != 0, output
 
@@ -504,7 +525,9 @@ def test_version_without_changelog_entry_rejected(repo: Path) -> None:
 
 def test_license_divergence_rejected(repo: Path) -> None:
     path = repo / SKILL_REL / "LICENSE"
-    path.write_text(path.read_text(encoding="utf-8").replace("GNU", "GNU ", 1), encoding="utf-8", newline="\n")
+    path.write_text(
+        path.read_text(encoding="utf-8").replace("GNU", "GNU ", 1), encoding="utf-8", newline="\n"
+    )
     assert_fails(repo, "根目录 LICENSE 与 Skill 内 LICENSE 不一致")
 
 

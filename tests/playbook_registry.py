@@ -58,7 +58,9 @@ HEADING_TO_SLUG = {heading: slug for slug, heading, _ in CATEGORIES}
 LABEL_TO_SLUG = {label: slug for slug, _, label in CATEGORIES}
 
 MARKER = "<!-- registry:{state}:{key} -->"
-TABLE_ROW = re.compile(r"^\|\s*(?P<label>[^|]+?)\s*\|\s*(?P<count>\*{0,2}\d+\*{0,2})\s*\|\s*(?P<note>.*?)\s*\|$")
+TABLE_ROW = re.compile(
+    r"^\|\s*(?P<label>[^|]+?)\s*\|\s*(?P<count>\*{0,2}\d+\*{0,2})\s*\|\s*(?P<note>.*?)\s*\|$"
+)
 # README 小节计数：`### 🩺 健康、性能、存储与备份（15）`
 # 行尾只允许空格/制表符（不能用 `\s*`，否则在 re.M 下会吞掉标题后的空行）。
 SECTION_COUNT = re.compile(r"(?m)^(?P<prefix>###[ \t]+)(?P<title>[^\n]*?)（(?P<count>\d+)）[ \t]*$")
@@ -92,9 +94,7 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
 def find_playbooks() -> list[Path]:
     """返回可执行 Playbook，排除索引与编写规范。"""
     return sorted(
-        path
-        for path in REFERENCES_DIR.glob("playbook-*.md")
-        if path.name not in EXCLUDED_PLAYBOOKS
+        path for path in REFERENCES_DIR.glob("playbook-*.md") if path.name not in EXCLUDED_PLAYBOOKS
     )
 
 
@@ -114,7 +114,7 @@ def collect() -> dict[str, object]:
             }
         )
 
-    counts: dict[str, int] = {slug: 0 for slug in CATEGORY_SLUGS}
+    counts: dict[str, int] = dict.fromkeys(CATEGORY_SLUGS, 0)
     unknown: list[str] = []
     for entry in entries:
         category = str(entry["category"])
@@ -232,7 +232,11 @@ def run(mode: str) -> int:
     index_text = INDEX_PATH.read_text(encoding="utf-8")
     readme_text = README_PATH.read_text(encoding="utf-8")
     updates = [
-        (INDEX_PATH, index_text, replace_block(index_text, "index-summary", render_index_summary(snapshot), INDEX_PATH)),
+        (
+            INDEX_PATH,
+            index_text,
+            replace_block(index_text, "index-summary", render_index_summary(snapshot), INDEX_PATH),
+        ),
         (README_PATH, readme_text, rewrite_readme(readme_text, snapshot)),
     ]
 

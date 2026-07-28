@@ -27,7 +27,8 @@ from urllib.parse import unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import playbook_registry as registry  # noqa: E402  (需要先设置 sys.path)
+# 生成器与校验器共用同一份分类真源；上面的 sys.path.insert 让直接执行脚本时也能导入。
+import playbook_registry as registry
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = REPO_ROOT / "skills" / "computer-repair-skill"
@@ -82,9 +83,7 @@ REMOTE_SHELL_PATTERNS = {
         r"(?im)(?:curl|wget|irm|iwr|Invoke-WebRequest|Invoke-RestMethod)\b[^\r\n|]*\|\s*"
         r"(?:sudo\s+)?(?:bash|sh|zsh|pwsh|powershell|python3?|iex|Invoke-Expression)\b"
     ),
-    "远程脚本命令替换执行": re.compile(
-        r"(?im)(?:/bin/)?(?:bash|sh|zsh)\s+-c\s+[\"']?\$\(\s*(?:curl|wget)\b"
-    ),
+    "远程脚本命令替换执行": re.compile(r"(?im)(?:/bin/)?(?:bash|sh|zsh)\s+-c\s+[\"']?\$\(\s*(?:curl|wget)\b"),
     "PowerShell 下载即执行": re.compile(
         r"(?im)(?:iex|Invoke-Expression)\s*\(?\s*(?:irm|iwr|Invoke-WebRequest|Invoke-RestMethod|"
         r"\(?New-Object\s+Net\.WebClient\)?\.DownloadString)"
@@ -109,6 +108,27 @@ FORBIDDEN_PRODUCT_MARKER = re.compile(r"noah", re.IGNORECASE)
 SELF_PATH = Path(__file__).resolve()
 TEXT_SUFFIXES = {"", ".md", ".py", ".ps1", ".sh", ".yaml", ".yml", ".json", ".svg", ".cfg", ".toml"}
 HYGIENE_SUFFIXES = {".md", ".py", ".sh", ".ps1", ".yaml", ".yml"}
+# 与 .gitignore 对齐：版本控制目录与工具缓存不是仓库产物，任何遍历都必须跳过。
+IGNORED_DIR_NAMES = frozenset(
+    {
+        ".eggs",
+        ".git",
+        ".hg",
+        ".idea",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".svn",
+        ".tox",
+        ".venv",
+        ".vscode",
+        "__pycache__",
+        "build",
+        "dist",
+        "node_modules",
+        "venv",
+    }
+)
 # 需要保留 CRLF 或制表符的例外文件（当前为空，保留结构以便将来登记）。
 HYGIENE_EXEMPT: set[str] = set()
 # Keep a Changelog 约定每个版本都重复 `### Added` / `### Changed` / `### Fixed`，
@@ -127,11 +147,7 @@ def is_single_emoji(value: str) -> bool:
         return False
 
     codepoint = ord(base[0])
-    return (
-        0x1F000 <= codepoint <= 0x1FAFF
-        or 0x2300 <= codepoint <= 0x23FF
-        or 0x2600 <= codepoint <= 0x27BF
-    )
+    return 0x1F000 <= codepoint <= 0x1FAFF or 0x2300 <= codepoint <= 0x23FF or 0x2600 <= codepoint <= 0x27BF
 
 
 def configure_console_encoding() -> None:
@@ -347,11 +363,16 @@ def find_playbooks() -> list[Path]:
 
 
 def iter_repo_files() -> list[Path]:
-    """遍历仓库内的普通文件，跳过 .git。"""
+    """遍历仓库内的普通文件，跳过版本控制目录与各类工具缓存。
+
+    缓存目录（`.ruff_cache/`、`__pycache__/` 等）里存在二进制文件，
+    一旦被纳入格式卫生扫描就会以「无法按 UTF-8 读取」误报，
+    而这些路径本来就在 .gitignore 里，不是仓库产物。
+    """
     return [
         path
         for path in sorted(REPO_ROOT.rglob("*"))
-        if path.is_file() and ".git" not in path.parts
+        if path.is_file() and IGNORED_DIR_NAMES.isdisjoint(path.parts)
     ]
 
 
@@ -521,9 +542,7 @@ def validate_remote_execution(validation: Validation) -> None:
     scanned = 0
     for path in sorted(SKILL_DIR.rglob("*.md")):
         scanned += 1
-        for number, label, snippet, context in find_remote_execution_hits(
-            read_text(path, validation)
-        ):
+        for number, label, snippet, context in find_remote_execution_hits(read_text(path, validation)):
             validation.error(
                 f"{path.name}:{number} 在{context}中出现{label}：{snippet[:80]}；"
                 "请先下载、审阅并在用户确认后执行本地文件。"
@@ -822,8 +841,7 @@ def validate_formatting(validation: Validation) -> None:
             for cell in split_table_cells(stripped):
                 if cell.count("`") % 2:
                     validation.error(
-                        f"{relative}:{number} 表格行内代码跨越了单元格边界，"
-                        "代码中的 `|` 需要写成 `\\|`。"
+                        f"{relative}:{number} 表格行内代码跨越了单元格边界，代码中的 `|` 需要写成 `\\|`。"
                     )
                     break
 
@@ -926,9 +944,7 @@ def validate_release_files(validation: Validation, catalog: dict[Path, dict[str,
                 f"发现旧产品标识：{path.relative_to(REPO_ROOT)}",
             )
         for label, pattern in SECRET_PATTERNS.items():
-            validation.check(
-                not pattern.search(text), f"发现疑似 {label}：{path.relative_to(REPO_ROOT)}"
-            )
+            validation.check(not pattern.search(text), f"发现疑似 {label}：{path.relative_to(REPO_ROOT)}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -956,7 +972,7 @@ def main(argv: list[str] | None = None) -> int:
     for label, check in checks:
         try:
             check()
-        except Exception as exc:  # noqa: BLE001 - 崩溃也要变成可读结论
+        except Exception as exc:
             # 单个检查崩溃不能丢弃其余检查的结论：CI 里一条 traceback
             # 比一份完整问题清单难用得多。
             validation.error(f"{label}检查因内部异常中断：{type(exc).__name__}: {exc}")
