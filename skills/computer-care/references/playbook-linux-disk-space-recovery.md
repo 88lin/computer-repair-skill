@@ -1,6 +1,6 @@
 ---
 name: linux-disk-space-recovery
-description: Reclaim Linux disk space and inodes by measuring filesystems, identifying owners, cleaning through native tools, and verifying services
+description: Reclaim Linux disk space and inodes by measuring filesystems, cleaning native caches, and verifying services
 platform: linux
 last_reviewed: 2026-07-26
 author: computer-care-maintainers

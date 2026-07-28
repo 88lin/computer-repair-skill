@@ -13,15 +13,33 @@ from urllib.parse import unquote
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = REPO_ROOT / "skills" / "computer-care"
 REFERENCES_DIR = SKILL_DIR / "references"
-EXPECTED_PLAYBOOK_COUNT = 43
+EXPECTED_PLAYBOOK_COUNT = 58
 EXPECTED_BUNDLED_COUNT = 37
+MAX_SKILL_DESCRIPTION_CHARS = 600
+MAX_SKILL_DESCRIPTION_WORDS = 80
+MAX_PLAYBOOK_DESCRIPTION_CHARS = 120
 EXPECTED_LOCAL_PLAYBOOKS = {
+    "playbook-windows-application-cleanup.md",
+    "playbook-windows-application-lifecycle-audit.md",
+    "playbook-windows-browser-policy-audit.md",
+    "playbook-windows-configuration-review.md",
+    "playbook-windows-data-recovery-triage.md",
     "playbook-linux-disk-space-recovery.md",
     "playbook-linux-network-diagnostics.md",
     "playbook-linux-performance-forensics.md",
+    "playbook-windows-persistence-audit.md",
     "playbook-windows-disk-space-recovery.md",
     "playbook-windows-network-diagnostics.md",
     "playbook-windows-performance-forensics.md",
+    "playbook-windows-storage-inventory.md",
+    "playbook-windows-driver-lifecycle-audit.md",
+    "playbook-windows-av-input-triage.md",
+    "playbook-windows-boot-failure-triage.md",
+    "playbook-windows-winre-system-repair.md",
+    "playbook-windows-bitlocker-recovery-triage.md",
+    "playbook-windows-partition-resize-audit.md",
+    "playbook-windows-new-device-intake.md",
+    "playbook-windows-hardware-maintenance-safety.md",
 }
 REQUIRED_PLAYBOOK_FIELDS = {
     "name",
@@ -33,6 +51,12 @@ REQUIRED_PLAYBOOK_FIELDS = {
 }
 ALLOWED_PLATFORMS = {"all", "linux", "macos", "windows"}
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
+INDEX_ROW = re.compile(r"(?m)^\|\s*`([^`]+)`\s*\|.*?\]\(([^)\s]+)\)\s*\|\s*$")
+INDEX_SECTION = re.compile(r"(?ms)^## (.+?)\r?\n(.*?)(?=^## |\Z)")
+README_SUMMARY_ROW = re.compile(r"(?m)^\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|")
+TOOL_SECTION = re.compile(r"(?ms)^## Tools referenced\s*(.*?)(?=^## |\Z)")
+TOOL_BULLET = re.compile(r"(?m)^\s*-\s+`([a-z][a-z0-9_]*)`")
+TOOL_ALIAS = re.compile(r"`([a-z][a-z0-9_]*)`")
 PLACEHOLDER = re.compile(r"\b(?:TODO|FIXME|TBD)\b|YOUR_GITHUB_USER|<owner>", re.IGNORECASE)
 SECRET_PATTERNS = {
     "GitHub token": re.compile(r"\bgh[pousr]_[A-Za-z0-9]{30,}\b"),
@@ -121,7 +145,16 @@ def validate_skill_metadata(validation: Validation) -> None:
     metadata = parse_frontmatter(skill_path, validation)
     validation.check(set(metadata) == {"name", "description"}, "SKILL.md frontmatter 只能包含 name 和 description。")
     validation.check(metadata.get("name") == "computer-care", "SKILL.md 的 name 必须是 computer-care。")
-    validation.check(bool(metadata.get("description")), "SKILL.md 缺少非空 description。")
+    description = metadata.get("description", "").strip()
+    validation.check(bool(description), "SKILL.md 缺少非空 description。")
+    validation.check(
+        len(description) <= MAX_SKILL_DESCRIPTION_CHARS,
+        f"SKILL.md description 过长：{len(description)} 字符，最多 {MAX_SKILL_DESCRIPTION_CHARS} 字符。",
+    )
+    validation.check(
+        len(description.split()) <= MAX_SKILL_DESCRIPTION_WORDS,
+        f"SKILL.md description 过长：{len(description.split())} 个空格分词，最多 {MAX_SKILL_DESCRIPTION_WORDS} 个。",
+    )
 
     skill_lines = read_text(skill_path, validation).splitlines()
     validation.check(len(skill_lines) <= 500, f"SKILL.md 超过 500 行：{len(skill_lines)}。")
@@ -142,6 +175,7 @@ def validate_playbooks(validation: Validation) -> None:
     )
 
     names: dict[str, Path] = {}
+    descriptions: dict[str, Path] = {}
     bundled_count = 0
     local_files: set[str] = set()
 
@@ -149,6 +183,20 @@ def validate_playbooks(validation: Validation) -> None:
         metadata = parse_frontmatter(path, validation)
         missing = REQUIRED_PLAYBOOK_FIELDS - set(metadata)
         validation.check(not missing, f"{path.name} 缺少字段：{', '.join(sorted(missing))}。")
+
+        description = metadata.get("description", "").strip()
+        validation.check(bool(description), f"{path.name} 缺少非空 description。")
+        validation.check(
+            len(description) <= MAX_PLAYBOOK_DESCRIPTION_CHARS,
+            f"{path.name} 的 description 过长：{len(description)} 字符，最多 {MAX_PLAYBOOK_DESCRIPTION_CHARS} 字符。",
+        )
+        description_key = re.sub(r"\s+", " ", description).casefold()
+        if description_key in descriptions:
+            validation.errors.append(
+                f"Playbook description 重复：{path.name}、{descriptions[description_key].name}。"
+            )
+        elif description_key:
+            descriptions[description_key] = path
 
         name = metadata.get("name", "")
         if name in names:
@@ -202,7 +250,7 @@ def normalize_link_target(raw_target: str) -> str:
 
 
 def validate_links(validation: Validation) -> None:
-    """检查全部本地 Markdown 链接，并确认路由索引恰好覆盖 43 个 Playbook。"""
+    """检查全部本地 Markdown 链接，并确认路由索引覆盖全部 Playbook。"""
     for path in sorted(REPO_ROOT.rglob("*.md")):
         text = read_text(path, validation)
         for raw_target in MARKDOWN_LINK.findall(text):
@@ -224,6 +272,77 @@ def validate_links(validation: Validation) -> None:
     extra = indexed - actual
     validation.check(not missing, "路由索引缺少：" + ", ".join(sorted(missing)))
     validation.check(not extra, "路由索引包含不存在的 Playbook：" + ", ".join(sorted(extra)))
+
+    metadata_by_file = {
+        path.name: parse_frontmatter(path, validation).get("name", "")
+        for path in find_playbooks()
+    }
+    indexed_rows: dict[str, str] = {}
+    indexed_names: dict[str, str] = {}
+    for match in INDEX_ROW.finditer(index_text):
+        name, raw_target = match.groups()
+        target = Path(normalize_link_target(raw_target)).name
+        if target in indexed_rows:
+            validation.errors.append(f"路由索引重复登记：{target}。")
+        indexed_rows[target] = name
+        if name in indexed_names:
+            validation.errors.append(f"路由索引名称重复：{name}。")
+        indexed_names[name] = target
+
+    for filename, name in indexed_rows.items():
+        if filename in metadata_by_file:
+            validation.check(
+                name == metadata_by_file[filename],
+                f"路由索引名称与 frontmatter 不一致：{filename} -> {name}（应为 {metadata_by_file[filename]}）。",
+            )
+
+
+def validate_tool_references(validation: Validation) -> None:
+    """确保 Playbook 声明的语义工具在契约或平台映射中有定义。"""
+    mapping_files = [
+        REFERENCES_DIR / "tool-contract.md",
+        REFERENCES_DIR / "tools-windows.md",
+        REFERENCES_DIR / "tools-macos.md",
+        REFERENCES_DIR / "tools-linux.md",
+    ]
+    mapping_text = "\n".join(read_text(path, validation) for path in mapping_files)
+    mapped = set(TOOL_ALIAS.findall(mapping_text))
+
+    for path in find_playbooks():
+        text = read_text(path, validation)
+        section = TOOL_SECTION.search(text)
+        if not section:
+            continue
+        for tool in sorted(set(TOOL_BULLET.findall(section.group(1)))):
+            validation.check(
+                tool in mapped,
+                f"{path.name} 引用了未登记的工具别名：{tool}。",
+            )
+
+
+def validate_readme_summary(validation: Validation) -> None:
+    """确保 README 的分类数量跟随路由索引，而不是停留在旧版本。"""
+    index_text = read_text(REFERENCES_DIR / "playbook-index.md", validation)
+    index_counts = {
+        heading: len(INDEX_ROW.findall(body))
+        for heading, body in INDEX_SECTION.findall(index_text)
+        if heading != "未命中专项流程"
+    }
+
+    readme_text = read_text(REPO_ROOT / "README.md", validation)
+    readme_counts = {
+        category: int(count)
+        for category, count in README_SUMMARY_ROW.findall(readme_text)
+        if category in index_counts
+    }
+    validation.check(
+        readme_counts == index_counts,
+        "README 的 Playbook 分类数量与路由索引不一致。",
+    )
+    validation.check(
+        sum(readme_counts.values()) == EXPECTED_PLAYBOOK_COUNT,
+        f"README 的 Playbook 分类合计应为 {EXPECTED_PLAYBOOK_COUNT}，实际为 {sum(readme_counts.values())}。",
+    )
 
 
 def validate_release_files(validation: Validation) -> None:
@@ -290,6 +409,8 @@ def main() -> int:
     validate_skill_metadata(validation)
     validate_playbooks(validation)
     validate_links(validation)
+    validate_tool_references(validation)
+    validate_readme_summary(validation)
     validate_release_files(validation)
     return validation.finish()
 

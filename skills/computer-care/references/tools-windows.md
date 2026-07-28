@@ -115,6 +115,38 @@ Get-WinEvent -FilterHashtable @{
 
 日志量大时先按时间、Provider、事件级别和事件 ID 缩小范围。
 
+## 应用生命周期
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `win_package_inventory` | `winget list --source winget`、`Get-AppxPackage`、卸载注册表项，分别保留来源和包 ID | 只读 |
+| `win_package_metadata` | `winget show --id '<ID>' --exact` 或官方源页面；对安装器补充签名和 SHA-256 | 只读联网 |
+| `win_file_signature` | `Get-AuthenticodeSignature -LiteralPath '<PATH>'` | 只读 |
+| `win_persistence_snapshot` | 组合 `Win32_Service`、`Win32_StartupCommand`、`Get-ScheduledTask` 和已确认的注册表项 | 只读 |
+| `win_package_install` | 对已确认的精确 ID 使用 `winget install --id '<ID>' --exact` 或用户选定的 Chocolatey 包；保留来源与版本 | 高影响，先确认 |
+| `win_package_uninstall` | 对已确认的精确 ID 使用 `winget uninstall --id '<ID>' --exact`、原生卸载器或 `Remove-AppxPackage -Package '<FULL_NAME>'` | 高影响，先确认 |
+
+不要把 `winget`、Chocolatey、Appx 和注册表卸载项的显示名称直接拼接进
+Shell。先列出精确 ID、发布者、版本、来源和卸载字符串，再通过结构化参数
+执行。若 `winget` 不存在，报告缺失并让用户选择官方安装路径；不要自动下载
+未知 App Installer、远程脚本或未签名二进制。
+
+## 存储、策略与恢复
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `win_path_inventory` | 对已确认的字面路径使用 `Get-ChildItem -LiteralPath`，限制深度并跳过 reparse point | 只读但可能较慢 |
+| `win_file_hash` | 对明确文件使用 `Get-FileHash -Algorithm SHA256` | 只读 |
+| `win_recycle_path` | 使用宿主的回收站能力或 `Microsoft.VisualBasic.FileIO.FileSystem`，只传入已确认的字面路径 | 高影响，先确认 |
+| `win_registry_snapshot` | `reg.exe export '<KEY>' '<BACKUP_FILE>' /y`，备份文件放在已确认的隔离目录 | 可逆变更，先确认目标 |
+| `win_scheduled_task_list` | `Get-ScheduledTask`，按 TaskPath、TaskName、State 和 Actions 输出 | 只读 |
+| `win_policy_list` | 读取明确的 `HKLM/HKCU:\Software\Policies` 子项和浏览器策略页 | 只读 |
+| `win_recovery_image_scan` | 对写保护的磁盘镜像调用宿主的取证/恢复工具，报告输出到独立目标卷 | 只读；源盘禁止写入 |
+| `win_volume_inventory` | `Get-Disk`、`Get-Partition`、`Get-Volume`，必要时补充 `Win32_LogicalDisk` | 只读 |
+| `win_bitlocker_status` | `Get-BitLockerVolume`；家庭版或命令不可用时记录缺失并使用设置界面核对 | 只读 |
+
+目录清单只报告路径、类型、大小、时间、扩展名比例和计数。不要为了解释未知目录而读取文件正文；如需外部模型分析，只发送去标识化元数据和最多 20 条相对路径样本。
+
 ## 系统诊断与服务
 
 | Playbook 工具 | 推荐实现 | 风险 |
@@ -126,6 +158,8 @@ Get-WinEvent -FilterHashtable @{
 | `win_startup_programs` | 查询 `Win32_StartupCommand` 和常见 Run 注册表项 | 只读 |
 | `win_service_list` | `Get-Service`，需要时补充 `Win32_Service` | 只读 |
 | `win_restart_service` | `Restart-Service -Name '<SERVICE>'` | 会中断依赖，先确认 |
+| `win_pnp_device_list` | `Get-PnpDevice` 与 `Get-PnpDeviceProperty -KeyName 'DEVPKEY_Device_HardwareIds'` | 只读 |
+| `win_driver_inventory` | `Get-CimInstance Win32_PnPSignedDriver`，按设备实例筛选 | 只读 |
 
 ```powershell
 Get-CimInstance Win32_StartupCommand |
@@ -143,3 +177,4 @@ Get-CimInstance Win32_Service |
 - 需要管理员权限时展示单条准确命令、原因、影响和回滚。
 - 使用宿主的提升机制或由用户在管理员终端执行，不打开长期高权限会话。
 - 重启 Windows Update、BITS、打印和网络服务前记录原始状态。
+- 不用 `Remove-Item`、`rmdir` 或扩展名通配符替代 `win_recycle_path`；不对 `C:\`、用户根目录、浏览器 profile 或应用数据根目录做递归删除。

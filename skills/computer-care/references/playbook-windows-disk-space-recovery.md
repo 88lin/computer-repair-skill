@@ -1,6 +1,6 @@
 ---
 name: windows-disk-space-recovery
-description: Reclaim Windows disk space by measuring volumes, identifying safe targets, preserving user data, and verifying freed space
+description: Reclaim Windows disk space by measuring volumes, preserving user data, and verifying freed space
 platform: windows
 last_reviewed: 2026-07-26
 author: computer-care-maintainers
@@ -18,6 +18,9 @@ Run `win_disk_usage` and record total/free space for each fixed volume. Confirm 
 Do not begin deletion from a drive-level percentage alone. Measure categories first.
 
 ## Standard diagnostic path
+
+### 0. Preserve data and classify the request
+Separate “free space”, “move data”, “resize a partition” and “delete data” as different goals. If a move or resize is being considered, route to `windows-partition-resize-audit` before cleaning. Use 3-2-1 as the target for important files; a USB drive is not a sufficient sole backup.
 
 ### 1. Establish the baseline
 Query `Win32_LogicalDisk` for fixed volumes. Record bytes, not only rounded GB. Check whether the low-space volume contains Windows, user profiles, applications, VMs, containers, or synchronized folders.
@@ -71,6 +74,7 @@ Re-run `win_disk_usage` and report exact before/after free bytes. Verify Windows
 - Large user profile -> measure categories; preserve personal and synchronized data.
 - Large WSL/Docker data -> clean through the owning platform, then inspect compaction separately.
 - Large `WinSxS` -> trust DISM analysis, not Explorer's apparent size.
+- `Installer`, restore points, chat databases, synchronized roots and WSL virtual disks -> require an owner-specific plan; do not treat them as generic cache.
 
 ## Tools referenced
 - `win_disk_usage`

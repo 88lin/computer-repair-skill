@@ -12,6 +12,30 @@ from human-written tutorials, documentation, or setup guides.
 
 ---
 
+## Computer Care repository rules
+
+When this guide is used to add a Playbook to this repository, these rules take
+precedence over the generic upstream DSL below:
+
+- Use `source: local` and `author: computer-care-maintainers` for new project files.
+- Use only `source: bundled` for an intentionally adapted upstream baseline;
+  `source: fleet` and the legacy `type:` field are not accepted by this repository.
+- Keep frontmatter `description` at or below 120 characters, make the `name`
+  unique, and register the file in `references/playbook-index.md`.
+- Include a read-only activation/check path, verification, escalation, and a
+  `Tools referenced` section when the Playbook calls semantic tools.
+- Run `python tests/validate_skill.py` before submitting changes.
+
+## Quick navigation
+
+- [File Format](#file-format)
+- [The Step DSL](#the-step-dsl)
+- [Credential Handling](#credential-handling)
+- [Folder Playbooks](#folder-playbooks-multi-file)
+- [Converting a Tutorial](#converting-a-tutorial-step-by-step)
+- [Quality Checklist](#quality-checklist)
+- [Example: Full Minimal Playbook](#example-full-minimal-playbook)
+
 ## Core Concept
 
 A tutorial says: "Open Terminal and type `npm install -g openclaw`."
@@ -48,7 +72,7 @@ name: my-playbook-name
 description: One-line summary of what this playbook does
 platform: all
 last_reviewed: 2026-03-09
-author: your-name
+author: computer-care-maintainers
 source: local
 ---
 ```
@@ -56,11 +80,11 @@ source: local
 | Field | Values | Notes |
 |---|---|---|
 | `name` | hyphenated slug | Must match filename (without `.md`). For sub-modules: `folder/module-name` |
-| `description` | < 120 chars | Shown in the knowledge TOC. Be specific. |
+| `description` | <= 120 characters | Shown in the knowledge TOC. Be specific and include the trigger. |
 | `platform` | `all`, `macos`, `windows`, `linux` | The host Agent only loads playbooks matching the user's OS |
 | `last_reviewed` | `YYYY-MM-DD` | When the playbook was last verified accurate |
-| `author` | string | Credit |
-| `source` | `bundled`, `local`, or `fleet` | `bundled` = ships with the Skill. `local` = your own file (preserved across updates). `fleet` = pushed by an administrator. Use `local` for playbooks you write. The legacy `type:` field (`system`/`user`) is still accepted. |
+| `author` | string | Use `computer-care-maintainers` for files contributed to this repository. |
+| `source` | `bundled` or `local` | `bundled` = adapted upstream baseline; `local` = project-maintained extension. This repository does not accept `fleet` or the legacy `type:` field. |
 | `emoji` | optional, a single emoji | Icon shown on the progress card |
 
 ### Body Structure
@@ -512,7 +536,7 @@ name: setup-example-app
 description: Install and configure Example App with API access
 platform: all
 last_reviewed: 2026-03-09
-author: your-name
+author: computer-care-maintainers
 source: local
 ---
 

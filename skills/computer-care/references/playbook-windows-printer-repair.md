@@ -17,11 +17,13 @@ User reports: can't print, print jobs stuck, printer offline, printer not found,
 Run `win_print_queue` to see pending jobs and `win_printer_list` to see configured printers.
 - If no printers configured → printer was never added or was removed. Jump to escalation.
 - If printers exist → proceed with fix path.
+- Before cancelling jobs, show the exact queue entries and get confirmation; cancelling a queue is a state change.
 
 ## Standard fix path (try in order)
 
 ### 1. Clear stuck jobs
-Run `win_cancel_print_jobs` to clear all pending jobs.
+After the user confirms the listed jobs, run `win_cancel_print_jobs` for the
+approved printer and job IDs; do not silently clear every queue.
 A single stuck job blocks everything behind it. Clearing the queue and reprinting is the fastest fix.
 
 ### 2. Restart the Print Spooler
@@ -30,11 +32,14 @@ This clears the spooler state and re-establishes connections. The Print Spooler 
 
 If `win_restart_spooler` fails, try manually via `shell_run`:
 ```
-net stop spooler
-del /Q /F %systemroot%\System32\spool\PRINTERS\*
-net start spooler
+Get-Service -Name Spooler | Select-Object Status, StartType
+Get-ChildItem -LiteralPath (Join-Path $env:SystemRoot 'System32\spool\PRINTERS') -File |
+  Select-Object FullName, Length, LastWriteTime
 ```
-This also clears any corrupted spool files.
+Do not use wildcard deletion in the spool directory. Preserve the error and the
+literal file list, then propose a per-file, reversible action only after the
+user confirms the exact targets. Escalate locked files, an unclear queue owner,
+or a managed print server to IT or Microsoft's supported spooler repair path.
 
 ### 3. Check printer connectivity
 Based on printer type (visible in `win_printer_list`):
@@ -69,7 +74,7 @@ If the printer shows "Driver is unavailable":
 - `win_cancel_print_jobs` — clear all stuck jobs
 - `win_restart_spooler` — restart the Print Spooler service
 - `win_ping` — test network printer connectivity
-- `shell_run` — manual spooler cleanup commands
+- `shell_run` — inspect spooler state and enumerate exact spool files
 
 ## Escalation
 If all steps fail:

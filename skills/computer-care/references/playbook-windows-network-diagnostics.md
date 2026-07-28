@@ -25,6 +25,9 @@ Keep each result separate. A successful IP ping does not prove DNS or HTTP works
 
 ## Standard diagnostic path
 
+### 0. Use a boundary test before changing settings
+Treat the path as a chain: service or site, upstream network, access point or cable, adapter, driver, Windows settings, then browser/application. Compare a known-good device on the same link, the affected device on another link, and a second application. Record the exact failing layer instead of resetting the whole network.
+
 ### 1. Validate adapter and address
 Run `Get-NetAdapter` and inspect only connected or expected adapters.
 - `169.254.x.x` means DHCP did not provide an address.
@@ -66,6 +69,8 @@ Get-NetAdapter | Where-Object InterfaceDescription -Match 'VPN|Virtual|Tunnel'
 Do not disable a managed proxy or security client. Compare behavior with the user's approved VPN state and check organization policy.
 
 Test `http://www.msftconnecttest.com/connecttest.txt` or the organization's approved captive-portal endpoint when a sign-in page is suspected.
+
+If a campus or enterprise network uses separate wired and wireless identities, record the adapter's MAC address and authentication state without changing randomized-MAC settings blindly. A “No Internet” icon may only indicate that an external connectivity probe or captive portal is not authenticated; test an approved internal endpoint and the original URL.
 
 ### 6. Apply the narrow repair
 Show a plan and obtain approval before state changes.

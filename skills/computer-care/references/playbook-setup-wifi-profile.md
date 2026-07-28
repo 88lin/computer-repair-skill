@@ -27,8 +27,7 @@ For WPA2 Personal: collect the Wi-Fi password using `secure_input` (secret_name:
 For WPA2 Enterprise: collect username via `text_input`, then password via `secure_input`.
 
 ## Step 4: Connect to the network
-On macOS, use `networksetup -setairportnetwork en0 "<SSID>" "<password>"`.
-On Windows, create a WLAN profile XML and use `netsh wlan add profile` then `netsh wlan connect`.
+Never interpolate the password into a transcript, shell command, process argument, or shell history. On macOS, prefer the system Wi-Fi UI or a host API that accepts the `secure_input` value without logging it; if an interactive prompt is required, let the user enter the password locally. On Windows, create the WLAN profile in a protected temporary location with `write_secret`, apply it with the native WLAN flow, and remove the temporary secret only after connectivity is verified.
 
 > Note: the password collected via secure_input can be written to a temp config file using `write_secret` if needed for scripted connection.
 
@@ -38,6 +37,8 @@ If the connection fails:
 - Wrong password → ask user to re-enter
 - Enterprise auth failed → check username format (may need domain\user or user@domain)
 - Captive portal → tell user to open a browser
+
+If the target device is already in an offline setup or recovery environment, do not assume the host Agent can connect it. Give the user a manual GUI or technician checklist and verify the result when a usable host is available again.
 
 ## Tools referenced
 - `shell_run` — network commands

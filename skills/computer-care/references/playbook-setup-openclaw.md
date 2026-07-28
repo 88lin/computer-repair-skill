@@ -1,6 +1,6 @@
 ---
 name: setup-openclaw
-description: Install and configure OpenClaw (龙虾) — an AI gateway connecting Claude to WhatsApp, Telegram, and other messaging channels
+description: Install and configure OpenClaw (龙虾), an AI gateway for Claude, WhatsApp, Telegram, and other channels
 platform: all
 last_reviewed: 2026-03-08
 author: upstream-maintainers

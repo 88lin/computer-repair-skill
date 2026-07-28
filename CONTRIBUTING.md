@@ -12,7 +12,7 @@
 
 ## 修改上游 Playbook
 
-`source: bundled` 的 37 个文件来自 `NOTICE` 记录的上游基准提交，面向 Agent 的措辞和 author 标记已做中性化适配。同步上游时保留现有行为与中性命名，并在 Pull Request 中注明上游提交、变更文件和行为差异。
+`source: bundled` 的 37 个文件来自 `NOTICE` 记录的上游基准提交，面向 Agent 的措辞和 author 标记已做中性化适配。当前还有 21 个 `source: local` 的 Windows/Linux 扩展，来源取舍记录在 `upstream-source-review.md`。同步上游时保留现有行为与中性命名，并在 Pull Request 中注明上游提交、变更文件和行为差异。
 
 项目新增 Playbook 使用以下元数据：
 
@@ -30,6 +30,7 @@ source: local
 新 Playbook 还需要：
 
 - 使用 `playbook-<slug>.md` 文件名，并登记到 `references/playbook-index.md`。
+- 让 frontmatter 的 `description` 不超过 120 个字符且只描述一个明确入口；不要把多个能力堆在同一行。
 - 给出激活条件、快速只读检查、标准诊断路径、修复前确认、验证、限制和升级信息。
 - 对平台命令提供明确失败处理，不使用宽泛删除或不可审计的命令拼接。
 - 需要凭据时使用宿主安全输入能力，不在上下文或命令历史中回显秘密。
