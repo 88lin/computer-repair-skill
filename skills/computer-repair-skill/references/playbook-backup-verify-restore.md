@@ -94,5 +94,7 @@ If verification reveals:
 - Backup is encrypted and password is unknown → this is a critical issue. The backup is unrecoverable. Document and escalate to the admin.
 
 ## Tools referenced
-- Shell commands — backup tool queries, file creation, restore commands
-- Disk usage tools — checking backup destination space
+- `shell_run` — query the platform backup tool, create the canary file, run the test restore
+- `win_disk_usage` / `mac_disk_usage` / `linux_disk_usage` — confirm the restore destination has free space
+- `ui_user_question` with `options` — confirm the restore target before anything is written
+- `ui_done` — report the verified restore with before/after evidence

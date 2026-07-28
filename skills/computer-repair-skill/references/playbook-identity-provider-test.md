@@ -2,7 +2,7 @@
 name: identity-provider-test
 description: Test connectivity to identity providers — Microsoft Entra ID, Google Workspace, and SSO endpoints
 platform: all
-last_reviewed: 2026-03-17
+last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled
 emoji: 🪪
@@ -19,7 +19,7 @@ User can't sign in to corporate services, SSO failures, "session expired" loops,
 
 ### 1. Test Microsoft Entra ID (M365) DNS
 Resolve `login.microsoftonline.com` using a DNS lookup.
-- If resolution fails, DNS is broken — activate `network-diagnostics` first.
+- If resolution fails, DNS is broken — activate the platform-matched networking playbook first: `windows-network-diagnostics` (Windows), `network-diagnostics` (macOS), or `linux-network-diagnostics` (Linux).
 - If it resolves to an unexpected IP or a local IP, a proxy or DNS filter may be intercepting authentication traffic.
 
 ### 2. Test Google Workspace DNS
@@ -79,7 +79,8 @@ If IdP endpoints are reachable but authentication still fails:
 - If the IdP itself is down (returns 5xx), check the provider's status page and wait.
 
 ## Tools referenced
-- DNS lookup tools — resolve IdP hostnames
-- HTTP check tools — test HTTPS connectivity to login endpoints
-- Network info tools — check for VPN interfaces
-- Shell commands — check proxy settings, time sync, VPN status
+- `win_dns_check` / `mac_dns_check` / `linux_dns_check` — resolve identity provider hostnames
+- `win_http_check` / `mac_http_check` / `linux_http_check` — test HTTPS reachability of login endpoints
+- `win_network_info` / `mac_network_info` / `linux_network_info` — detect VPN interfaces and proxy configuration
+- `shell_run` — check clock skew (`w32tm /query /status`, `sntp -d`, `timedatectl`) and proxy settings
+- `ui_info` — report which providers are reachable and whether the fault is network- or account-level

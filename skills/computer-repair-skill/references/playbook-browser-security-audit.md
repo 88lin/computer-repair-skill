@@ -77,5 +77,7 @@ If sideloaded extensions with broad permissions are found and the user didn't in
 - If on a corporate device, notify IT — policy-managed extensions should come from a known source.
 
 ## Tools referenced
-- Shell commands — read browser config files, check update agents
-- Disk audit tools — check browser profile sizes
+- `shell_run` — read browser configuration files and check update agents
+- `win_app_data_ls` / `mac_app_support_ls` — locate browser profile directories
+- `win_disk_usage` / `mac_disk_usage` / `linux_disk_usage` — measure browser profile sizes
+- `ui_info` — report findings; this playbook is read-only and never removes an extension itself

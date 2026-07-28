@@ -84,5 +84,7 @@ If suspicious network connections or unrecognized processes are found:
 - Persistent red findings after remediation suggest a deeper compromise — recommend professional incident response.
 
 ## Tools referenced
-- Shell commands — check firewall, list processes, network connections
-- Process listing tools — find running AV/endpoint protection processes
+- `shell_run` — read firewall state, list listening ports, query update status
+- `win_process_list` / `mac_process_list` / `linux_process_list` — find running AV/endpoint protection processes
+- `win_service_list` — check Defender, firewall and update service state on Windows
+- `ui_info` — report findings; never disable a protection component to "test" it

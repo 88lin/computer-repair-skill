@@ -86,5 +86,7 @@ If the cleanup is for a security incident:
 - If the device may be compromised, a full wipe may be more appropriate than selective cleanup. Consult IT security.
 
 ## Tools referenced
-- Shell commands — keychain queries, klist, SSH key listing
-- User confirmation prompts — confirmation before each removal action
+- `shell_run` — keychain / Credential Manager queries, `klist`, SSH key listing (names and paths only)
+- `ui_user_question` with `options` — confirm each credential store separately before touching it
+- `ui_info` — report what exists without printing any secret value
+- `ui_done` — summarize what was cleared and what still needs manual rotation
