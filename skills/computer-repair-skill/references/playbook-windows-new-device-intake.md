@@ -2,6 +2,7 @@
 name: windows-new-device-intake
 description: Inspect a new Windows computer, preserve unboxing evidence, verify support/warranty, and establish a safe baseline
 platform: windows
+category: health-performance-storage-backup
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

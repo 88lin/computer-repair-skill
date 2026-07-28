@@ -2,6 +2,7 @@
 name: setup-openclaw/troubleshooting
 description: Diagnose and fix common OpenClaw issues
 platform: all
+category: openclaw
 last_reviewed: 2026-03-08
 author: upstream-maintainers
 source: bundled
@@ -16,7 +17,7 @@ installation.
 ## Step 1: Run Diagnostics
 
 Start with the standard diagnostic ladder:
-```
+```bash
 openclaw status
 openclaw gateway status
 openclaw doctor
@@ -24,7 +25,7 @@ openclaw channels status --probe
 ```
 
 Check logs for errors:
-```
+```bash
 openclaw logs --follow
 ```
 

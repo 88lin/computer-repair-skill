@@ -2,6 +2,7 @@
 name: linux-disk-space-recovery
 description: Reclaim Linux disk space and inodes by measuring filesystems, cleaning native caches, and verifying services
 platform: linux
+category: health-performance-storage-backup
 last_reviewed: 2026-07-26
 author: computer-repair-skill-maintainers
 source: local
@@ -24,7 +25,7 @@ Run `linux_disk_usage` and record `df -hT` plus `df -i`. Identify the exact file
 
 ### 2. Measure within one filesystem
 Start at the affected mount and stay on that filesystem:
-```
+```bash
 du -x -d 1 -h '<MOUNT>' 2>/dev/null | sort -h
 ```
 

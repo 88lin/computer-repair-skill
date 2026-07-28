@@ -2,6 +2,7 @@
 name: windows-boot-failure-triage
 description: Triage Windows startup, No Boot Device, UEFI/boot-entry, and pre-login failures without blindly changing firmware
 platform: windows
+category: windows-repair-boot-hardware
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

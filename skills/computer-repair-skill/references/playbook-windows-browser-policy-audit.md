@@ -2,6 +2,7 @@
 name: windows-browser-policy-audit
 description: Audit Chrome, Edge, Firefox, and Brave policies without touching profiles or disabling security updates
 platform: windows
+category: security-credentials
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

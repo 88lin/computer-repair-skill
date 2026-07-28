@@ -2,6 +2,7 @@
 name: setup-openclaw/add-feishu
 description: Add Feishu (飞书) as a messaging channel for OpenClaw (built-in plugin)
 platform: all
+category: openclaw
 last_reviewed: 2026-03-09
 author: upstream-maintainers
 source: bundled
@@ -125,7 +126,7 @@ Run `shell_run` with `openclaw channels add` — but this is interactive.
 Instead, configure directly:
 
 Run `shell_run` with:
-```
+```bash
 openclaw config set channels.feishu.enabled true
 ```
 
@@ -143,13 +144,13 @@ Alternatively, use `write_secret` with:
 - format: "{{value}}"
 
 Then set the env reference:
-```
+```bash
 openclaw config set channels.feishu.accounts.main.appSecret "${FEISHU_APP_SECRET}"
 openclaw config set env.FEISHU_APP_SECRET "$(cat ~/.openclaw/secrets/feishu_app_secret)"
 ```
 
 Restart gateway:
-```
+```bash
 openclaw gateway restart
 ```
 
@@ -187,7 +188,7 @@ Have the user send a message to the bot in Feishu:
 >    it means pairing mode is active
 
 If a pairing code was returned, run:
-```
+```bash
 openclaw pairing approve feishu <code>
 ```
 
@@ -247,12 +248,12 @@ Set via: `openclaw config set channels.feishu.dmPolicy "open"`
 Default: all groups allowed, but @mention required.
 
 Allow a specific group without @mention:
-```
+```bash
 openclaw config set channels.feishu.groups.oc_GROUP_ID.requireMention false
 ```
 
 Restrict to specific groups:
-```
+```bash
 openclaw config set channels.feishu.groupPolicy "allowlist"
 openclaw config set channels.feishu.groupAllowFrom '["oc_xxx", "oc_yyy"]'
 ```
@@ -263,14 +264,14 @@ openclaw config set channels.feishu.groupAllowFrom '["oc_xxx", "oc_yyy"]'
 ### Performance Tuning
 
 Reduce API quota usage for high-traffic bots:
-```
+```bash
 openclaw config set channels.feishu.typingIndicator false
 openclaw config set channels.feishu.resolveSenderNames false
 ```
 
 ### Auto-Start
 
-```
+```bash
 openclaw gateway install
 ```
 

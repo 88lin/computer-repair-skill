@@ -2,6 +2,7 @@
 name: windows-performance-forensics
 description: Diagnose Windows slowness, CPU saturation, memory pressure, disk bottlenecks, startup load, and application hangs
 platform: windows
+category: health-performance-storage-backup
 last_reviewed: 2026-07-26
 author: computer-repair-skill-maintainers
 source: local
@@ -21,7 +22,7 @@ Take at least two short samples before naming a transient process as the cause.
 
 ### 1. Establish system pressure
 Query:
-```
+```powershell
 Get-CimInstance Win32_PerfFormattedData_PerfOS_Processor -Filter "Name='_Total'"
 Get-CimInstance Win32_PerfFormattedData_PerfOS_Memory
 Get-CimInstance Win32_PerfFormattedData_PerfDisk_PhysicalDisk -Filter "Name='_Total'"

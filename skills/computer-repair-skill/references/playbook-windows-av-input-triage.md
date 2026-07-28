@@ -2,6 +2,7 @@
 name: windows-av-input-triage
 description: Troubleshoot Windows camera, microphone, headset, and speaker failures across hardware, permissions, drivers, and apps
 platform: windows
+category: windows-repair-boot-hardware
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

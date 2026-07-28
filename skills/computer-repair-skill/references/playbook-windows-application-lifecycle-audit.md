@@ -2,6 +2,7 @@
 name: windows-application-lifecycle-audit
 description: Audit Windows app install/uninstall candidates by exact package ID, publisher, source, and reversible verification
 platform: windows
+category: health-performance-storage-backup
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

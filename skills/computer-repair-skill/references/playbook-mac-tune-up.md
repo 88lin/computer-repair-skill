@@ -2,6 +2,7 @@
 name: mac-tune-up
 description: Safe maintenance sweep for a generally-sluggish Mac — refresh caches and reclaim memory without risk
 platform: macos
+category: health-performance-storage-backup
 last_reviewed: 2026-06-08
 author: upstream-maintainers
 source: bundled

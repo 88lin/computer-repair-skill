@@ -2,6 +2,7 @@
 name: network-diagnostics
 description: Systematic connectivity troubleshooting for Wi-Fi, DNS, and internet issues
 platform: macos
+category: network-identity-email
 last_reviewed: 2026-03-04
 author: upstream-maintainers
 source: bundled

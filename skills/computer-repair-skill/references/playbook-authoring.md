@@ -42,7 +42,7 @@ A tutorial says: "Open Terminal and type `npm install -g openclaw`."
 
 A playbook says:
 
-```
+```markdown
 ## Step 2: Install OpenClaw
 
 Run `shell_run` with `npm install -g openclaw@latest`.
@@ -131,7 +131,7 @@ Steps are declared with level-2 markdown headers:
 - Steps execute sequentially — no branching within a playbook
 
 **Accepted formats** (all equivalent, but prefer `## Step N: Label`):
-```
+```markdown
 ## Step 1: Check Environment
 ## Step 1 — Check Environment
 ## Step 1. Check Environment
@@ -290,7 +290,7 @@ format "API_KEY={{value}}".
 
 For complex setups with optional branches, use a folder structure:
 
-```
+```text
 playbooks/
   setup-myapp/
     playbook.md          ← main entry point (REQUIRED, name must be "playbook.md")

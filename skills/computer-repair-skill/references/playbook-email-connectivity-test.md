@@ -2,6 +2,7 @@
 name: email-connectivity-test
 description: Test network connectivity to email servers — SMTP, IMAP, POP3, and major providers
 platform: all
+category: network-identity-email
 last_reviewed: 2026-03-17
 author: upstream-maintainers
 source: bundled

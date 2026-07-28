@@ -2,6 +2,7 @@
 name: setup-openclaw/configure
 description: Edit OpenClaw configuration — models, channels, sessions, automation
 platform: all
+category: openclaw
 last_reviewed: 2026-03-08
 author: upstream-maintainers
 source: bundled
@@ -39,7 +40,7 @@ Ask the user what they want to configure. Common tasks:
 Read current model: `openclaw config get agents.defaults.model.primary`
 
 Set new model:
-```
+```bash
 openclaw config set agents.defaults.model.primary "anthropic/claude-sonnet-4-5"
 ```
 
@@ -50,7 +51,7 @@ Common model IDs:
 - For Chinese providers, activate `setup-openclaw/china-models`
 
 If switching providers, may need to set the API key:
-```
+```bash
 openclaw config set env.ANTHROPIC_API_KEY "sk-ant-..."
 ```
 Or use secure_input to collect the key, then write it.
@@ -84,7 +85,7 @@ To re-link a channel: `openclaw channels login --channel <name>`
 ## Step 4: Automation (Cron & Heartbeats)
 
 **Heartbeats** — periodic check-ins from the agent:
-```
+```bash
 openclaw config set agents.defaults.heartbeat.every "30m"
 openclaw config set agents.defaults.heartbeat.target "last"
 ```
@@ -130,7 +131,7 @@ After editing config, most changes apply automatically (hot reload).
 Verify: `openclaw doctor`
 
 If you edited gateway port/bind settings, restart:
-```
+```bash
 openclaw gateway restart
 ```
 

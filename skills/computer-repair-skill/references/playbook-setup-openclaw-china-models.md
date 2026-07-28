@@ -2,6 +2,7 @@
 name: setup-openclaw/china-models
 description: Set up Chinese AI model providers for OpenClaw (Volcano Engine, Moonshot, DeepSeek, Qwen, GLM)
 platform: all
+category: openclaw
 last_reviewed: 2026-03-08
 author: upstream-maintainers
 source: bundled
@@ -60,24 +61,24 @@ Ask the user which provider they want to use:
 For most providers, the user needs an API key. Collect it via `secure_input`.
 
 Then set it in the OpenClaw config:
-```
+```bash
 openclaw config set env.<ENV_VAR_NAME> "<api_key>"
 ```
 
 For example, for Volcano Engine:
-```
+```bash
 openclaw config set env.VOLCANO_ENGINE_API_KEY "<key>"
 ```
 
 ## Step 3: Configure the Model
 
 **For built-in providers** (volcengine, byteplus, zai):
-```
+```bash
 openclaw config set agents.defaults.model.primary "volcengine/doubao-seed-1.8"
 ```
 
 **For Qwen Portal** (free, OAuth):
-```
+```bash
 openclaw models auth login --provider qwen-portal --set-default
 ```
 This opens a device code flow — use WAIT_FOR_USER.
@@ -138,7 +139,7 @@ For DeepSeek:
 ## Step 4: Verify
 
 Check that the model is accessible:
-```
+```bash
 openclaw models status
 ```
 

@@ -2,6 +2,7 @@
 name: windows-partition-resize-audit
 description: Audit Windows partition and C-drive expansion requests with backup, BitLocker, adjacency and offline-tool safety checks
 platform: windows
+category: windows-repair-boot-hardware
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

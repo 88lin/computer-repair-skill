@@ -2,6 +2,7 @@
 name: disk-space-recovery
 description: Reclaim disk space on macOS — measure, audit, clean cache-class data, report freed bytes
 platform: macos
+category: health-performance-storage-backup
 last_reviewed: 2026-06-05
 author: upstream-maintainers
 source: bundled

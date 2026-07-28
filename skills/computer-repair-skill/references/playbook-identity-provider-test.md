@@ -2,6 +2,7 @@
 name: identity-provider-test
 description: Test connectivity to identity providers — Microsoft Entra ID, Google Workspace, and SSO endpoints
 platform: all
+category: network-identity-email
 last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled

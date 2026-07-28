@@ -2,6 +2,7 @@
 name: backup-verify-restore
 description: Verify backup integrity by checking status, timestamps, and testing a real file restore
 platform: all
+category: health-performance-storage-backup
 last_reviewed: 2026-03-17
 author: upstream-maintainers
 source: bundled

@@ -2,6 +2,7 @@
 name: linux-performance-forensics
 description: Diagnose Linux load, CPU, memory pressure, swapping, IO waits, disk bottlenecks, cgroup limits, and process hangs
 platform: linux
+category: health-performance-storage-backup
 last_reviewed: 2026-07-26
 author: computer-repair-skill-maintainers
 source: local
@@ -21,7 +22,7 @@ Identify whether the workload runs on bare metal, a VM, a container, WSL, or a c
 
 ### 1. Interpret load and CPU
 Run:
-```
+```bash
 uptime
 nproc
 vmstat 1 5
@@ -41,7 +42,7 @@ When available, use `pidstat 1 5` for CPU, memory faults, and IO rates. Record f
 
 ### 3. Check memory pressure
 Run:
-```
+```bash
 free -h
 cat /proc/meminfo
 cat /proc/pressure/memory

@@ -2,6 +2,7 @@
 name: windows-winre-system-repair
 description: Diagnose Windows startup/system corruption with WinRE, Safe Mode, SFC, DISM, and restore paths
 platform: windows
+category: windows-repair-boot-hardware
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

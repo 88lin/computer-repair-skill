@@ -2,6 +2,7 @@
 name: windows-disk-space-recovery
 description: Reclaim Windows disk space by measuring volumes, preserving user data, and verifying freed space
 platform: windows
+category: health-performance-storage-backup
 last_reviewed: 2026-07-26
 author: computer-repair-skill-maintainers
 source: local
@@ -34,7 +35,7 @@ Do not follow reparse points blindly. Treat OneDrive and other synchronized root
 
 ### 3. Inspect Windows-managed storage
 Check Settings storage categories or approved system tools. Analyze the component store before proposing cleanup:
-```
+```powershell
 DISM.exe /Online /Cleanup-Image /AnalyzeComponentStore
 ```
 

@@ -2,6 +2,7 @@
 name: setup-wifi-profile
 description: Connect to a new Wi-Fi network including enterprise/WPA2-Enterprise networks
 platform: all
+category: network-identity-email
 last_reviewed: 2026-03-07
 author: upstream-maintainers
 source: bundled

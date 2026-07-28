@@ -2,6 +2,7 @@
 name: setup-ssh-key
 description: Generate an SSH key pair and add it to GitHub or another service
 platform: all
+category: dev-environment-setup
 last_reviewed: 2026-03-07
 author: upstream-maintainers
 source: bundled
@@ -35,7 +36,7 @@ Provide a direct link: https://github.com/settings/ssh/new
 Run: `ssh -T git@github.com` to verify.
 Expected success output: "Hi username! You've successfully authenticated"
 If it fails, check `~/.ssh/config` and suggest adding:
-```
+```text
 Host github.com
   IdentityFile ~/.ssh/id_ed25519
   AddKeysToAgent yes

@@ -2,6 +2,7 @@
 name: endpoint-security-check
 description: Quick security posture check — antivirus, firewall, updates, and suspicious activity
 platform: all
+category: security-credentials
 last_reviewed: 2026-03-17
 author: upstream-maintainers
 source: bundled

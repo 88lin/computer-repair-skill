@@ -2,6 +2,7 @@
 name: windows-bitlocker-recovery-triage
 description: Audit BitLocker/device encryption before PE, BIOS, hardware, partition, repair, or reinstall operations
 platform: windows
+category: windows-repair-boot-hardware
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

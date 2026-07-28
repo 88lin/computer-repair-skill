@@ -2,6 +2,7 @@
 name: windows-configuration-review
 description: Review reversible Windows privacy, performance, and usability settings with version gates, diff, and rollback
 platform: windows
+category: apps-updates-printing
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

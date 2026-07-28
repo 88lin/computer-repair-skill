@@ -2,6 +2,7 @@
 name: windows-network-diagnostics
 description: Systematic Windows connectivity troubleshooting for adapters, DHCP, routes, DNS, proxy, VPN, and HTTP
 platform: windows
+category: network-identity-email
 last_reviewed: 2026-07-26
 author: computer-repair-skill-maintainers
 source: local
@@ -60,7 +61,7 @@ Flush DNS only after observing stale or inconsistent resolver results. Re-run th
 
 ### 5. Validate proxy, VPN, and captive portal
 Inspect:
-```
+```powershell
 netsh winhttp show proxy
 Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings'
 Get-NetAdapter | Where-Object InterfaceDescription -Match 'VPN|Virtual|Tunnel'

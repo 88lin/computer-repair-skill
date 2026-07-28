@@ -2,6 +2,7 @@
 name: setup-openclaw
 description: Install and configure OpenClaw (龙虾), an AI gateway for Claude, WhatsApp, Telegram, and other channels
 platform: all
+category: openclaw
 last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled
@@ -30,7 +31,7 @@ Run `node --version` to check Node.js.
 ## Step 2: Install OpenClaw
 
 If the user already has Node.js 22+, prefer the official npm package:
-```
+```bash
 npm install -g openclaw@latest
 ```
 
@@ -65,7 +66,7 @@ PATH. Check with `npm prefix -g` and add `$(npm prefix -g)/bin` to PATH.
 
 The wizard handles model selection, authentication, channel setup, and daemon
 installation all in one flow:
-```
+```bash
 openclaw onboard --install-daemon
 ```
 
@@ -83,14 +84,14 @@ for detailed guidance on Volcano Engine, Moonshot, DeepSeek, etc.
 ## Step 4: Verify Gateway
 
 Check that the gateway is running:
-```
+```bash
 openclaw gateway status
 ```
 
 Expected: "Runtime: running" and "RPC probe: ok".
 
 If not running, start it:
-```
+```bash
 openclaw gateway
 ```
 
@@ -112,7 +113,7 @@ If unsure, ask the user if they need the bot to operate Feishu documents,
 calendar, or tasks. If yes → official plugin. If just chat → built-in.
 
 **WhatsApp**:
-```
+```bash
 openclaw channels login --channel whatsapp
 ```
 This shows a QR code. Tell the user:
@@ -130,12 +131,12 @@ After linking, verify: `openclaw channels status --probe`
 Send a test message on the connected channel. The AI should respond.
 
 Check logs if something doesn't work:
-```
+```bash
 openclaw logs --follow
 ```
 
 Run diagnostics:
-```
+```bash
 openclaw doctor
 ```
 

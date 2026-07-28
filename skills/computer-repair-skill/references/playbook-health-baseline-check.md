@@ -2,6 +2,7 @@
 name: health-baseline-check
 description: Comprehensive device health check — disk, memory, uptime, updates, firewall, backup, and network
 platform: all
+category: health-performance-storage-backup
 last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled

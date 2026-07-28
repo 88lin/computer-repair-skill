@@ -2,6 +2,7 @@
 name: windows-storage-inventory
 description: Build a privacy-preserving Windows storage inventory that explains large paths before any cleanup
 platform: windows
+category: health-performance-storage-backup
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

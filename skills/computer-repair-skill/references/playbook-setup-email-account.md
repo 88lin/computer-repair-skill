@@ -2,6 +2,7 @@
 name: setup-email-account
 description: Add an email account to Apple Mail or Outlook on macOS
 platform: macos
+category: network-identity-email
 last_reviewed: 2026-03-07
 author: upstream-maintainers
 source: bundled

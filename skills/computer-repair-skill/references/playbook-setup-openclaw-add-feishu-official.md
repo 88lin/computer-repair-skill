@@ -2,6 +2,7 @@
 name: setup-openclaw/add-feishu-official
 description: Add Feishu official plugin (user-identity OAuth — documents, calendar, tasks)
 platform: all
+category: openclaw
 last_reviewed: 2026-03-09
 author: upstream-maintainers
 source: bundled
@@ -31,7 +32,7 @@ via Feishu, or wants AI to operate as their identity (not as a bot).
 ## Step 1: Install the Official Plugin
 
 Run `shell_run` with:
-```
+```bash
 openclaw plugins install @larksuiteoapi/feishu-openclaw-plugin
 ```
 
@@ -53,7 +54,7 @@ Collect the App ID via `text_input` (placeholder: "cli_xxxxxxxxx").
 Collect the App Secret via `secure_input` (secret_name: "feishu_app_secret").
 
 Run `shell_run` with:
-```
+```bash
 openclaw config set channels.feishu.accounts.main.appId "<app_id>"
 ```
 
@@ -86,7 +87,7 @@ Tell the user:
 > 2. You'll receive a pairing code — copy it
 
 If pairing code received, run `shell_run` with:
-```
+```bash
 openclaw pairing approve feishu <code>
 ```
 

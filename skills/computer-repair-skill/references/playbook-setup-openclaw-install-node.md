@@ -2,6 +2,7 @@
 name: setup-openclaw/install-node
 description: Install Node.js 22+ for OpenClaw (sub-module)
 platform: all
+category: openclaw
 last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled

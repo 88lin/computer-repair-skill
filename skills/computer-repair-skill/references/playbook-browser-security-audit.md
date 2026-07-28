@@ -2,6 +2,7 @@
 name: browser-security-audit
 description: Audit browser extensions, saved passwords, and update status for security risks
 platform: all
+category: security-credentials
 last_reviewed: 2026-03-17
 author: upstream-maintainers
 source: bundled

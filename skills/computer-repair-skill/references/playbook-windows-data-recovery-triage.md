@@ -2,6 +2,7 @@
 name: windows-data-recovery-triage
 description: Triage deleted or inaccessible Windows data with image-first read-only recovery to a separate target
 platform: windows
+category: windows-data-recovery
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

@@ -2,6 +2,7 @@
 name: setup-openclaw/config-reference
 description: Comprehensive OpenClaw configuration field reference
 platform: all
+category: openclaw
 last_reviewed: 2026-03-08
 author: upstream-maintainers
 source: bundled
@@ -201,7 +202,7 @@ Supports recursive merge, relative paths, up to 10 nesting levels.
 
 ## CLI Commands Quick Reference
 
-```
+```bash
 openclaw configure                 # interactive wizard
 openclaw config get <path>         # read a field
 openclaw config set <path> <value> # set a field

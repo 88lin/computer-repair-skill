@@ -2,6 +2,7 @@
 name: setup-cuda
 description: Install NVIDIA CUDA Toolkit on Linux (Ubuntu/Debian, RHEL/Fedora)
 platform: linux
+category: dev-environment-setup
 last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled
@@ -29,18 +30,18 @@ Run `shell_run` with `cat /etc/os-release` to identify the distribution.
 Then install kernel headers and GCC:
 
 **Ubuntu/Debian:**
-```
+```bash
 sudo apt update && sudo apt install -y build-essential linux-headers-$(uname -r)
 ```
 
 **RHEL/Fedora/Rocky:**
-```
+```bash
 sudo dnf install -y gcc kernel-devel-$(uname -r)
 ```
 
 ## Step 3: Add NVIDIA repository and install driver
 **Ubuntu/Debian:**
-```
+```bash
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
 sudo dpkg -i cuda-keyring_1.1-1_all.deb
 sudo apt update
@@ -48,7 +49,7 @@ sudo apt update
 Adjust `ubuntu2404` to match the actual distro version (ubuntu2204, debian12, etc.).
 
 **RHEL/Fedora/Rocky:**
-```
+```bash
 sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo
 ```
 Adjust `rhel9` to match (fedora41, etc.).
@@ -57,12 +58,12 @@ Use WAIT_FOR_USER — adding repos and downloading packages can take a few minut
 
 ## Step 4: Install CUDA Toolkit
 **Ubuntu/Debian:**
-```
+```bash
 sudo apt install -y cuda-toolkit
 ```
 
 **RHEL/Fedora/Rocky:**
-```
+```bash
 sudo dnf install -y cuda-toolkit
 ```
 
@@ -72,7 +73,7 @@ Use WAIT_FOR_USER — installation downloads ~2–4 GB and takes 5–15 minutes.
 
 ## Step 5: Configure PATH
 Add CUDA to the user's PATH by appending to `~/.bashrc`:
-```
+```bash
 echo 'export PATH=/usr/local/cuda/bin${PATH:+:${PATH}}' >> ~/.bashrc
 echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}' >> ~/.bashrc
 source ~/.bashrc
@@ -91,7 +92,7 @@ to verification until the user confirms that the system is back.
 
 ## Step 6: Verify installation
 Run these checks:
-```
+```bash
 nvidia-smi
 nvcc --version
 ```

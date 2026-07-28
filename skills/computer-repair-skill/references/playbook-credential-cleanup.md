@@ -2,6 +2,7 @@
 name: credential-cleanup
 description: Audit and clean up stored credentials on a device — for offboarding or post-incident response
 platform: all
+category: security-credentials
 last_reviewed: 2026-03-17
 author: upstream-maintainers
 source: bundled

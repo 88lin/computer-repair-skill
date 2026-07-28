@@ -2,6 +2,7 @@
 name: dns-record-check
 description: Check email-related DNS records (MX, SPF, DKIM, DMARC) for a domain
 platform: all
+category: network-identity-email
 last_reviewed: 2026-03-17
 author: upstream-maintainers
 source: bundled

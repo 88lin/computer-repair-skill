@@ -2,6 +2,7 @@
 name: performance-forensics
 description: Diagnose slowness, high CPU, memory pressure, and hangs
 platform: macos
+category: health-performance-storage-backup
 last_reviewed: 2026-06-08
 author: upstream-maintainers
 source: bundled

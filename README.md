@@ -168,6 +168,7 @@ Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问�
 
 本 Skill 内置 58 个可按需加载的专项 Playbook。下面的分类数量与[完整路由索引](skills/computer-repair-skill/references/playbook-index.md)一致。
 
+<!-- registry:begin:category-table -->
 | 分类 | 数量 | 主要内容 |
 |---|---|---|
 | 健康、性能、存储与备份 | 15 | 体检、性能、磁盘/目录盘点、应用缓存、备份和新机验收 |
@@ -178,6 +179,8 @@ Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问�
 | 安全与凭据 | 5 | 终端安全、浏览器、浏览器策略、持久化和凭据清理 |
 | 开发环境与基础设置 | 3 | Homebrew、CUDA 和 SSH Key |
 | OpenClaw | 11 | 安装、配置、渠道、国产模型、排障和卸载 |
+| **合计** | **58** | 可执行 Playbook 总数 |
+<!-- registry:end:category-table -->
 
 ## 💬 能做什么｜你可以这样问
 

@@ -2,6 +2,7 @@
 name: setup-homebrew
 description: Install and configure Homebrew package manager on macOS
 platform: macos
+category: dev-environment-setup
 last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled
@@ -23,7 +24,7 @@ Do not execute the official installer through command substitution. Download it
 into an isolated temporary directory, record the URL and SHA-256, and inspect
 the local file first:
 
-```
+```bash
 tmp_dir="$(mktemp -d)"
 script_path="$tmp_dir/homebrew-install.sh"
 curl --fail --location --silent --show-error \
@@ -44,7 +45,7 @@ minutes.
 After installation, Homebrew often needs to be added to the shell profile.
 Check if `brew` is in PATH by running `which brew`.
 If not found, tell the user to run:
-```
+```bash
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```

@@ -2,6 +2,7 @@
 name: windows-driver-lifecycle-audit
 description: Diagnose Windows driver failures with hardware IDs, vendor source, reinstall, rollback, and compatibility checks
 platform: windows
+category: windows-repair-boot-hardware
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

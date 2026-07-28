@@ -2,6 +2,7 @@
 name: printer-repair
 description: Fix stuck print jobs, missing printers, and CUPS issues
 platform: macos
+category: apps-updates-printing
 last_reviewed: 2026-03-04
 author: upstream-maintainers
 source: bundled

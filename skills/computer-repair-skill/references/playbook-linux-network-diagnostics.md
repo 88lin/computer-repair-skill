@@ -2,6 +2,7 @@
 name: linux-network-diagnostics
 description: Systematic Linux connectivity troubleshooting for links, addresses, routes, DNS, HTTP, firewall, and namespaces
 platform: linux
+category: network-identity-email
 last_reviewed: 2026-07-26
 author: computer-repair-skill-maintainers
 source: local
@@ -21,7 +22,7 @@ Also identify whether the command runs on the host, in a container, over SSH, or
 
 ### 1. Validate link and address
 Run:
-```
+```bash
 ip -brief link
 ip -brief address
 ip route show

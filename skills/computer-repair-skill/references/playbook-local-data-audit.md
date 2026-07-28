@@ -2,6 +2,7 @@
 name: local-data-audit
 description: Audit a device for locally stored sensitive or company data — for offboarding or device reassignment
 platform: all
+category: health-performance-storage-backup
 last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled

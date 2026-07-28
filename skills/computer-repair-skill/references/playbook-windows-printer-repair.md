@@ -2,6 +2,7 @@
 name: windows-printer-repair
 description: Fix stuck print jobs, offline printers, and spooler issues on Windows
 platform: windows
+category: apps-updates-printing
 last_reviewed: 2026-03-04
 author: upstream-maintainers
 source: bundled
@@ -31,7 +32,7 @@ Run `win_restart_spooler` to restart the Windows Print Spooler service.
 This clears the spooler state and re-establishes connections. The Print Spooler often gets stuck after a few failed jobs — restarting fixes this.
 
 If `win_restart_spooler` fails, try manually via `shell_run`:
-```
+```powershell
 Get-Service -Name Spooler | Select-Object Status, StartType
 Get-ChildItem -LiteralPath (Join-Path $env:SystemRoot 'System32\spool\PRINTERS') -File |
   Select-Object FullName, Length, LastWriteTime

@@ -2,6 +2,7 @@
 name: windows-hardware-maintenance-safety
 description: Plan safe Windows laptop hardware maintenance for parts, battery, dust, and thermal work without automatic execution
 platform: windows
+category: windows-repair-boot-hardware
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

@@ -2,6 +2,7 @@
 name: setup-openclaw/add-telegram
 description: Add Telegram as a messaging channel for OpenClaw
 platform: all
+category: openclaw
 last_reviewed: 2026-03-08
 author: upstream-maintainers
 source: bundled
@@ -32,7 +33,7 @@ Use WAIT_FOR_USER — the user does this in Telegram.
 Collect the bot token via `secure_input` (secret_name: "telegram_bot_token").
 
 Set it in config:
-```
+```bash
 openclaw config set channels.telegram.botToken "<token>"
 openclaw config set channels.telegram.enabled true
 ```
@@ -51,7 +52,7 @@ Or write directly to `~/.openclaw/openclaw.json`:
 ```
 
 And set the env var:
-```
+```bash
 openclaw config set env.TELEGRAM_BOT_TOKEN "<token>"
 ```
 
@@ -70,7 +71,7 @@ from `@userinfobot` on Telegram.
 ## Step 4: Restart and Test
 
 Restart the gateway to pick up channel changes:
-```
+```bash
 openclaw gateway restart
 ```
 
@@ -89,7 +90,7 @@ If the user wants the bot in a group:
 2. Add the bot to the Telegram group.
 
 3. Configure group policy:
-   ```
+   ```bash
    openclaw config set channels.telegram.groupPolicy "open"
    ```
    Or use "allowlist" with specific sender IDs.

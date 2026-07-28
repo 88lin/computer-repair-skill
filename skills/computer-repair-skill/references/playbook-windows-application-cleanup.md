@@ -2,6 +2,7 @@
 name: windows-application-cleanup
 description: Audit and clean regenerable Windows app caches or duplicates while preserving profiles, chat data, and credentials
 platform: windows
+category: health-performance-storage-backup
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

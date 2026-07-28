@@ -2,6 +2,7 @@
 name: setup-openclaw/uninstall
 description: Completely uninstall OpenClaw — stop services, remove config, uninstall CLI
 platform: all
+category: openclaw
 last_reviewed: 2026-07-28
 author: upstream-maintainers
 source: bundled

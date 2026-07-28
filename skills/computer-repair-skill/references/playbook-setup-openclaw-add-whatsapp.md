@@ -2,6 +2,7 @@
 name: setup-openclaw/add-whatsapp
 description: Add or reconfigure WhatsApp for OpenClaw
 platform: all
+category: openclaw
 last_reviewed: 2026-03-08
 author: upstream-maintainers
 source: bundled
@@ -18,7 +19,7 @@ OpenClaw must be installed (`openclaw --version` should work).
 ## Step 1: Link WhatsApp Account
 
 Run:
-```
+```bash
 openclaw channels login --channel whatsapp
 ```
 
@@ -46,7 +47,7 @@ Ask who should be allowed to message the bot:
 - **Disabled**: WhatsApp DMs disabled.
 
 Set via CLI:
-```
+```bash
 openclaw config set channels.whatsapp.dmPolicy "pairing"
 ```
 
@@ -68,7 +69,7 @@ Or for allowlist:
 By default, groups require the bot to be @mentioned.
 
 To change:
-```
+```bash
 openclaw config set channels.whatsapp.groupPolicy "open"
 ```
 
@@ -88,7 +89,7 @@ Configure mention patterns for custom trigger words:
 ## Step 4: Verify
 
 Restart gateway if it was running:
-```
+```bash
 openclaw gateway restart
 ```
 
@@ -110,7 +111,7 @@ Check logs if issues: `openclaw logs --follow`
 ## Multi-Account Setup
 
 For multiple WhatsApp numbers, use account IDs:
-```
+```bash
 openclaw channels login --channel whatsapp --account work
 ```
 

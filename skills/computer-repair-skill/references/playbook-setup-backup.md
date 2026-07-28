@@ -2,6 +2,7 @@
 name: setup-backup
 description: Set up Time Machine backup on macOS or configure basic backup strategy
 platform: macos
+category: health-performance-storage-backup
 last_reviewed: 2026-03-07
 author: upstream-maintainers
 source: bundled

@@ -2,6 +2,7 @@
 name: windows-persistence-audit
 description: Audit Windows startup, services, scheduled tasks, shell integrations, file associations, and extensions before removal
 platform: windows
+category: security-credentials
 last_reviewed: 2026-07-28
 author: computer-repair-skill-maintainers
 source: local

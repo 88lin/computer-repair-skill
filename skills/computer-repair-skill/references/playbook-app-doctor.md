@@ -2,6 +2,7 @@
 name: app-doctor
 description: Fix app crashes, launch failures, and permission issues
 platform: macos
+category: apps-updates-printing
 last_reviewed: 2026-03-04
 author: upstream-maintainers
 source: bundled
