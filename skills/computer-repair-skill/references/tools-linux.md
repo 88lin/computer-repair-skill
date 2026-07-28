@@ -70,6 +70,92 @@ journalctl --unit '<SERVICE>' --since '-2 hours' --no-pager
 
 日志查询先限定 unit、时间、priority、boot 或 PID。读取 `/var/log` 中的认证和安全日志时只提取故障所需字段。
 
+## 硬件、存储健康与温度
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `linux_hardware_inventory` | `lscpu`、`lsblk`、`lspci`、`lsusb`、`/sys/class/dmi/id/*` | 只读 |
+| `linux_storage_health` | `smartctl -H -A '<DEVICE>'`、`nvme smart-log '<DEVICE>'`、`/sys/block/<DEV>/queue/rotational` | 只读，通常需要 root |
+| `linux_memory_report` | `/proc/meminfo`、`dmidecode -t memory`、`journalctl -k` 里的 EDAC/MCE 记录、`ras-mc-ctl --summary` | 只读，部分命令需要 root |
+| `linux_thermal_status` | `sensors`、`/sys/class/thermal/thermal_zone*/{type,temp}`、`upower -i`、`/sys/class/power_supply/BAT*/` | 只读 |
+
+```bash
+lscpu
+lsblk -o NAME,TRAN,ROTA,SIZE,MODEL,SERIAL,MOUNTPOINTS
+cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name /sys/class/dmi/id/bios_version
+
+sudo smartctl -H -A '<DEVICE>'
+sudo nvme smart-log '<DEVICE>'
+
+for zone in /sys/class/thermal/thermal_zone*; do
+  printf '%s type=%s milli_c=%s\n' "$zone" "$(cat "$zone/type")" "$(cat "$zone/temp")"
+done
+
+upower -i "$(upower -e | grep -m1 BAT)"
+```
+
+`smartctl -t short`、`smartctl -t long` 和 `nvme format` 会改变设备状态，不属于本别名；健康检查只读取已有计数器。USB 桥接盒经常不透传 SMART，必要时补 `-d sat` 并说明结果可能缺失。`/sys/class/thermal` 的温度单位是千分之一摄氏度。
+
+## 启动与崩溃证据
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `linux_boot_status` | `systemd-analyze blame`、`systemctl --failed`、`journalctl --list-boots`、`bootctl status`、`efibootmgr -v`、`mokutil --sb-state` | 只读，部分命令需要 root |
+| `linux_crash_report_list` | `coredumpctl list`、`/var/crash` 元数据、`journalctl -k -b -1 -p err` | 只读 |
+
+```bash
+journalctl --list-boots
+journalctl -b -1 -p err --no-pager
+systemctl --failed
+systemd-analyze blame | head -n 20
+
+ls -l /sys/firmware/efi >/dev/null 2>&1 && echo 'firmware=UEFI' || echo 'firmware=BIOS/CSM'
+coredumpctl list --no-pager | tail -n 20
+```
+
+`bootctl install`、`grub-install`、`update-grub`、`grub2-mkconfig` 和 `update-initramfs -u` 都会改写启动链，不属于只读分诊。文件系统检查只用只读模式（`fsck -n`、`xfs_repair -n`、`btrfs check --readonly`），`btrfs check --repair` 有数据损坏风险。
+
+## 持久化与软件清单
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `linux_startup_items` | `systemctl list-unit-files --state=enabled`、`systemctl --user list-unit-files --state=enabled`、`/etc/xdg/autostart`、`~/.config/autostart`、Shell 启动文件 | 只读 |
+| `linux_service_list` | `systemctl list-units --type=service --all`；非 systemd 用 `service --status-all` 或 `rc-status` | 只读 |
+| `linux_scheduled_task_list` | `systemctl list-timers --all`、`crontab -l`、`/etc/crontab`、`/etc/cron.*`、`at -l` | 只读 |
+| `linux_package_inventory` | `dpkg-query -W -f`、`rpm -qa`、`pacman -Q`；归属查询用 `dpkg -S`、`rpm -qf`、`pacman -Qo` | 只读 |
+| `linux_file_hash` | `sha256sum '<PATH>'` | 只读 |
+
+```bash
+systemctl list-unit-files --state=enabled --no-pager
+systemctl list-timers --all --no-pager
+systemd-delta --type=overridden
+
+dpkg -S '<PATH>' 2>/dev/null || rpm -qf '<PATH>' 2>/dev/null || pacman -Qo '<PATH>' 2>/dev/null
+sha256sum '<PATH>'
+```
+
+`systemd-delta` 能暴露被本地单元覆盖的发行版单元，是排查"改了配置却没生效"的首选证据。包完整性核对用 `rpm -Va`、`debsums -c` 或 `pacman -Qkk`；这些命令只读，但输出量大，先限定到可疑路径。
+
+## 显示与蓝牙外设
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `linux_display_info` | `xrandr --listmonitors`（X11）、`wayland-info` 或 `swaymsg -t get_outputs`（Wayland）、`/sys/class/drm/*/status`、`lspci -k` 的 VGA 段 | 只读 |
+| `linux_bluetooth_status` | `bluetoothctl show`、`bluetoothctl devices`、`rfkill list`、`systemctl status bluetooth` | 只读 |
+
+```bash
+echo "session=${XDG_SESSION_TYPE:-unknown}"
+for port in /sys/class/drm/card*-*; do
+  printf '%s %s\n' "${port##*/}" "$(cat "$port/status" 2>/dev/null)"
+done
+lspci -k | grep -A 3 -iE 'vga|3d|display'
+
+rfkill list
+bluetoothctl show
+```
+
+Wayland 会话里 `xrandr` 只能看到 XWayland 的视图，不能代表真实输出状态；先读 `XDG_SESSION_TYPE` 再选工具。`bluetoothctl power off`、`connect`、`remove` 都会改变配对与连接状态，需要单独确认。
+
 ## 常见状态变更
 
 Linux Playbook 语义工具集较小，流程常通过 `shell_run` 完成动作。以下全部先展示计划并确认：

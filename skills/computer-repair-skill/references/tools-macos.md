@@ -124,6 +124,66 @@ sed -n '1,200p' '<PATH>'
 
 密钥链、Messages、Mail、Safari、照片库、云盘和其他隐私目录需要更窄的目标与明确理由。优先读取元数据，不读取秘密正文。
 
+## 硬件、存储健康与电源
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `mac_hardware_inventory` | `system_profiler SPHardwareDataType SPMemoryDataType`、`sysctl -n hw.model` | 只读 |
+| `mac_storage_health` | `diskutil info -all` 的 SMART 字段、`system_profiler SPNVMeDataType SPSerialATADataType`、`diskutil list` | 只读 |
+| `mac_power_report` | `pmset -g batt`、`pmset -g ps`、`pmset -g assertions`、`pmset -g thermlog`、`system_profiler SPPowerDataType` | 只读 |
+
+```bash
+system_profiler SPHardwareDataType
+sysctl -n hw.model hw.memsize
+
+diskutil info -all | grep -E 'Device Node|Device / Media Name|SMART Status|Solid State'
+system_profiler SPNVMeDataType
+
+pmset -g batt
+system_profiler SPPowerDataType | sed -n '1,60p'
+pmset -g assertions | sed -n '1,40p'
+```
+
+Apple silicon 与 T2 机型的内存和固态盘不可自行更换，`SPMemoryDataType` 会报告统一内存而不是插槽明细；不要给出"加内存条"这类不适用的建议。`ioreg -r -c AppleSmartBattery` 可读到原始电池键值，但字段名随机型变化，先以 `system_profiler` 的循环次数和状况为准。`sudo powermetrics` 采样会持续占用 CPU，只在明确需要时限次数运行。
+
+## 加密、持久化与完整性
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `mac_filevault_status` | `fdesetup status`、`fdesetup list`、`diskutil apfs list`、`diskutil apfs listUsers /`、`csrutil status` | 只读 |
+| `mac_persistence_snapshot` | `launchctl print-disabled`、`/Library/Launch{Agents,Daemons}`、`~/Library/LaunchAgents`、`profiles show -type configuration`、`systemextensionsctl list` | 只读，部分命令需要 sudo |
+| `mac_file_hash` | `shasum -a 256 '<PATH>'`；配合 `codesign -dv --verbose=4` 与 `spctl -a -vv` | 只读 |
+
+```bash
+fdesetup status
+diskutil apfs listUsers /
+csrutil status
+
+ls -la /Library/LaunchAgents /Library/LaunchDaemons "$HOME/Library/LaunchAgents" 2>/dev/null
+launchctl print-disabled "gui/$(id -u)"
+systemextensionsctl list
+
+shasum -a 256 '<PATH>'
+codesign -dv --verbose=4 '<PATH>' 2>&1 | sed -n '1,20p'
+spctl -a -vv '<PATH>' 2>&1
+```
+
+`fdesetup validaterecovery`、`fdesetup changerecovery` 和 `fdesetup disable` 都会改变加密状态或要求输入恢复密钥，不属于只读分诊；恢复密钥绝不回显、不写入报告。`/System/Library` 下的 launchd 项由 SIP 保护，只读不改。删除 `/Library/Application Support/com.apple.TCC/TCC.db` 或绕过 SIP 一律拒绝。
+
+## 显示与蓝牙外设
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `mac_display_info` | `system_profiler SPDisplaysDataType` | 只读 |
+| `mac_bluetooth_status` | `system_profiler SPBluetoothDataType` | 只读 |
+
+```bash
+system_profiler SPDisplaysDataType
+system_profiler SPBluetoothDataType | sed -n '1,80p'
+```
+
+`blueutil` 属于第三方工具且能直接改开关与配对状态；只在用户已安装并确认时使用。删除 `/Library/Preferences/com.apple.Bluetooth.plist` 会清空全部配对记录，属于高影响操作，必须先列出受影响设备并确认。
+
 ## 管理员权限
 
 - 先用普通权限完成检查。

@@ -171,6 +171,78 @@ Get-CimInstance Win32_Service |
 
 读取文件前使用 `Get-Item -LiteralPath '<PATH>'` 获取类型和大小。二进制、超大文件或凭据文件只读取诊断所需的元数据。
 
+## 硬件、存储健康与电源
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `win_hardware_inventory` | `Win32_ComputerSystem`、`Win32_BIOS`、`Win32_BaseBoard`、`Win32_PhysicalMemory`、`Win32_PhysicalMemoryArray` | 只读 |
+| `win_storage_health` | `Get-PhysicalDisk`、`Get-PhysicalDisk \| Get-StorageReliabilityCounter`、`Get-Disk`、`root\wmi` 的 `MSStorageDriver_FailurePredictStatus` | 只读，可靠性计数器需要管理员 |
+| `win_memory_report` | `Win32_PhysicalMemory` 明细、`Microsoft-Windows-WHEA-Logger` 与 `MemoryDiagnostics-Results` 事件、`Get-Counter` 内存计数器 | 只读 |
+| `win_power_report` | `powercfg /batteryreport /output '<PATH>'`、`powercfg /a`、`powercfg /requests`、`Win32_Battery`、`root\wmi` 的 `BatteryFullChargedCapacity` 与 `BatteryCycleCount` | 报告写入指定路径，先确认目标目录 |
+
+```powershell
+Get-CimInstance Win32_BIOS |
+  Select-Object Manufacturer, SMBIOSBIOSVersion, ReleaseDate, SerialNumber
+
+Get-CimInstance Win32_PhysicalMemory |
+  Select-Object BankLabel, DeviceLocator, Manufacturer, PartNumber, Capacity, Speed, ConfiguredClockSpeed
+
+Get-PhysicalDisk |
+  Select-Object DeviceId, FriendlyName, MediaType, BusType, HealthStatus, OperationalStatus,
+    @{n='SizeGB';e={[math]::Round($_.Size / 1GB, 1)}}
+
+Get-PhysicalDisk | Get-StorageReliabilityCounter |
+  Select-Object DeviceId, Temperature, Wear, PowerOnHours, ReadErrorsTotal, WriteErrorsTotal
+
+powercfg /batteryreport /output "$env:USERPROFILE\Desktop\battery-report.html"
+```
+
+`Get-StorageReliabilityCounter` 依赖驱动与存储栈实现，USB 外置盒和部分 RAID 控制器会返回空值；缺字段要如实报告而不是当成健康。`AdapterRAM`、`Win32_PhysicalMemory.Speed` 等 WMI 字段在部分固件上不准确，跨源比对后再下结论。`powercfg /energy` 会做 60 秒跟踪并生成报告，属于额外开销，先说明再运行。
+
+## 崩溃与内核事件
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `win_crash_dump_list` | 枚举 `%SystemRoot%\Minidump`、`%SystemRoot%\MEMORY.DMP`、`%SystemRoot%\LiveKernelReports` 的元数据，并读取 `Win32_OSRecoveryConfiguration` 与 `BugCheck` / `Kernel-Power` 事件 | 只读 |
+
+```powershell
+Get-CimInstance Win32_OSRecoveryConfiguration |
+  Select-Object DebugInfoType, DebugFilePath, MiniDumpDirectory, AutoReboot
+
+Get-ChildItem -LiteralPath "$env:SystemRoot\Minidump" -Filter '*.dmp' -ErrorAction SilentlyContinue |
+  Sort-Object LastWriteTime -Descending |
+  Select-Object -First 10 Name, LastWriteTime, Length
+
+Get-WinEvent -FilterHashtable @{
+  LogName = 'System'
+  ProviderName = 'Microsoft-Windows-Kernel-Power', 'Microsoft-Windows-WHEA-Logger', 'BugCheck'
+  StartTime = (Get-Date).AddDays(-14)
+} -ErrorAction SilentlyContinue |
+  Select-Object TimeCreated, ProviderName, Id, LevelDisplayName, Message
+```
+
+只列出转储文件的路径、时间和大小。内存转储含运行时内存内容，可能包含密码、密钥和文档片段：不要读取正文、不要复制到共享目录、不要上传到第三方分析网站。需要符号化分析时由用户在受控环境用 WinDbg 执行 `!analyze -v`。`verifier.exe`（驱动程序验证器）会显著改变内核行为并可能导致无法进入系统，只在升级处置时按"先建立还原点、失败时安全模式 `verifier /reset`"的前提使用。
+
+## 显示与蓝牙外设
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `win_display_info` | `Win32_VideoController`、`Get-PnpDevice -Class Display`、`root\wmi` 的 `WmiMonitorID` 与 `WmiMonitorConnectionParams` | 只读 |
+| `win_bluetooth_status` | `Get-PnpDevice -Class Bluetooth`、`Get-Service bthserv`、`Microsoft-Windows-Bluetooth-*` 事件 | 只读 |
+
+```powershell
+Get-CimInstance Win32_VideoController |
+  Select-Object Name, VideoProcessor, DriverVersion, DriverDate,
+    CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate, Status
+
+Get-PnpDevice -Class Display, Bluetooth |
+  Select-Object Status, Class, FriendlyName, InstanceId
+
+Get-Service -Name bthserv | Select-Object Name, Status, StartType
+```
+
+`Win32_VideoController.AdapterRAM` 是 32 位字段，超过 4 GB 的显存会被截断，不要用它判断显卡规格。显示驱动超时恢复（TDR）表现为系统日志里 `Display` 提供程序的 4101 事件，配合 `LiveKernelReports` 中的 WATCHDOG 记录一起判断。`dxdiag /t '<PATH>'` 会生成文本报告，属于写文件操作，先确认输出路径。
+
 ## 管理员权限
 
 - 先用普通权限完成诊断。
