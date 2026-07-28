@@ -56,11 +56,14 @@ case "$target" in
   *) fail "不支持的 target：$target" ;;
 esac
 
-# 展开常见的用户目录写法，避免在引号中把波浪号当成普通字符。
+# 展开用户传入的字面量波浪号路径。
+# case 分支里的 ~ 必须加引号：不加引号时 shell 会先做波浪号展开，模式就变成 $HOME/*，
+# 反而匹配不到用户输入的字面量 "~/..."。因此这里的 SC2088 是刻意为之。
+# shellcheck disable=SC2088
 expand_user_path() {
   case "$1" in
     "~") printf '%s\n' "$HOME" ;;
-    "~/"*) printf '%s/%s\n' "$HOME" "${1#~/}" ;;
+    "~/"*) printf '%s/%s\n' "$HOME" "${1#"~/"}" ;;
     *) printf '%s\n' "$1" ;;
   esac
 }
@@ -80,14 +83,14 @@ resolve_skills_root() {
   esac
 }
 
-script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)"
-source_dir="$(CDPATH= cd -- "$script_dir/../skills/$skill_name" && pwd -P)"
+script_dir="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
+source_dir="$(CDPATH='' cd -- "$script_dir/../skills/$skill_name" && pwd -P)"
 [[ -f "$source_dir/SKILL.md" ]] || fail "找不到 Skill 源目录：$source_dir"
 
 requested_root="$(resolve_skills_root)"
 requested_root="$(expand_user_path "$requested_root")"
 mkdir -p -- "$requested_root"
-skills_root="$(CDPATH= cd -- "$requested_root" && pwd -P)"
+skills_root="$(CDPATH='' cd -- "$requested_root" && pwd -P)"
 target_path="$skills_root/$skill_name"
 
 if [[ -e "$target_path" || -L "$target_path" ]]; then

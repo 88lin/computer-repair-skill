@@ -13,6 +13,17 @@ $ErrorActionPreference = "Stop"
 
 $SkillName = "computer-repair-skill"
 
+function Write-Status {
+    <# 输出面向用户的进度信息。
+
+    刻意不用 Write-Host：它在没有 host 的运行环境（CI、计划任务、远程会话）里
+    行为不确定，PSScriptAnalyzer 也会因此告警。也不用 Write-Output —— 那会把
+    提示文字混进函数返回值。直接写 Console 的标准输出最可控。 #>
+    param([Parameter(Mandatory = $true)][AllowEmptyString()][string]$Message)
+
+    [Console]::Out.WriteLine($Message)
+}
+
 function Expand-InstallPath {
     <# 将环境变量、用户目录和相对路径转换为可审计的绝对路径。 #>
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -103,7 +114,7 @@ $backupPath = $null
 $installed = $false
 
 try {
-    Write-Host "正在验证并暂存 Skill：$sourcePath"
+    Write-Status "正在验证并暂存 Skill：$sourcePath"
     Copy-SkillToStage -Source $sourcePath -Stage $stagePath
 
     if ($targetExists) {
@@ -111,7 +122,7 @@ try {
         New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null
         $backupPath = Join-Path $backupRoot (Get-Date -Format "yyyyMMdd-HHmmssfff")
         Move-Item -LiteralPath $targetPath -Destination $backupPath
-        Write-Host "旧版本已备份到：$backupPath"
+        Write-Status "旧版本已备份到：$backupPath"
     }
 
     Move-Item -LiteralPath $stagePath -Destination $targetPath
@@ -130,5 +141,5 @@ finally {
     }
 }
 
-Write-Host "安装完成：$targetPath"
-Write-Host "请重启或刷新 Agent 的 Skills 列表后使用 $SkillName。"
+Write-Status "安装完成：$targetPath"
+Write-Status "请重启或刷新 Agent 的 Skills 列表后使用 $SkillName。"
