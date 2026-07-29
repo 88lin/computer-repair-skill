@@ -330,7 +330,10 @@ function initCopy() {
 /* ==========================================================================
    7 · Prompt cards — slow, interruptible, seamless horizontal movement
    ======================================================================= */
-var sayLoop = { root: null, track: null, loopWidth: 0, frame: 0, last: 0, carry: 0, paused: false };
+var sayLoop = {
+  root: null, track: null, loopWidth: 0, frame: 0, last: 0,
+  paused: false, visible: false, active: false, observer: null
+};
 
 function cloneSayCards(track, originals) {
   originals.forEach(function (card) {
@@ -347,7 +350,7 @@ function cloneSayCards(track, originals) {
 
 function refreshSayClones() {
   var track = sayLoop.track;
-  if (!track || reduceMotion) return;
+  if (!track || !sayLoop.active) return;
 
   $$(".say-card[data-say-clone]", track).forEach(function (card) { card.remove(); });
   var originals = $$(".say-card:not([data-say-clone])", track);
@@ -368,50 +371,100 @@ function refreshSayClones() {
 }
 
 function normalizeSayScroll() {
-  if (!sayLoop.root || !sayLoop.loopWidth) return;
+  if (!sayLoop.active || !sayLoop.root || !sayLoop.loopWidth) return;
   if (sayLoop.root.scrollLeft >= sayLoop.loopWidth) {
     sayLoop.root.scrollLeft %= sayLoop.loopWidth;
   }
 }
 
-function initSayAutoScroll() {
-  var root = $("#sayScroller");
-  var track = root && $(".say-track", root);
-  if (!root || !track || reduceMotion) return;
+function stopSayLoop() {
+  if (sayLoop.frame) cancelAnimationFrame(sayLoop.frame);
+  sayLoop.frame = 0;
+  sayLoop.last = 0;
+  sayLoop.active = false;
+  sayLoop.paused = false;
+  sayLoop.loopWidth = 0;
+  if (!sayLoop.root || !sayLoop.track) return;
+  $$(".say-card[data-say-clone]", sayLoop.track).forEach(function (card) { card.remove(); });
+  sayLoop.root.classList.remove("is-looping");
+  sayLoop.track.classList.remove("is-looping");
+  sayLoop.root.scrollLeft = 0;
+}
 
-  sayLoop.root = root;
-  sayLoop.track = track;
-  root.classList.add("is-looping");
-  track.classList.add("is-looping");
+function startSayLoop() {
+  if (sayLoop.active || !sayLoop.root || !sayLoop.track) return;
+  sayLoop.active = true;
+  sayLoop.root.classList.add("is-looping");
+  sayLoop.track.classList.add("is-looping");
   refreshSayClones();
-  addEventListener("resize", function () { requestAnimationFrame(refreshSayClones); });
-
-  root.addEventListener("scroll", normalizeSayScroll, { passive: true });
-  root.addEventListener("pointerenter", function () { sayLoop.paused = true; });
-  root.addEventListener("pointerleave", function () { sayLoop.paused = false; sayLoop.last = performance.now(); });
-  root.addEventListener("focusin", function () { sayLoop.paused = true; });
-  root.addEventListener("focusout", function (ev) {
-    if (!root.contains(ev.relatedTarget)) { sayLoop.paused = false; sayLoop.last = performance.now(); }
-  });
-  root.addEventListener("pointerdown", function () { sayLoop.paused = true; });
-  addEventListener("pointerup", function () { sayLoop.paused = false; sayLoop.last = performance.now(); });
 
   function move(now) {
+    if (!sayLoop.active) return;
     if (!sayLoop.last) sayLoop.last = now;
     var elapsed = Math.min(64, now - sayLoop.last);
     sayLoop.last = now;
-    if (!sayLoop.paused && !document.hidden && sayLoop.loopWidth) {
-      sayLoop.carry += elapsed * 0.028;
-      if (sayLoop.carry >= 1) {
-        root.scrollLeft += Math.floor(sayLoop.carry);
-        sayLoop.carry %= 1;
-        normalizeSayScroll();
-      }
+    if (!sayLoop.paused && sayLoop.visible && !document.hidden && sayLoop.loopWidth) {
+      var next = (sayLoop.root.scrollLeft + elapsed * 0.036) % sayLoop.loopWidth;
+      sayLoop.root.scrollLeft = next;
     }
     sayLoop.frame = requestAnimationFrame(move);
   }
 
   sayLoop.frame = requestAnimationFrame(move);
+}
+
+function initSayAutoScroll() {
+  var root = $("#sayScroller");
+  var track = root && $(".say-track", root);
+  if (!root || !track || !window.matchMedia || !window.requestAnimationFrame) return;
+
+  sayLoop.root = root;
+  sayLoop.track = track;
+  var desktop = matchMedia("(min-width: 768px) and (hover: hover) and (pointer: fine)");
+  var motion = matchMedia("(prefers-reduced-motion: reduce)");
+
+  if ("IntersectionObserver" in window) {
+    sayLoop.observer = new IntersectionObserver(function (entries) {
+      sayLoop.visible = entries.some(function (entry) { return entry.isIntersecting; });
+      sayLoop.last = performance.now();
+    }, { threshold: 0.08 });
+    sayLoop.observer.observe(root);
+  } else {
+    sayLoop.visible = true;
+  }
+
+  function syncMode() {
+    if (desktop.matches && !motion.matches) startSayLoop();
+    else stopSayLoop();
+  }
+
+  addEventListener("resize", function () {
+    if (sayLoop.active) requestAnimationFrame(refreshSayClones);
+  });
+
+  root.addEventListener("scroll", normalizeSayScroll, { passive: true });
+  root.addEventListener("pointerenter", function () { if (sayLoop.active) sayLoop.paused = true; });
+  root.addEventListener("pointerleave", function () {
+    if (sayLoop.active) { sayLoop.paused = false; sayLoop.last = performance.now(); }
+  });
+  root.addEventListener("focusin", function () { if (sayLoop.active) sayLoop.paused = true; });
+  root.addEventListener("focusout", function (ev) {
+    if (sayLoop.active && !root.contains(ev.relatedTarget)) {
+      sayLoop.paused = false;
+      sayLoop.last = performance.now();
+    }
+  });
+  root.addEventListener("pointerdown", function () { if (sayLoop.active) sayLoop.paused = true; });
+  addEventListener("pointerup", function () {
+    if (sayLoop.active) {
+      sayLoop.paused = false;
+      sayLoop.last = performance.now();
+    }
+  });
+
+  syncMode();
+  if (desktop.addEventListener) desktop.addEventListener("change", syncMode);
+  if (motion.addEventListener) motion.addEventListener("change", syncMode);
 }
 
 /* ==========================================================================

@@ -65,6 +65,7 @@
 /* ------------------------------------------------------------------- reset */
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:96px}
+html{ -webkit-tap-highlight-color:transparent }
 html.lenis{scroll-behavior:auto}
 body{
   margin:0;
@@ -361,13 +362,17 @@ h1,h2,h3,h4{margin:0;font-family:var(--f-heading);font-weight:800;line-height:1.
 .what-in{display:grid;grid-template-columns:minmax(0,.36fr) minmax(0,1fr);gap:clamp(30px,5vw,80px)}
 .what-aside-stick{position:sticky;top:96px}
 .what-main{min-width:0}
+.vs-frame{
+  overflow:hidden;background:#fff;border:1.6px dashed rgba(43,127,216,.44);
+  border-radius:var(--card-r);
+}
 
 .vs{
-  width:100%;border-collapse:separate;border-spacing:0;background:var(--card-bg);
-  border:1.6px dashed rgba(43,127,216,.34);border-radius:var(--card-r);overflow:hidden;box-shadow:none;
+  width:100%;border-collapse:separate;border-spacing:0;background:transparent;
+  border:0;border-radius:0;overflow:visible;box-shadow:none;
 }
 .vs-cap{
-  caption-side:top;text-align:left;padding-bottom:12px;
+  margin:0;text-align:left;padding-bottom:12px;
 }
 .vs-cap span{
   display:inline-flex;align-items:center;padding:7px 11px;background:#FFF8DA;
@@ -471,7 +476,7 @@ h1,h2,h3,h4{margin:0;font-family:var(--f-heading);font-weight:800;line-height:1.
 /* ============================================================================
    03 · 安全红线 — 浅色信息面板，与全站暖白卡片语言一致
    ========================================================================= */
-.s-safety{background:var(--cream-dark);color:var(--ink)}
+.s.s-safety{background:var(--cream-dark);color:var(--ink);padding-bottom:28px}
 .sf-head{margin-bottom:var(--s-block)}
 
 /* Pull Quote（components.md #6）— 不用默认 blockquote 样式 */
@@ -776,7 +781,8 @@ h1,h2,h3,h4{margin:0;font-family:var(--f-heading);font-weight:800;line-height:1.
 .say-head{margin-bottom:clamp(30px,4vw,52px)}
 .say-scroller{
   overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  padding:6px 0 26px;-webkit-overflow-scrolling:touch;
+  padding:6px 0 26px;scroll-padding-inline:var(--gutter);
+  -webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;
 }
 .say-scroller::-webkit-scrollbar{height:7px}
 .say-scroller::-webkit-scrollbar-track{background:var(--rule-soft);border-radius:999px}
@@ -788,6 +794,7 @@ h1,h2,h3,h4{margin:0;font-family:var(--f-heading);font-weight:800;line-height:1.
 .say-track::after{content:'';flex:0 0 clamp(4px,4vw,60px)}
 .say-card{
   position:relative;flex:0 0 auto;width:clamp(300px,78vw,360px);scroll-snap-align:start;
+  scroll-snap-stop:normal;
   background:var(--card-bg);border:1px solid #AFCBE9;border-radius:var(--card-r);
   padding:var(--s-card) var(--s-card) 62px;box-shadow:var(--card-shadow);
   display:flex;flex-direction:column;
@@ -1078,9 +1085,13 @@ body.is-locked{overflow:hidden}
   .hero-cmd-code,.cta-cmd code{white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:visible}
   /* 日志字段行是「字段清单」而非命令，折行无歧义 */
   .sf-log-code,.sf-log-code code{white-space:pre-wrap;overflow-wrap:break-word;overflow-x:visible}
-  /* 4 个安装方式的 tab：窄屏换行成两排，而不是横向滚动藏起来 */
-  .tabbar{flex-wrap:wrap;overflow-x:visible}
-  .tab{padding-left:0;padding-right:clamp(16px,5vw,26px)}
+  /* 4 个安装方式在窄屏保持稳定的 2 × 2 网格。 */
+  .tabbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;border-bottom:0;overflow:visible}
+  .tab{
+    min-width:0;min-height:48px;justify-content:flex-start;align-items:center;margin:0;padding:10px 12px;
+    background:#fff;border:1px solid var(--rule);border-radius:8px;
+  }
+  .tab.is-on{background:var(--blue-wash);border-color:#8CB9E6}
 }
 
 /* ============================================================================
@@ -1160,10 +1171,6 @@ html[lang="en"] .hero-h1{font-size:clamp(2.7rem,3.8vw,3.35rem);line-height:1.1}
 .s-what{background:var(--cream-dark)}
 .what-in{grid-template-columns:minmax(0,.36fr) minmax(0,1fr);gap:clamp(30px,5vw,80px)}
 .what-aside-stick{top:96px}
-.vs{
-  border:1.6px dashed rgba(43,127,216,.34);border-radius:var(--card-r);
-  box-shadow:none;background:#fff;
-}
 .vs thead th{padding:13px 18px}
 .vs td{padding:clamp(16px,1.8vw,24px) 18px}
 .vs tbody tr,.vs tbody tr:nth-child(even){background:transparent}
@@ -1220,7 +1227,11 @@ html[lang="en"] .hero-h1{font-size:clamp(2.7rem,3.8vw,3.35rem);line-height:1.1}
 .sf-log-code{color:var(--ink)}
 .sf-log-n{color:var(--ink-faint)}
 
-.s-install{background:var(--cream-dark)}
+.s.s-install{
+  background:var(--cream-dark);
+  padding:32px 0 clamp(56px,7vh,72px);
+}
+.s-install .in-head{margin-bottom:clamp(30px,2.8vw,40px)}
 .tabbar{border-bottom-color:var(--rule)}
 .tab{font-size:.92rem;color:var(--ink-faint)}
 .tabpanel{padding-top:clamp(28px,3.6vw,48px)}
@@ -1348,6 +1359,82 @@ html[lang="en"] .hero-h1{font-size:clamp(2.7rem,3.8vw,3.35rem);line-height:1.1}
   .cta-in{text-align:center}
   .cta-acts{justify-content:center}
   .cta-h{font-size:clamp(1.8rem,9vw,2.6rem)}
+}
+
+@media (max-width:720px){
+  .vs-frame{overflow:visible;border:0;border-radius:0;background:transparent}
+  .vs{display:block;border:0;background:transparent;overflow:visible;box-shadow:none}
+  .vs-cap{display:block;width:100%;padding:0 0 14px}
+  .vs-cap span{max-width:100%;white-space:normal}
+  .vs thead{
+    display:table-header-group;position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+  .vs tbody{display:grid;gap:14px}
+  .vs tbody tr{
+    position:relative;display:grid;padding:0;overflow:hidden;background:#fff;
+    border:1.6px dashed rgba(43,127,216,.34);border-radius:14px;
+  }
+  .vs tbody tr:last-child{border-bottom:1.6px dashed rgba(43,127,216,.34)}
+  .vs tbody tr:nth-child(even){border-color:rgba(139,105,182,.34)}
+  .vs td{display:block;min-width:0;padding:0 18px}
+  .vs-n{
+    position:absolute;z-index:2;right:18px;top:18px;width:auto;height:auto;margin:0;padding:0 !important;
+    display:block;border:0;border-radius:0;background:transparent;color:var(--blue);
+    font-size:1.3rem;font-style:italic;font-weight:400;line-height:1;opacity:.5;
+  }
+  .vs-y{
+    width:auto;margin:0;padding:18px 56px 18px 18px !important;background:var(--mint-soft);
+    border-right:0;border-bottom:1px dashed rgba(79,154,107,.36);
+  }
+  .vs-no{padding:18px !important;background:var(--rose-soft)}
+  .vs-y::before,.vs-no::before{
+    display:inline-flex;align-items:center;width:auto;margin:0 0 11px;padding:4px 9px;border-radius:6px;
+    font-size:.76rem;line-height:1.2;font-weight:800;
+  }
+  .vs-y::before{content:'它是';color:#275F3C;background:#D9EFDF}
+  .vs-no::before{content:'它不是';color:#8D2635;background:#FADCE1}
+  html[lang="en"] .vs-y::before{content:'It is'}
+  html[lang="en"] .vs-no::before{content:'It is not'}
+  .vs-y b,.vs-no b{font-size:1.02rem;line-height:1.45}
+  .vs-y span,.vs-no span{font-size:.94rem;line-height:1.65}
+  .vs code{overflow-wrap:anywhere;word-break:break-word}
+
+  .s.s-safety{padding-bottom:16px}
+  .s.s-install{padding:24px 0 44px}
+  .s-install .in-head{margin-bottom:22px}
+  .s-install .tabpanel{padding-top:24px}
+  .s-install .tp-in{gap:20px}
+  .s-install .tp-note{margin-top:14px}
+
+  .say-scroller{scroll-snap-type:x proximity;padding-bottom:18px;scrollbar-width:none}
+  .say-scroller::-webkit-scrollbar{display:none}
+  .say-track{gap:14px}
+  .say-card{
+    width:min(calc(100vw - 56px),330px);padding:26px 24px 68px;
+    scroll-snap-align:start;box-shadow:none;
+  }
+  .say-card:hover{transform:none;box-shadow:none}
+  .say-n{right:16px;top:12px;font-size:2.2rem}
+  .say-q{font-size:1rem;line-height:1.62;padding-right:38px}
+  .copybtn-say{left:24px;bottom:22px}
+
+  .foot{padding:36px 0 24px}
+  .foot-mast,.foot-tag,.foot-legal{text-align:left}
+  .foot-mast{font-size:1.42rem;letter-spacing:0}
+  .foot-tag{padding-bottom:20px}
+  .foot-cols{padding-top:8px;grid-template-columns:minmax(0,1fr);gap:0}
+  .foot-col,.foot-col:last-child{
+    grid-column:auto;display:grid;grid-template-columns:clamp(76px,24vw,88px) minmax(0,1fr);
+    gap:14px;align-items:start;padding:16px 0;border-bottom:1px dashed var(--rule);
+  }
+  .foot-col:last-child{border-bottom:0}
+  .foot-h{margin:0;padding-top:2px;font-size:.76rem;line-height:1.45}
+  .foot-list,.foot-col:last-child .foot-list{
+    display:flex;flex-wrap:wrap;align-items:baseline;gap:7px 16px;
+  }
+  .foot-list li{font-size:.88rem;line-height:1.45}
+  .foot-legal{margin-top:8px;padding-top:18px;line-height:1.7}
 }
 
 @media print{
