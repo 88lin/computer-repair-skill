@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://repair.88lin.eu.org/sitemap.xml

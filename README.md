@@ -14,9 +14,12 @@
 [![skills.sh](https://skills.sh/b/88lin/computer-repair-skill)](https://skills.sh/88lin/computer-repair-skill)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
+[官方网站](https://repair.88lin.eu.org/) · [在线浏览 58 个 Playbook](https://repair.88lin.eu.org/#playbooks)
+
 </div>
 
-> 电脑变慢、断网、更新失败、打印机离线、C 盘爆满、驱动异常、Windows 启动失败、OpenClaw 配置问题……直接用自然语言描述，Agent 会按平台和风险选择合适的排障流程。
+> [!NOTE]
+> 电脑卡顿、流氓软件、断网、更新失败、打印机离线、C 盘爆满、驱动异常、Windows 启动失败、OpenClaw 配置问题……直接用自然语言描述，Agent 会按平台和风险选择合适的排障流程。
 
 ## ✨ 为什么选择 Computer Repair Skill
 

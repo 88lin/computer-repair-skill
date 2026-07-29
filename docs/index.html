@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title data-i18n="meta.title">Computer Repair Skill — 让 Agent 像一名谨慎的电脑维修工程师</title>
+<meta name="description" data-i18n-attr="content|meta.desc" content="一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。58 个按需加载的专项 Playbook，只读优先、证据优先、可审计可回滚。AGPL-3.0 开源。">
+<meta name="author" content="88lin">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+<link rel="canonical" href="https://repair.88lin.eu.org/">
+<link rel="sitemap" type="application/xml" href="https://repair.88lin.eu.org/sitemap.xml">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta name="msvalidate.01" content="8E8B99B786171A5D199F348D0ACB6387" />
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Computer Repair Skill">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:url" content="https://repair.88lin.eu.org/">
+<meta property="og:title" data-i18n-attr="content|meta.ogtitle" content="Computer Repair Skill — 让 Agent 像一名谨慎的电脑维修工程师">
+<meta property="og:description" data-i18n-attr="content|meta.desc" content="一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。58 个按需加载的专项 Playbook，只读优先、证据优先、可审计可回滚。AGPL-3.0 开源。">
+<meta property="og:image" content="https://repair.88lin.eu.org/assets/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Computer Repair Skill — 跨平台电脑诊断与维修 Agent Skill">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" data-i18n-attr="content|meta.ogtitle" content="Computer Repair Skill — 让 Agent 像一名谨慎的电脑维修工程师">
+<meta name="twitter:description" data-i18n-attr="content|meta.desc" content="一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。58 个按需加载的专项 Playbook，只读优先、证据优先、可审计可回滚。AGPL-3.0 开源。">
+<meta name="twitter:image" content="https://repair.88lin.eu.org/assets/img/og-image.png">
+<meta name="twitter:image:alt" content="Computer Repair Skill — 跨平台电脑诊断与维修 Agent Skill">
+
+<link rel="stylesheet" href="assets/vendor/lenis/lenis.css">
+<link rel="stylesheet" href="assets/css/site.css">
+<script>document.documentElement.className+=' js';</script>
+<noscript><style>
+  .js-only{display:none !important}
+  .rv{opacity:1 !important;transform:none !important}
+  .pb-row{cursor:default}
+  .noscript-note{display:block !important}
+</style></noscript>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "Computer Repair Skill",
+  "url": "https://repair.88lin.eu.org/",
+  "image": "https://repair.88lin.eu.org/assets/img/og-image.png",
+  "codeRepository": "https://github.com/88lin/computer-repair-skill",
+  "description": "Cross-platform computer diagnosis and repair Agent Skill with 58 on-demand playbooks. Read-only first, evidence first, auditable and reversible.",
+  "programmingLanguage": ["Markdown", "YAML"],
+  "keywords": "computer repair, Agent Skill, Windows diagnostics, macOS diagnostics, Linux diagnostics",
+  "inLanguage": "zh-CN",
+  "isAccessibleForFree": true,
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+  "author": { "@type": "Person", "name": "88lin" }
+}
+</script>
+</head>
+
+<body>
+<a class="skiplink" href="#main" data-i18n="a11y.skip">跳到主要内容</a>
+
+<div class="scrollbar" aria-hidden="true"><i id="scrollbarFill"></i></div>
+
+<!-- ══════════ NAV ══════════ -->
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="nav-brand" href="#top">
+      <span class="nav-brand-text">Computer&nbsp;Repair&nbsp;Skill</span>
+    </a>
+    <nav class="nav-links" aria-label="主导航" data-i18n-attr="aria-label|a11y.nav">
+      <a href="#what"      data-i18n="nav.what">它是什么</a>
+      <a href="#flow"      data-i18n="nav.flow">工作流</a>
+      <a href="#safety"    data-i18n="nav.safety">安全红线</a>
+      <a href="#install"   data-i18n="nav.install">安装</a>
+      <a href="#playbooks" data-i18n="nav.playbooks">Playbook</a>
+      <a href="#prompts"   data-i18n="nav.prompts">示例提问</a>
+      <a href="#faq"       data-i18n="nav.faq">常见问题</a>
+    </nav>
+    <div class="nav-side">
+      <button class="langbtn" id="langBtn" type="button" aria-label="切换语言 / Switch language" data-i18n-attr="aria-label|a11y.lang">
+        <span class="langbtn-on">中</span><span class="langbtn-sep">/</span><span class="langbtn-off">EN</span>
+      </button>
+      <a class="nav-gh" href="https://github.com/88lin/computer-repair-skill" rel="noopener">GitHub<span aria-hidden="true"> ↗</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<span id="top"></span>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="hero" aria-labelledby="heroTitle">
+  <div class="hero-in">
+
+    <div class="hero-copy">
+      <h1 class="hero-h1 rv rv-d1" id="heroTitle" data-i18n-html="hero.h1"><span class="hero-title-line">让 Agent 像一名<span class="hl">谨慎的</span></span><br><span class="hero-title-line">电脑维修工程师</span></h1>
+
+      <p class="hero-lead rv rv-d2" data-i18n="hero.lead">先取证，再判断；先计划，再修改。</p>
+
+      <p class="hero-sub rv rv-d2" data-i18n="hero.sub">一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。电脑变慢、断网、更新失败、打印机离线、C 盘爆满、驱动异常、Windows 启动失败、OpenClaw 配置问题——直接用自然语言描述，Agent 会按平台和风险选择合适的排障流程。</p>
+
+      <div class="hero-cmd rv rv-d3">
+        <code class="hero-cmd-code" id="heroCmd">npx skills add 88lin/computer-repair-skill</code>
+        <button class="copybtn" type="button" data-copy="npx skills add 88lin/computer-repair-skill" data-i18n-attr="aria-label|a11y.copy" aria-label="复制命令"><span data-i18n="ui.copy">复制</span></button>
+      </div>
+
+      <div class="hero-acts rv rv-d4">
+        <a class="btn btn-primary" href="#install" data-i18n="hero.cta1">四种安装方式</a>
+        <a class="btn btn-ghost" href="#playbooks" data-i18n="hero.cta2">看 58 个 Playbook</a>
+      </div>
+
+      <ul class="hero-pills rv rv-d5">
+        <li class="pill"><b class="pill-n">58</b><span class="pill-t" data-i18n="hero.pill1">专项 Playbook</span></li>
+        <li class="pill"><b class="pill-n">3</b><span class="pill-t" data-i18n="hero.pill2">覆盖平台</span></li>
+        <li class="pill"><b class="pill-n">AGPL</b><span class="pill-t" data-i18n="hero.pill3">3.0 开源</span></li>
+      </ul>
+
+    </div>
+
+    <div class="hero-stage rv rv-d3">
+      <figure class="term">
+        <figcaption class="term-bar">
+          <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="term-title" data-i18n="hero.termTitle">一次典型排障对话</span>
+        </figcaption>
+        <div class="term-body">
+          <p class="tl"><span class="tl-p">$</span> npx skills add 88lin/computer-repair-skill</p>
+          <p class="tl tl-ok"><span class="tl-mark" aria-hidden="true">✓</span> computer-repair-skill → ~/.codex/skills/</p>
+          <p class="tl tl-you" id="typeLine"><span class="tl-p">&gt;</span> <span id="typeText" data-i18n="hero.type" data-i18n-attr="data-typewriter|hero.type" data-typewriter="Windows 11 最近经常断网，先只读检查网卡、DHCP、DNS、代理和 VPN，不要重置网络。">Windows 11 最近经常断网，先只读检查网卡、DHCP、DNS、代理和 VPN，不要重置网络。</span><i class="caret" aria-hidden="true"></i></p>
+          <div class="term-steps" id="termSteps">
+            <p class="tl tl-s"><span class="tl-k">1/7</span> <span data-i18n="hero.t1">明确目标</span><span class="tl-d" data-i18n="hero.t1d">平台 Windows · 约束：不重置网络</span></p>
+            <p class="tl tl-s"><span class="tl-k">2/7</span> <span data-i18n="hero.t2">路由 Playbook</span><span class="tl-d tl-mono">windows-network-diagnostics</span></p>
+            <p class="tl tl-s"><span class="tl-k">3/7</span> <span data-i18n="hero.t3">只读诊断</span><span class="tl-d tl-mono">Get-NetAdapter · Get-DnsClientServerAddress · Test-NetConnection · netsh winhttp show proxy</span></p>
+            <p class="tl tl-s tl-stop"><span class="tl-k tl-k-r">4/7</span> <span data-i18n="hero.t4">提出修复计划</span><span class="tl-d tl-d-r" data-i18n="hero.t4d">等待你明确确认后才动手</span></p>
+          </div>
+        </div>
+      </figure>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ 01 · 它是什么 / 它不是什么 ══════════ -->
+<section class="s s-what" id="what" aria-labelledby="whatTitle">
+  <div class="wrap what-in">
+
+    <div class="what-aside">
+      <div class="what-aside-stick">
+        <h2 class="sectitle" id="whatTitle" data-i18n="what.title">它是什么，<br>它不是什么</h2>
+        <p class="secdesc" data-i18n="what.desc">它不是装机软件，而是一套让 Agent 按步骤诊断、解释风险，并在你确认后修复问题的电脑维修流程。</p>
+        <p class="scribble"><span class="scribble-txt" data-i18n="what.note">不安装后台程序，不接管你的电脑</span></p>
+      </div>
+    </div>
+
+    <div class="what-main">
+      <table class="vs">
+        <caption class="vs-cap"><span data-i18n="what.caption">Computer Repair Skill 的定位对照</span></caption>
+        <thead>
+          <tr>
+            <th scope="col" class="vs-h-n"><span class="sr-only" data-i18n="what.colN">序号</span></th>
+            <th scope="col" class="vs-h-y" data-i18n="what.colYes">它是</th>
+            <th scope="col" class="vs-h-n2" data-i18n="what.colNo">它不是</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="vs-n" aria-hidden="true">1</td>
+            <td class="vs-y"><b data-i18n="what.r1y">给 Agent 读取的 Skill 包</b><span data-i18n="what.r1yd">提供诊断步骤、确认规则和安全边界，由你的 Agent 执行。</span></td>
+            <td class="vs-no"><b data-i18n="what.r1n">一个桌面软件</b><span data-i18n="what.r1nd">没有安装包、没有界面、没有后台进程。</span></td>
+          </tr>
+          <tr>
+            <td class="vs-n" aria-hidden="true">2</td>
+            <td class="vs-y"><b data-i18n="what.r2y">复制进 Skills 目录的资源</b><span data-i18n="what.r2yd"><code>~/.codex/skills/</code>、<code>~/.claude/skills/</code>、<code>~/.agents/skills/</code>。</span></td>
+            <td class="vs-no"><b data-i18n="what.r2n">配套程序、模型或云端 API</b><span data-i18n="what.r2nd">Skill 本身是 Markdown / YAML 资源，不需要额外装任何东西。</span></td>
+          </tr>
+          <tr>
+            <td class="vs-n" aria-hidden="true">3</td>
+            <td class="vs-y"><b data-i18n="what.r3y">先审查差异、风险和回滚路径</b><span data-i18n="what.r3yd">确认之后再执行最小变更。</span></td>
+            <td class="vs-no"><b data-i18n="what.r3n">「一键优化 Windows」</b><span data-i18n="what.r3nd">优化配置可能影响更新、隐私、驱动、企业策略和回滚。</span></td>
+          </tr>
+          <tr>
+            <td class="vs-n" aria-hidden="true">4</td>
+            <td class="vs-y"><b data-i18n="what.r4y">58 个按需加载的专项 Playbook</b><span data-i18n="what.r4yd">通过路由索引按问题加载，减少无关上下文。</span></td>
+            <td class="vs-no"><b data-i18n="what.r4n">一次性塞满上下文的巨型提示词</b><span data-i18n="what.r4nd">按问题只加载相关流程，避免混入无关步骤。</span></td>
+          </tr>
+          <tr>
+            <td class="vs-n" aria-hidden="true">5</td>
+            <td class="vs-y"><b data-i18n="what.r5y">可审计、可回滚的维修流程</b><span data-i18n="what.r5yd">改变状态时保留计划、验证步骤和回滚命令。</span></td>
+            <td class="vs-no"><b data-i18n="what.r5n">维修资质或数据恢复承诺</b><span data-i18n="what.r5nd">遇到冒烟、进液、异响、过热、电池鼓包或原盘物理故障，立即停工升级给专业人员。</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ 02 · 一次对话怎么走 ══════════ -->
+<section class="s s-flow" id="flow" aria-labelledby="flowTitle">
+  <div class="wrap">
+    <div class="flow-head">
+      <h2 class="sectitle" id="flowTitle" data-i18n="flow.title">一次对话怎么走</h2>
+      <p class="secdesc secdesc-wide" data-i18n="flow.desc">从描述问题到验证结果，Agent 始终按七个步骤推进。任何修改都要先说明原因、影响和回滚方式，再等待你确认。</p>
+    </div>
+  </div>
+
+  <div class="wrap flow-in">
+    <nav class="flow-rail js-only" aria-label="工作流步骤导航" data-i18n-attr="aria-label|a11y.flowrail">
+      <ol class="flow-rail-list">
+        <li><a href="#step1" class="frl is-on" data-step="1"><i class="frl-n">01</i><span data-i18n="flow.s1t">明确目标</span></a></li>
+        <li><a href="#step2" class="frl" data-step="2"><i class="frl-n">02</i><span data-i18n="flow.s2t">路由 Playbook</span></a></li>
+        <li><a href="#step3" class="frl" data-step="3"><i class="frl-n">03</i><span data-i18n="flow.s3t">只读诊断</span></a></li>
+        <li><a href="#step4" class="frl frl-stop" data-step="4"><i class="frl-n">04</i><span data-i18n="flow.s4t">提出修复计划</span></a></li>
+        <li><a href="#step5" class="frl" data-step="5"><i class="frl-n">05</i><span data-i18n="flow.s5t">执行最小变更</span></a></li>
+        <li><a href="#step6" class="frl" data-step="6"><i class="frl-n">06</i><span data-i18n="flow.s6t">验证结果</span></a></li>
+        <li><a href="#step7" class="frl" data-step="7"><i class="frl-n">07</i><span data-i18n="flow.s7t">收尾</span></a></li>
+      </ol>
+    </nav>
+
+    <ol class="flow-cards">
+      <li class="fc rv" id="step1">
+        <span class="fc-dot" aria-hidden="true">1</span>
+        <div class="fc-body">
+          <h3 class="fc-t"><span data-i18n="flow.s1t">明确目标</span></h3>
+          <p class="fc-p" data-i18n="flow.s1p">把请求拆成症状、目标状态和不可改变的约束。多个目标逐项保留——不用删除替代迁移，不用重装替代修复，不跳过明确要求。</p>
+          <p class="fc-tag"><span class="tag" data-i18n="flow.s1g">动作分级：只读审计 · 可逆变更 · 高影响变更 · 系统级红线</span></p>
+        </div>
+      </li>
+      <li class="fc rv" id="step2">
+        <span class="fc-dot" aria-hidden="true">2</span>
+        <div class="fc-body">
+          <h3 class="fc-t"><span data-i18n="flow.s2t">路由 Playbook</span></h3>
+          <p class="fc-p" data-i18n="flow.s2p">读取路由索引，按症状、平台和触发词选最具体的一个 Playbook。只加载当前任务需要的那一份，不一次读全部。</p>
+          <p class="fc-tag"><span class="tag" data-i18n="flow.s2g">Playbook 是诊断协议，不是执行授权</span></p>
+        </div>
+      </li>
+      <li class="fc rv" id="step3">
+        <span class="fc-dot" aria-hidden="true">3</span>
+        <div class="fc-body">
+          <h3 class="fc-t"><span data-i18n="flow.s3t">只读诊断</span></h3>
+          <p class="fc-p" data-i18n="flow.s3p">先跑范围窄、不改状态的检查，记录命令、退出码、测量值、路径、服务状态和时间点。命令输出是证据，单一异常不等于根因。</p>
+          <p class="fc-tag"><span class="tag" data-i18n="flow.s3g">默认只传元数据：不读文件正文、密码库、Cookie 或私钥</span></p>
+        </div>
+      </li>
+      <li class="fc fc-stop rv" id="step4">
+        <span class="fc-dot fc-dot-r" aria-hidden="true">4</span>
+        <div class="fc-body">
+          <h3 class="fc-t"><span data-i18n="flow.s4t">提出修复计划</span><span class="fc-flag" data-i18n="flow.s4f">必须停下</span></h3>
+          <p class="fc-p" data-i18n="flow.s4p">在安装、升级、长时间任务、管理员操作或任何状态变更之前，先展示：已确认的现象与最可能原因、具体动作和影响范围、是否需要提权／联网／重启、回滚点、修复后的验证命令和成功标准。</p>
+          <p class="fc-quote" data-i18n="flow.s4q">等待用户明确确认。之前对另一组动作的确认，不覆盖新出现的高影响动作。</p>
+          <p class="scribble scribble-in"><span class="scribble-txt" data-i18n="flow.s4n">整个 Skill 的支点在这里</span></p>
+        </div>
+      </li>
+      <li class="fc rv" id="step5">
+        <span class="fc-dot" aria-hidden="true">5</span>
+        <div class="fc-body">
+          <h3 class="fc-t"><span data-i18n="flow.s5t">执行最小变更</span></h3>
+          <p class="fc-p" data-i18n="flow.s5p">只执行已经展示过的动作；范围一扩大就重新展示计划。用字面路径和结构化参数，不依赖当前目录或宽泛通配符。清理逐项留下目标路径、大小／哈希、原位置、时间和恢复位置。</p>
+          <p class="fc-tag"><span class="tag" data-i18n="flow.s5g">优先回收站或隔离目录，不用永久删除代替「清理」</span></p>
+        </div>
+      </li>
+      <li class="fc rv" id="step6">
+        <span class="fc-dot" aria-hidden="true">6</span>
+        <div class="fc-body">
+          <h3 class="fc-t"><span data-i18n="flow.s6t">验证结果</span></h3>
+          <p class="fc-p" data-i18n="flow.s6p">重跑与故障直接相关的诊断，不以命令退出成功代替问题解决。对比变更前后数据，并检查相邻功能是否回归。</p>
+          <p class="fc-tag"><span class="tag" data-i18n="flow.s6g">Playbook 定义了成功标准时逐项满足</span></p>
+        </div>
+      </li>
+      <li class="fc rv" id="step7">
+        <span class="fc-dot" aria-hidden="true">7</span>
+        <div class="fc-body">
+          <h3 class="fc-t"><span data-i18n="flow.s7t">收尾</span></h3>
+          <p class="fc-p" data-i18n="flow.s7p">用你当前的语言简洁报告：根因或当前最可信结论、实际执行的命令与改动、验证证据和最终状态、尚未处理的风险与回滚命令。</p>
+          <p class="fc-tag"><span class="tag" data-i18n="flow.s7g">不声称已修复未经验证的问题</span></p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ══════════ 03 · 安全红线 ══════════ -->
+<section class="s s-safety" id="safety" aria-labelledby="safetyTitle">
+  <div class="wrap">
+    <div class="sf-head">
+      <h2 class="sectitle" id="safetyTitle" data-i18n="safety.title">安全红线</h2>
+      <p class="secdesc secdesc-wide" data-i18n="safety.desc">删除文件、使用管理员权限、修改磁盘或启动配置都可能带来高风险。Computer Repair Skill 会按影响分级，越危险的动作，需要越明确的范围、回滚方案和单独确认。</p>
+    </div>
+
+    <blockquote class="pq">
+      <p class="pq-t" data-i18n="safety.quote">用户对普通修复的确认，不覆盖这些对象。</p>
+      <footer class="pq-f">Computer Repair Skill<span class="pq-sep">·</span><span data-i18n="safety.quoteSrc">系统级红线</span></footer>
+    </blockquote>
+
+    <h3 class="sf-h3" data-i18n="safety.ladderTitle">四级风险分层</h3>
+    <ol class="ladder">
+      <li class="ladder-row rv" data-lv="1">
+        <span class="ladder-k">L1</span>
+        <div class="ladder-body">
+          <h4 class="ladder-t" data-i18n="safety.l1t">只读</h4>
+          <p class="ladder-p" data-i18n="safety.l1p">观察系统但不改变状态，例如查询网络、磁盘、进程、服务、日志和文件元数据。</p>
+        </div>
+        <span class="ladder-bar" aria-hidden="true"><i style="width:22%"></i></span>
+        <span class="ladder-act" data-i18n="safety.l1a">限定范围后可直接执行</span>
+      </li>
+      <li class="ladder-row rv rv-d1" data-lv="2">
+        <span class="ladder-k">L2</span>
+        <div class="ladder-body">
+          <h4 class="ladder-t" data-i18n="safety.l2t">可逆变更</h4>
+          <p class="ladder-p" data-i18n="safety.l2p">低影响且有明确回滚，例如刷新 DNS、重启普通服务、移动单个文件。</p>
+        </div>
+        <span class="ladder-bar" aria-hidden="true"><i style="width:48%"></i></span>
+        <span class="ladder-act" data-i18n="safety.l2a">先展示计划、影响和回滚，取得确认</span>
+      </li>
+      <li class="ladder-row rv rv-d2" data-lv="3">
+        <span class="ladder-k">L3</span>
+        <div class="ladder-body">
+          <h4 class="ladder-t" data-i18n="safety.l3t">高影响变更</h4>
+          <p class="ladder-p" data-i18n="safety.l3p">删除、终止进程、清缓存、改权限、安装、升级、卸载、管理员命令、批量移动、修改启动项或安全设置。</p>
+        </div>
+        <span class="ladder-bar ladder-bar-y" aria-hidden="true"><i style="width:74%"></i></span>
+        <span class="ladder-act" data-i18n="safety.l3a">展示精确命令、目标范围、恢复方案和验证，单独确认</span>
+      </li>
+      <li class="ladder-row rv rv-d3" data-lv="4">
+        <span class="ladder-k ladder-k-r">L4</span>
+        <div class="ladder-body">
+          <h4 class="ladder-t ladder-t-r" data-i18n="safety.l4t">系统级红线</h4>
+          <p class="ladder-p" data-i18n="safety.l4p">启动卷、系统根目录、分区表、固件、BIOS/UEFI、系统密钥链、凭据数据库、整棵用户目录，或关闭核心安全机制。</p>
+        </div>
+        <span class="ladder-bar ladder-bar-r" aria-hidden="true"><i style="width:100%"></i></span>
+        <span class="ladder-act ladder-act-r" data-i18n="safety.l4a">停止执行，转向厂商或企业恢复路径</span>
+      </li>
+    </ol>
+
+    <div class="sf-cols">
+      <article class="dcard dcard-b rv">
+        <h3 class="dcard-t" data-i18n="safety.ibdTitle">删除前必须走完的六步</h3>
+        <p class="dcard-sub" data-i18n="safety.ibdSub">Inspect Before Delete · 对任何删除都适用</p>
+        <ol class="numlist">
+          <li data-i18n="safety.ibd1">用字面绝对路径确定目标，不依赖当前目录。</li>
+          <li data-i18n="safety.ibd2">用只读命令列出目标、大小、修改时间、类型和关键内容。</li>
+          <li data-i18n="safety.ibd3">确认检查结果确实对应将删除的具体对象。</li>
+          <li data-i18n="safety.ibd4">展示目标列表、理由、预计影响和恢复方式。</li>
+          <li data-i18n="safety.ibd5">取得用户对本次具体目标的确认。</li>
+          <li data-i18n="safety.ibd6">删除明确子项，随后验证目标与相邻目录状态。</li>
+        </ol>
+      </article>
+
+      <article class="dcard dcard-r rv rv-d1">
+        <h3 class="dcard-t" data-i18n="safety.neverTitle">绝不执行</h3>
+        <p class="dcard-sub" data-i18n="safety.neverSub">这些写法根本不进入执行阶段</p>
+        <ul class="xlist">
+          <li data-i18n-html="safety.n1">把远程响应直接交给 Shell 的管道：<code>irm&nbsp;|&nbsp;iex</code>、<code>iwr&nbsp;|&nbsp;iex</code>、<code>curl&nbsp;|&nbsp;powershell</code>、<code>curl&nbsp;|&nbsp;bash</code>、<code>wget&nbsp;|&nbsp;sh</code>、<code>bash&nbsp;-c&nbsp;"$(curl&nbsp;…)"</code>。</li>
+          <li data-i18n-html="safety.n2">对用户数据、应用数据或凭据目录使用 <code>*</code>、递归根目录或祖先目录清扫。</li>
+          <li data-i18n-html="safety.n3">通过管道、<code>xargs</code>、<code>eval</code>、命令替换、编码载荷或动态变量隐藏删除目标。</li>
+          <li data-i18n="safety.n4">在聊天中输出密码、恢复密钥、私钥、token 或完整敏感路径。</li>
+          <li data-i18n="safety.n5">主动关闭 Defender、SmartScreen、UAC、防火墙、Windows Update 或核心隔离——这些只做状态审计。</li>
+          <li data-i18n="safety.n6">盗版激活、未知下载器、强制卸载 Edge、未审计的一键优化包。</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="sf-log rv">
+      <p class="sf-log-k" data-i18n="safety.logTitle">每个高影响动作都留一条记录</p>
+      <pre class="sf-log-code"><code data-i18n="safety.logFields">时间 | 目标 | 动作 | 风险级别 | 用户确认 | 退出状态 | 验证 | 回滚</code></pre>
+      <p class="sf-log-n" data-i18n="safety.logNote">记录命令模板时移除秘密；路径涉及用户名或公司信息时只保留诊断所需部分。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 04 · 装进你的 Agent ══════════ -->
+<section class="s s-install" id="install" aria-labelledby="installTitle">
+  <div class="wrap">
+    <div class="in-head">
+      <h2 class="sectitle" id="installTitle" data-i18n="install.title">装进你的 Agent</h2>
+      <p class="secdesc secdesc-wide" data-i18n="install.desc">四种方式，从「一句话交给 Agent」到「手动复制目录」。只支持聊天、不具备本机文件或终端能力的客户端，无法替你真正安装。</p>
+    </div>
+
+    <div class="tabs" id="installTabs">
+      <div class="tabbar" role="tablist" aria-label="安装方式" data-i18n-attr="aria-label|a11y.tabs">
+        <button class="tab is-on" role="tab" id="tab-1" aria-controls="panel-1" aria-selected="true" type="button">
+          <i class="tab-n">01</i><span data-i18n="install.t1">交给 Agent</span>
+        </button>
+        <button class="tab" role="tab" id="tab-2" aria-controls="panel-2" aria-selected="false" type="button" tabindex="-1">
+          <i class="tab-n">02</i><span data-i18n="install.t2">Skills CLI</span>
+        </button>
+        <button class="tab" role="tab" id="tab-3" aria-controls="panel-3" aria-selected="false" type="button" tabindex="-1">
+          <i class="tab-n">03</i><span data-i18n="install.t3">仓库安装器</span>
+        </button>
+        <button class="tab" role="tab" id="tab-4" aria-controls="panel-4" aria-selected="false" type="button" tabindex="-1">
+          <i class="tab-n">04</i><span data-i18n="install.t4">手动复制</span>
+        </button>
+      </div>
+
+      <div class="tabpanel" role="tabpanel" id="panel-1" aria-labelledby="tab-1" tabindex="0">
+        <div class="tp-in">
+          <div class="tp-txt">
+            <h3 class="tp-t" data-i18n="install.p1t">把一句话交给 Agent</h3>
+            <p class="tp-p" data-i18n="install.p1p">最适合新手。打开 Codex、Claude Code、Hermes、OpenClaw、Cursor 或其他支持 Agent Skills 的工具，把右边这段话直接发给它。</p>
+            <p class="tp-note" data-i18n="install.p1n">Agent 需要能访问 GitHub、读取本机文件并执行必要的安装命令。</p>
+          </div>
+          <div class="tp-code">
+            <figure class="code">
+              <figcaption class="code-bar"><span class="code-lang">prompt</span>
+                <button class="copybtn" type="button" data-copy-from="#code1" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+              </figcaption>
+              <pre class="code-body code-body-wrap"><code id="code1" data-i18n="install.prompt">请安装这个 Agent Skill：https://github.com/88lin/computer-repair-skill
+先审查仓库内容和 SKILL.md，再安装到你当前 Agent 的 Skills 目录；如果已经安装旧版本，先备份再更新。
+完成后告诉我实际安装路径、目标 Agent 和验证结果。</code></pre>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel is-hidden" role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0" hidden>
+        <div class="tp-in">
+          <div class="tp-txt">
+            <h3 class="tp-t" data-i18n="install.p2t">Skills CLI</h3>
+            <p class="tp-p" data-i18n="install.p2p">已装 Node.js 和 npm 时最快。第一次运行会让你选择安装范围和目标 Agent；装完重启或刷新 Agent 的 Skills 列表。</p>
+            <p class="tp-note" data-i18n-html="install.p2n">安装范围、目标 Agent 和链接来源以 Skills CLI 当前文档为准：<a href="https://skills.sh/docs" rel="noopener">skills.sh/docs</a>。</p>
+          </div>
+          <div class="tp-code">
+            <figure class="code">
+              <figcaption class="code-bar"><span class="code-lang">bash</span>
+                <button class="copybtn" type="button" data-copy-from="#code2" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+              </figcaption>
+              <pre class="code-body"><code id="code2"><span class="c-c" data-i18n="install.c1"># 交互式安装</span>
+npx skills add 88lin/computer-repair-skill
+
+<span class="c-c" data-i18n="install.c2"># 全局安装</span>
+npx skills add 88lin/computer-repair-skill --global
+
+<span class="c-c" data-i18n="install.c3"># 只装给 Codex / 只装给 Claude Code</span>
+npx skills add 88lin/computer-repair-skill --global --agent codex
+npx skills add 88lin/computer-repair-skill --global --agent claude-code</code></pre>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel is-hidden" role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0" hidden>
+        <div class="tp-in">
+          <div class="tp-txt">
+            <h3 class="tp-t" data-i18n="install.p3t">仓库安装器</h3>
+            <p class="tp-p" data-i18n-html="install.p3p">适合希望明确控制路径的用户。<code>codex</code>、<code>claude</code>、<code>agents</code> 会使用对应的默认 Skills 根目录；<code>custom</code> 配合 <code>-Destination</code> / <code>--destination</code> 自定义位置。</p>
+            <p class="tp-note" data-i18n-html="install.p3n">目标目录已存在时安装器<b>默认拒绝覆盖</b>。确认升级时显式加 <code>-Force</code> 或 <code>--force</code>，旧版本会先备份到相邻的 <code>external/computer-repair-skill/backups</code>。</p>
+          </div>
+          <div class="tp-code">
+            <figure class="code">
+              <figcaption class="code-bar"><span class="code-lang">powershell / bash</span>
+                <button class="copybtn" type="button" data-copy-from="#code3" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+              </figcaption>
+              <pre class="code-body"><code id="code3">git clone https://github.com/88lin/computer-repair-skill.git
+cd computer-repair-skill
+
+<span class="c-c"># Windows PowerShell</span>
+.\scripts\install.ps1 -Target codex
+.\scripts\install.ps1 -Target custom -Destination "D:\path\to\skills"
+
+<span class="c-c"># macOS / Linux</span>
+./scripts/install.sh --target claude
+./scripts/install.sh --target custom --destination "/path/to/skills"</code></pre>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel is-hidden" role="tabpanel" id="panel-4" aria-labelledby="tab-4" tabindex="0" hidden>
+        <div class="tp-in">
+          <div class="tp-txt">
+            <h3 class="tp-t" data-i18n="install.p4t">手动复制</h3>
+            <p class="tp-p" data-i18n-html="install.p4p">适合无法使用命令行的用户。把仓库里的 <code>skills/computer-repair-skill</code> 整个目录复制到目标 Agent 的 Skills 根目录。</p>
+            <p class="tp-note" data-i18n-html="install.p4n">目录中必须保留 <code>SKILL.md</code>、<code>agents/</code> 和 <code>references/</code>，<b>不要只复制某一个 Playbook</b>。</p>
+          </div>
+          <div class="tp-code">
+            <figure class="code">
+              <figcaption class="code-bar"><span class="code-lang">path</span>
+                <button class="copybtn" type="button" data-copy-from="#code4" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+              </figcaption>
+              <pre class="code-body"><code id="code4">~/.codex/skills/computer-repair-skill/
+~/.claude/skills/computer-repair-skill/
+~/.agents/skills/computer-repair-skill/</code></pre>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 05 · 58 个 Playbook ══════════ -->
+<section class="s s-pb" id="playbooks" aria-labelledby="pbTitle">
+  <div class="wrap-wide">
+    <div class="pb-head">
+      <h2 class="sectitle" id="pbTitle" data-i18n="pb.title">58 个专项 Playbook</h2>
+      <p class="secdesc secdesc-wide" data-i18n="pb.desc">从电脑变慢、断网和磁盘爆满，到系统更新、启动修复与 OpenClaw 配置。搜索你的症状，或点开任意一行查看适用场景和示例提问。</p>
+    </div>
+
+    <div class="pb-stats rv">
+      <div class="pb-stats-cat">
+        <h3 class="minih" data-i18n="pb.byCat">按分类</h3>
+        <table class="dots" id="catTable">
+          <thead class="sr-only"><tr><th scope="col" data-i18n="pb.colCat">分类</th><th scope="col" data-i18n="pb.colCount">数量</th></tr></thead>
+          <tbody id="catTableBody"><!-- filled by site.js --></tbody>
+        </table>
+      </div>
+      <div class="pb-stats-plat">
+        <h3 class="minih" data-i18n="pb.byPlat">按平台</h3>
+        <ul class="platgrid" id="platGrid"><!-- filled by site.js --></ul>
+        <p class="pb-stats-note" data-i18n-html="pb.statNote">「跨平台」指流程不依赖单一操作系统，例如 DNS、邮件、身份服务、SSH、Wi-Fi、Outlook、OpenClaw、凭据与本地数据审计。</p>
+      </div>
+    </div>
+
+    <div class="pb-tools js-only rv">
+      <div class="searchbox">
+        <label class="sr-only" for="pbSearch" data-i18n="pb.searchLabel">搜索 Playbook</label>
+        <input type="search" id="pbSearch" class="searchinput" placeholder="搜索：bitlocker、DNS、C 盘、打印机…" autocomplete="off"
+               data-i18n-attr="placeholder|pb.searchPh">
+        <svg class="searchbox-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.6"/><line x1="12.9" y1="12.9" x2="17.4" y2="17.4"/></svg>
+      </div>
+      <div class="chips" id="pbChips" role="group" aria-label="筛选" data-i18n-attr="aria-label|a11y.filter"><!-- filled by site.js --></div>
+      <p class="pb-count" id="pbCount" aria-live="polite"></p>
+    </div>
+
+    <p class="noscript-note" style="display:none">
+      <span data-i18n="pb.nojs">当前浏览器未启用 JavaScript，因此搜索、筛选和详情弹窗不可用；完整的 58 条 Playbook 仍可在下方浏览。</span>
+    </p>
+
+    <div class="pb-tablewrap" data-lenis-prevent>
+      <table class="idx" id="pbTable">
+        <caption class="idx-cap"><span data-i18n="pb.tableCap">58 个 Playbook 的完整路由索引</span></caption>
+        <thead>
+          <tr>
+            <th scope="col" class="idx-h-n">No.</th>
+            <th scope="col" class="idx-h-t" data-i18n="pb.colTitle">Playbook</th>
+            <th scope="col" class="idx-h-c" data-i18n="pb.colCat">分类</th>
+            <th scope="col" class="idx-h-p" data-i18n="pb.colPlat">平台</th>
+            <th scope="col" class="idx-h-r" data-i18n="pb.colRoute">路由 ID</th>
+          </tr>
+        </thead>
+        <tbody id="pbBody">
+<tr class="pb-row" data-id="health-baseline-check"><td class="pb-i">01</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">全面体检</button><span class="pb-t-d">建立系统健康基线，适合交接、验收和维修前留档</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">health-baseline-check</td></tr>
+<tr class="pb-row" data-id="performance-forensics"><td class="pb-i">02</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">⚡</span><button type="button" class="pb-open">macOS 性能取证</button><span class="pb-t-d">CPU、内存压力、IO、风扇和无响应</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">performance-forensics</td></tr>
+<tr class="pb-row" data-id="windows-performance-forensics"><td class="pb-i">03</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 性能取证</button><span class="pb-t-d">CPU、内存、磁盘瓶颈、启动慢和应用无响应</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-performance-forensics</td></tr>
+<tr class="pb-row" data-id="linux-performance-forensics"><td class="pb-i">04</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Linux 性能取证</button><span class="pb-t-d">负载、CPU、内存、交换、IO 等待和容器限额</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-lin">Linux</span></td><td class="pb-r">linux-performance-forensics</td></tr>
+<tr class="pb-row" data-id="mac-tune-up"><td class="pb-i">05</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🧹</span><button type="button" class="pb-open">Mac 调优</button><span class="pb-t-d">缓存、权限和基础安全维护</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">mac-tune-up</td></tr>
+<tr class="pb-row" data-id="disk-space-recovery"><td class="pb-i">06</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">💾</span><button type="button" class="pb-open">macOS 磁盘恢复</button><span class="pb-t-d">大文件、缓存和可释放空间审计</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">disk-space-recovery</td></tr>
+<tr class="pb-row" data-id="windows-disk-space-recovery"><td class="pb-i">07</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 磁盘恢复</button><span class="pb-t-d">系统盘爆满、更新空间不足和安全释放</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-disk-space-recovery</td></tr>
+<tr class="pb-row" data-id="windows-storage-inventory"><td class="pb-i">08</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 存储盘点</button><span class="pb-t-d">按路径和大小解释空间分配</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-storage-inventory</td></tr>
+<tr class="pb-row" data-id="windows-application-cleanup"><td class="pb-i">09</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 应用清理</button><span class="pb-t-d">微信重复文件、浏览器缓存和包缓存</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-cleanup</td></tr>
+<tr class="pb-row" data-id="windows-application-lifecycle-audit"><td class="pb-i">10</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 应用生命周期审计</button><span class="pb-t-d">WinGet、Chocolatey、Appx、来源、发布者和残留</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-lifecycle-audit</td></tr>
+<tr class="pb-row" data-id="windows-new-device-intake"><td class="pb-i">11</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 新机验收</button><span class="pb-t-d">本地硬件、序列号、配置、开箱证据和首次设置</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-new-device-intake</td></tr>
+<tr class="pb-row" data-id="linux-disk-space-recovery"><td class="pb-i">12</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Linux 磁盘恢复</button><span class="pb-t-d">文件系统、inode、日志和容器存储增长</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-lin">Linux</span></td><td class="pb-r">linux-disk-space-recovery</td></tr>
+<tr class="pb-row" data-id="local-data-audit"><td class="pb-i">13</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">📂</span><button type="button" class="pb-open">本地数据审计</button><span class="pb-t-d">离职、设备回收前盘点敏感数据</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">local-data-audit</td></tr>
+<tr class="pb-row" data-id="backup-verify-restore"><td class="pb-i">14</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">💾</span><button type="button" class="pb-open">备份验证与抽样恢复</button><span class="pb-t-d">时间戳、完整性、可读性和独立目标恢复</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">backup-verify-restore</td></tr>
+<tr class="pb-row" data-id="setup-backup"><td class="pb-i">15</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🛡️</span><button type="button" class="pb-open">macOS 备份设置</button><span class="pb-t-d">Time Machine 和基础备份策略</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">setup-backup</td></tr>
+<tr class="pb-row" data-id="network-diagnostics"><td class="pb-i">16</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🌐</span><button type="button" class="pb-open">macOS 网络诊断</button><span class="pb-t-d">Wi-Fi、地址、路由、DNS 和网页访问</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">network-diagnostics</td></tr>
+<tr class="pb-row" data-id="windows-network-diagnostics"><td class="pb-i">17</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🌐</span><button type="button" class="pb-open">Windows 网络诊断</button><span class="pb-t-d">网卡、DHCP、路由、DNS、代理、VPN 和 HTTP</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-network-diagnostics</td></tr>
+<tr class="pb-row" data-id="linux-network-diagnostics"><td class="pb-i">18</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🌐</span><button type="button" class="pb-open">Linux 网络诊断</button><span class="pb-t-d">链路、地址、路由、DNS、防火墙和命名空间</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-lin">Linux</span></td><td class="pb-r">linux-network-diagnostics</td></tr>
+<tr class="pb-row" data-id="vpn-troubleshooting"><td class="pb-i">19</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🔒</span><button type="button" class="pb-open">macOS VPN 排障</button><span class="pb-t-d">连接、掉线、分流和 DNS 异常</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">vpn-troubleshooting</td></tr>
+<tr class="pb-row" data-id="dns-record-check"><td class="pb-i">20</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">📋</span><button type="button" class="pb-open">DNS 记录检查</button><span class="pb-t-d">MX、SPF、DKIM、DMARC 和邮件域名记录</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">dns-record-check</td></tr>
+<tr class="pb-row" data-id="email-connectivity-test"><td class="pb-i">21</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">📡</span><button type="button" class="pb-open">邮件连通性测试</button><span class="pb-t-d">SMTP、IMAP、POP3 和邮件服务器</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">email-connectivity-test</td></tr>
+<tr class="pb-row" data-id="identity-provider-test"><td class="pb-i">22</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🪪</span><button type="button" class="pb-open">身份提供商测试</button><span class="pb-t-d">Entra ID、Google Workspace 和 SSO 端点</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">identity-provider-test</td></tr>
+<tr class="pb-row" data-id="setup-wifi-profile"><td class="pb-i">23</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">📶</span><button type="button" class="pb-open">Wi-Fi 配置</button><span class="pb-t-d">家庭或企业 WPA2/WPA3 配置</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-wifi-profile</td></tr>
+<tr class="pb-row" data-id="setup-email-account"><td class="pb-i">24</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">✉️</span><button type="button" class="pb-open">macOS 邮箱配置</button><span class="pb-t-d">Apple Mail 或 Outlook 添加邮箱</span></td><td class="pb-c">网络、DNS、VPN、身份与邮件</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">setup-email-account</td></tr>
+<tr class="pb-row" data-id="app-doctor"><td class="pb-i">25</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">macOS 应用修复</button><span class="pb-t-d">崩溃、打不开、权限和配置损坏</span></td><td class="pb-c">应用、系统更新与打印</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">app-doctor</td></tr>
+<tr class="pb-row" data-id="outlook-troubleshooting"><td class="pb-i">26</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">📧</span><button type="button" class="pb-open">Outlook 排障</button><span class="pb-t-d">同步、卡信、崩溃和配置文件</span></td><td class="pb-c">应用、系统更新与打印</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">outlook-troubleshooting</td></tr>
+<tr class="pb-row" data-id="update-troubleshooting"><td class="pb-i">27</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🔄</span><button type="button" class="pb-open">macOS 更新排障</button><span class="pb-t-d">下载、安装和更新卡住</span></td><td class="pb-c">应用、系统更新与打印</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">update-troubleshooting</td></tr>
+<tr class="pb-row" data-id="windows-update-troubleshooting"><td class="pb-i">28</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🔄</span><button type="button" class="pb-open">Windows Update 排障</button><span class="pb-t-d">错误码、服务、待重启和更新缓存</span></td><td class="pb-c">应用、系统更新与打印</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-update-troubleshooting</td></tr>
+<tr class="pb-row" data-id="printer-repair"><td class="pb-i">29</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🖨️</span><button type="button" class="pb-open">macOS 打印机修复</button><span class="pb-t-d">队列、CUPS 和设备发现</span></td><td class="pb-c">应用、系统更新与打印</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">printer-repair</td></tr>
+<tr class="pb-row" data-id="windows-printer-repair"><td class="pb-i">30</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🖨️</span><button type="button" class="pb-open">Windows 打印机修复</button><span class="pb-t-d">离线状态、打印队列和 Spooler</span></td><td class="pb-c">应用、系统更新与打印</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-printer-repair</td></tr>
+<tr class="pb-row" data-id="windows-configuration-review"><td class="pb-i">31</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🧩</span><button type="button" class="pb-open">Windows 配置审查</button><span class="pb-t-d">隐私、电源、去臃肿设置的差异、风险和回滚</span></td><td class="pb-c">应用、系统更新与打印</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-configuration-review</td></tr>
+<tr class="pb-row" data-id="windows-driver-lifecycle-audit"><td class="pb-i">32</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🪟</span><button type="button" class="pb-open">驱动生命周期审计</button><span class="pb-t-d">硬件 ID、官方来源、重装、回滚和兼容性</span></td><td class="pb-c">Windows 维修、启动与硬件</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-driver-lifecycle-audit</td></tr>
+<tr class="pb-row" data-id="windows-av-input-triage"><td class="pb-i">33</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🪟</span><button type="button" class="pb-open">摄像头与音视频输入分诊</button><span class="pb-t-d">开关、权限、系统设备和会议软件</span></td><td class="pb-c">Windows 维修、启动与硬件</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-av-input-triage</td></tr>
+<tr class="pb-row" data-id="windows-boot-failure-triage"><td class="pb-i">34</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🪟</span><button type="button" class="pb-open">启动失败分诊</button><span class="pb-t-d">No Boot Device、启动循环、UEFI/Legacy 和启动界面</span></td><td class="pb-c">Windows 维修、启动与硬件</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-boot-failure-triage</td></tr>
+<tr class="pb-row" data-id="windows-winre-system-repair"><td class="pb-i">35</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🪟</span><button type="button" class="pb-open">WinRE 系统修复</button><span class="pb-t-d">SFC、DISM、安全模式、启动修复和还原</span></td><td class="pb-c">Windows 维修、启动与硬件</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-winre-system-repair</td></tr>
+<tr class="pb-row" data-id="windows-bitlocker-recovery-triage"><td class="pb-i">36</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🪟</span><button type="button" class="pb-open">BitLocker/PE 前置分诊</button><span class="pb-t-d">加密状态、TPM/BIOS、恢复密钥和离线清单</span></td><td class="pb-c">Windows 维修、启动与硬件</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-bitlocker-recovery-triage</td></tr>
+<tr class="pb-row" data-id="windows-partition-resize-audit"><td class="pb-i">37</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🪟</span><button type="button" class="pb-open">分区扩容审计</button><span class="pb-t-d">邻接空间、备份、移动分区和离线操作边界</span></td><td class="pb-c">Windows 维修、启动与硬件</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-partition-resize-audit</td></tr>
+<tr class="pb-row" data-id="windows-hardware-maintenance-safety"><td class="pb-i">38</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🪟</span><button type="button" class="pb-open">硬件维护安全</button><span class="pb-t-d">断电放电、ESD、清灰、换件和停工条件</span></td><td class="pb-c">Windows 维修、启动与硬件</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-hardware-maintenance-safety</td></tr>
+<tr class="pb-row" data-id="endpoint-security-check"><td class="pb-i">39</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🛡️</span><button type="button" class="pb-open">终端安全检查</button><span class="pb-t-d">防病毒、防火墙、更新和可疑活动</span></td><td class="pb-c">安全与凭据</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">endpoint-security-check</td></tr>
+<tr class="pb-row" data-id="browser-security-audit"><td class="pb-i">40</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🔍</span><button type="button" class="pb-open">浏览器安全审计</button><span class="pb-t-d">扩展、密码存储、版本和安全设置</span></td><td class="pb-c">安全与凭据</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">browser-security-audit</td></tr>
+<tr class="pb-row" data-id="windows-browser-policy-audit"><td class="pb-i">41</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🔐</span><button type="button" class="pb-open">Windows 浏览器策略审计</button><span class="pb-t-d">Chrome、Edge、Firefox、Brave 策略和遥测</span></td><td class="pb-c">安全与凭据</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-browser-policy-audit</td></tr>
+<tr class="pb-row" data-id="windows-persistence-audit"><td class="pb-i">42</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🔐</span><button type="button" class="pb-open">Windows 持久化审计</button><span class="pb-t-d">启动项、服务、计划任务、右键菜单和文件关联</span></td><td class="pb-c">安全与凭据</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-persistence-audit</td></tr>
+<tr class="pb-row" data-id="credential-cleanup"><td class="pb-i">43</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🔑</span><button type="button" class="pb-open">凭据清理</button><span class="pb-t-d">SSH key、token、云凭据和事件后残留</span></td><td class="pb-c">安全与凭据</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">credential-cleanup</td></tr>
+<tr class="pb-row" data-id="windows-data-recovery-triage"><td class="pb-i">44</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🧯</span><button type="button" class="pb-open">Windows 数据恢复分诊</button><span class="pb-t-d">先成像、只读扫描、报告，再写入独立目标</span></td><td class="pb-c">Windows 数据恢复</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-data-recovery-triage</td></tr>
+<tr class="pb-row" data-id="setup-homebrew"><td class="pb-i">45</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🍺</span><button type="button" class="pb-open">Homebrew</button><span class="pb-t-d">安装、配置和基础诊断</span></td><td class="pb-c">开发环境与基础设置</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">setup-homebrew</td></tr>
+<tr class="pb-row" data-id="setup-cuda"><td class="pb-i">46</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🎮</span><button type="button" class="pb-open">CUDA</button><span class="pb-t-d">Ubuntu、Debian、RHEL/Fedora 的驱动与工具链</span></td><td class="pb-c">开发环境与基础设置</td><td class="pb-p"><span class="tagp tagp-lin">Linux</span></td><td class="pb-r">setup-cuda</td></tr>
+<tr class="pb-row" data-id="setup-ssh-key"><td class="pb-i">47</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🔑</span><button type="button" class="pb-open">SSH Key</button><span class="pb-t-d">生成、GitHub 配置和 publickey 排障</span></td><td class="pb-c">开发环境与基础设置</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-ssh-key</td></tr>
+<tr class="pb-row" data-id="setup-openclaw"><td class="pb-i">48</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">OpenClaw 总体安装</button><span class="pb-t-d">Node.js、网关、渠道和安装验证</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-install-node"><td class="pb-i">49</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">Node.js 22+</button><span class="pb-t-d">安装或核对 OpenClaw 所需运行时</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/install-node</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-configure"><td class="pb-i">50</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">OpenClaw 配置</button><span class="pb-t-d">模型、渠道、会话和自动化</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/configure</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-config-reference"><td class="pb-i">51</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">OpenClaw 配置字段参考</button><span class="pb-t-d">查询配置项和安全默认值</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/config-reference</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-add-feishu"><td class="pb-i">52</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">飞书内置插件</button><span class="pb-t-d">机器人身份接入</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/add-feishu</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-add-feishu-official"><td class="pb-i">53</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">飞书官方插件</button><span class="pb-t-d">用户身份和文档能力</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/add-feishu-official</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-add-telegram"><td class="pb-i">54</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">Telegram 渠道</button><span class="pb-t-d">Bot 接入和连通性</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/add-telegram</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-add-whatsapp"><td class="pb-i">55</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">WhatsApp 渠道</button><span class="pb-t-d">登录、重新配置和会话状态</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/add-whatsapp</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-china-models"><td class="pb-i">56</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">国产模型</button><span class="pb-t-d">火山、Moonshot、DeepSeek、Qwen、GLM</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/china-models</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-troubleshooting"><td class="pb-i">57</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">OpenClaw 排障</button><span class="pb-t-d">网关、渠道、模型和日志</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/troubleshooting</td></tr>
+<tr class="pb-row" data-id="setup-openclaw-uninstall"><td class="pb-i">58</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🦞</span><button type="button" class="pb-open">OpenClaw 卸载</button><span class="pb-t-d">停止服务、移除配置和验证残留</span></td><td class="pb-c">OpenClaw</td><td class="pb-p"><span class="tagp tagp-all">跨平台</span></td><td class="pb-r">setup-openclaw/uninstall</td></tr>
+</tbody>
+      </table>
+    </div>
+
+    <p class="pb-empty is-hidden" id="pbEmpty" data-i18n="pb.empty">没有匹配的 Playbook。换个关键词，或清空筛选。</p>
+  </div>
+</section>
+
+<!-- ══════════ 06 · 你可以直接说的话 ══════════ -->
+<section class="s s-say" id="prompts" aria-labelledby="sayTitle">
+  <div class="wrap">
+    <div class="say-head">
+      <h2 class="sectitle" id="sayTitle" data-i18n="say.title">你可以直接说的话</h2>
+      <p class="secdesc secdesc-wide" data-i18n-html="say.desc">安装后直接描述问题，不需要记 Playbook 名称。说清楚 <b>平台 + 症状 + 约束 + 期望动作</b>，Agent 就能更准确地选择排障流程。</p>
+    </div>
+  </div>
+
+  <div class="say-scroller" id="sayScroller" data-lenis-prevent-horizontal aria-label="示例提问自动滚动列表" data-i18n-attr="aria-label|a11y.sayScroller">
+    <ul class="say-track">
+      <li class="say-card">
+        <span class="say-n" aria-hidden="true">01</span>
+        <p class="say-q" id="say1" data-i18n="say.q1">Windows 11 最近经常断网，先只读检查网卡、DHCP、DNS、代理和 VPN，不要重置网络。</p>
+        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-network-diagnostics</code></p>
+        <button class="copybtn copybtn-say" type="button" data-copy-from="#say1" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+      </li>
+      <li class="say-card">
+        <span class="say-n" aria-hidden="true">02</span>
+        <p class="say-q" id="say2" data-i18n="say.q2">这台 Linux 服务器磁盘满了，先按挂载点和 inode 找原因，不要删除日志或容器数据。</p>
+        <p class="say-meta"><span class="tagp tagp-lin">Linux</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">linux-disk-space-recovery</code></p>
+        <button class="copybtn copybtn-say" type="button" data-copy-from="#say2" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+      </li>
+      <li class="say-card">
+        <span class="say-n" aria-hidden="true">03</span>
+        <p class="say-q" id="say3" data-i18n="say.q3">Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问题和预计影响列出来。</p>
+        <p class="say-meta"><span class="tagp tagp-mac">macOS</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">performance-forensics</code></p>
+        <button class="copybtn copybtn-say" type="button" data-copy-from="#say3" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+      </li>
+      <li class="say-card">
+        <span class="say-n" aria-hidden="true">04</span>
+        <p class="say-q" id="say4" data-i18n="say.q4">打印机显示离线，先检查队列、Spooler 和连接方式，清空卡住的作业前先让我确认。</p>
+        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-printer-repair</code></p>
+        <button class="copybtn copybtn-say" type="button" data-copy-from="#say4" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+      </li>
+      <li class="say-card">
+        <span class="say-n" aria-hidden="true">05</span>
+        <p class="say-q" id="say5" data-i18n="say.q5">帮我做一次 Windows 维修前体检，同时检查 C 盘空间、启动项和备份状态；全部先只读。</p>
+        <p class="say-meta"><span class="tagp tagp-all" data-i18n="say.multi">多目标</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">health-baseline-check</code></p>
+        <button class="copybtn copybtn-say" type="button" data-copy-from="#say5" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+      </li>
+      <li class="say-card say-card-stop">
+        <span class="say-n" aria-hidden="true">06</span>
+        <p class="say-q" id="say6" data-i18n="say.q6">我准备进入 PE，请先在当前 Windows 检查 BitLocker 状态；不要输出恢复密钥。</p>
+        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-bitlocker-recovery-triage</code></p>
+        <button class="copybtn copybtn-say" type="button" data-copy-from="#say6" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
+      </li>
+    </ul>
+  </div>
+
+  <div class="wrap">
+    <p class="say-order" data-i18n-html="say.order">标准工作顺序：确认平台和约束 <i>→</i> 读取证据 <i>→</i> 说明候选原因 <i>→</i> 给出最小变更计划 <i>→</i> 等待确认 <i>→</i> 执行 <i>→</i> 验证并记录结果。</p>
+  </div>
+</section>
+
+<!-- ══════════ 07 · 常见问题 ══════════ -->
+<section class="s s-faq" id="faq" aria-labelledby="faqTitle">
+  <div class="wrap faq-in">
+    <div class="faq-left">
+      <h2 class="sectitle sectitle-big" id="faqTitle" data-i18n="faq.title">常见问题</h2>
+      <p class="secdesc" data-i18n="faq.desc">关于安装方式、Agent 能力、安全边界和开源许可，这里集中回答。</p>
+      <ul class="faq-quick">
+        <li><i aria-hidden="true">01</i><p><b data-i18n="faq.point1t">它是 Skill，不是后台软件</b><span data-i18n="faq.point1d">Skill 提供流程，实际执行能力仍取决于 Agent 拥有的工具和权限。</span></p></li>
+        <li><i aria-hidden="true">02</i><p><b data-i18n="faq.point2t">默认只读，修改前确认</b><span data-i18n="faq.point2d">安装、删除、提权和重启必须先说明影响与回滚方式。</span></p></li>
+        <li><i aria-hidden="true">03</i><p><b data-i18n="faq.point3t">描述问题，不用记 Playbook</b><span data-i18n="faq.point3d">写清平台、症状、约束和期望动作，Agent 会自动路由。</span></p></li>
+      </ul>
+      <a class="btn btn-ghost btn-sm" href="https://github.com/88lin/computer-repair-skill/issues" rel="noopener" data-i18n="faq.more">还有问题？去 Issues 提</a>
+    </div>
+
+    <div class="faq-right">
+      <ul class="acc" id="acc">
+        <li class="acc-item is-open">
+          <h3 class="acc-h"><button class="acc-btn" type="button" aria-expanded="true" aria-controls="acc-p1"><i class="acc-n">1</i><span data-i18n="faq.q1">这是一个桌面软件吗？</span><span class="acc-arrow" aria-hidden="true">↓</span></button></h3>
+          <div class="acc-p" id="acc-p1"><p data-i18n="faq.a1">不是。它是给 Agent 读取的 Skill 包，提供诊断步骤、确认规则和安全边界。实际执行依赖你的 Agent 是否有本机终端、文件、网络和确认机制。</p></div>
+        </li>
+        <li class="acc-item">
+          <h3 class="acc-h"><button class="acc-btn" type="button" aria-expanded="false" aria-controls="acc-p2"><i class="acc-n">2</i><span data-i18n="faq.q2">能不能只用聊天窗口？</span><span class="acc-arrow" aria-hidden="true">↓</span></button></h3>
+          <div class="acc-p" id="acc-p2" hidden><p data-i18n="faq.a2">可以让 Agent 解释流程、生成检查清单和人工步骤；但没有本机工具时，它不能替你读取真实系统，也不能声称已经修复或验证。</p></div>
+        </li>
+        <li class="acc-item">
+          <h3 class="acc-h"><button class="acc-btn" type="button" aria-expanded="false" aria-controls="acc-p3"><i class="acc-n">3</i><span data-i18n="faq.q3">为什么不直接「一键优化 Windows」？</span><span class="acc-arrow" aria-hidden="true">↓</span></button></h3>
+          <div class="acc-p" id="acc-p3" hidden><p data-i18n="faq.a3">因为优化配置可能影响更新、隐私、驱动、企业策略和回滚。Computer Repair Skill 会先审查差异、风险和回滚路径，再在你确认后执行最小变更。</p></div>
+        </li>
+        <li class="acc-item">
+          <h3 class="acc-h"><button class="acc-btn" type="button" aria-expanded="false" aria-controls="acc-p4"><i class="acc-n">4</i><span data-i18n="faq.q4">进入 PE 后还能继续问 Agent 吗？</span><span class="acc-arrow" aria-hidden="true">↓</span></button></h3>
+          <div class="acc-p" id="acc-p4" hidden><p data-i18n="faq.a4">不要假设可以。进入 PE/WinRE 前让 Agent 把 BitLocker 状态、备份检查、命令清单和停工条件保存下来；离线阶段由人按清单处理，回到正常系统后再让 Agent 复核。</p></div>
+        </li>
+        <li class="acc-item">
+          <h3 class="acc-h"><button class="acc-btn" type="button" aria-expanded="false" aria-controls="acc-p5"><i class="acc-n">5</i><span data-i18n="faq.q5">支持哪些 Agent？</span><span class="acc-arrow" aria-hidden="true">↓</span></button></h3>
+          <div class="acc-p" id="acc-p5" hidden><p data-i18n="faq.a5">Codex、Claude Code、Hermes、OpenClaw、Cursor 或其他支持 Agent Skills 的工具。安装器内置 codex、claude、agents 三个默认 Skills 根目录，另有 custom 供你指定路径。</p></div>
+        </li>
+        <li class="acc-item">
+          <h3 class="acc-h"><button class="acc-btn" type="button" aria-expanded="false" aria-controls="acc-p6"><i class="acc-n">6</i><span data-i18n="faq.q6">它会直接修改我的电脑吗？</span><span class="acc-arrow" aria-hidden="true">↓</span></button></h3>
+          <div class="acc-p" id="acc-p6" hidden><p data-i18n="faq.a6">不会。默认先做只读检查并说明发现的问题；涉及安装、删除、提权、重启或其他状态变更时，会先展示具体动作、影响范围和回滚方式，等你明确确认后才继续。</p></div>
+        </li>
+        <li class="acc-item">
+          <h3 class="acc-h"><button class="acc-btn" type="button" aria-expanded="false" aria-controls="acc-p7"><i class="acc-n">7</i><span data-i18n="faq.q7">许可证和署名怎么算？</span><span class="acc-arrow" aria-hidden="true">↓</span></button></h3>
+          <div class="acc-p" id="acc-p7" hidden><p data-i18n="faq.a7">项目按 GNU AGPL-3.0 开源。你可以查看、审阅和修改源码；分发修改版本时，需要遵守同一许可证的公开源码与署名要求。</p></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA（黄色全宽面板） ══════════ -->
+<section class="cta" id="cta" aria-labelledby="ctaTitle">
+  <div class="cta-stripe" aria-hidden="true"></div>
+  <div class="wrap cta-in">
+    <h2 class="cta-h" id="ctaTitle" data-i18n-html="cta.title">下一次电脑出问题，<br>让 Agent 先取证。</h2>
+    <p class="cta-p" data-i18n="cta.desc">一行命令装好，然后用自然语言描述症状就行。</p>
+
+    <div class="cta-cmd">
+      <code id="ctaCmd">npx skills add 88lin/computer-repair-skill --global</code>
+      <button class="copybtn copybtn-cta" type="button" data-copy="npx skills add 88lin/computer-repair-skill --global" data-i18n-attr="aria-label|a11y.copy" aria-label="复制命令"><span data-i18n="ui.copy">复制</span></button>
+    </div>
+
+    <div class="cta-acts">
+      <a class="btn btn-ink" href="https://github.com/88lin/computer-repair-skill" rel="noopener" data-i18n="cta.gh">GitHub 仓库</a>
+      <a class="btn btn-outline" href="https://skills.sh/88lin/computer-repair-skill" rel="noopener" data-i18n="cta.sh">skills.sh 页面</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-mast">Computer&nbsp;Repair&nbsp;Skill</p>
+    <p class="foot-tag" data-i18n="foot.tagline">先取证，再判断；先计划，再修改。</p>
+
+    <div class="foot-cols">
+      <section class="foot-col">
+        <h2 class="foot-h" data-i18n="foot.h1">快速开始</h2>
+        <ul class="foot-list">
+          <li><a href="#install" data-i18n="foot.quick1">选择安装方式</a></li>
+          <li><a href="#playbooks" data-i18n="foot.quick2">浏览 58 个 Playbook</a></li>
+          <li><a href="#prompts" data-i18n="foot.quick3">查看示例提问</a></li>
+          <li><a href="#safety" data-i18n="foot.quick4">了解安全边界</a></li>
+        </ul>
+      </section>
+
+      <section class="foot-col">
+        <h2 class="foot-h" data-i18n="foot.h2">项目</h2>
+        <ul class="foot-list">
+          <li><a href="https://github.com/88lin/computer-repair-skill" rel="noopener" data-i18n="foot.project1">GitHub 仓库</a></li>
+          <li><a href="https://skills.sh/88lin/computer-repair-skill" rel="noopener" data-i18n="foot.project2">skills.sh 页面</a></li>
+          <li><a href="https://skills.sh/docs" rel="noopener" data-i18n="foot.project3">Skills CLI 文档</a></li>
+          <li><a href="https://github.com/88lin/computer-repair-skill/issues" rel="noopener" data-i18n="foot.project4">问题反馈</a></li>
+        </ul>
+      </section>
+
+      <section class="foot-col">
+        <h2 class="foot-h" data-i18n="foot.h3">开源与支持</h2>
+        <ul class="foot-list">
+          <li><a href="https://github.com/88lin" rel="noopener" data-i18n="foot.open1">作者 88lin</a></li>
+          <li><a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener">GNU AGPL-3.0</a></li>
+          <li><a href="https://github.com/88lin/computer-repair-skill/blob/main/SECURITY.md" rel="noopener" data-i18n="foot.open2">报告安全问题</a></li>
+          <li><a href="https://github.com/88lin/computer-repair-skill/blob/main/NOTICE" rel="noopener" data-i18n="foot.open3">来源与署名</a></li>
+        </ul>
+      </section>
+    </div>
+
+    <p class="foot-legal">
+      <span data-i18n-html="foot.legal">Computer Repair Skill 由 <a href="https://github.com/88lin" rel="noopener">88lin</a> 开发，按 <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener">GNU AGPL-3.0</a> 开源。</span>
+    </p>
+  </div>
+</footer>
+
+<!-- ══════════ MODAL ══════════ -->
+<div class="modal js-only" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+  <div class="modal-scrim" data-modal-close></div>
+  <div class="modal-box" role="document" data-lenis-prevent>
+    <button class="modal-x" type="button" data-modal-close aria-label="关闭" data-i18n-attr="aria-label|a11y.close">×</button>
+    <p class="modal-kicker" id="modalKicker"></p>
+    <h2 class="modal-t" id="modalTitle"></h2>
+    <p class="modal-detail" id="modalDetail"></p>
+    <dl class="modal-dl" id="modalDl"></dl>
+    <a class="modal-src" id="modalSrc" href="#" rel="noopener" data-i18n="ui.viewSource">在 GitHub 上看这个 Playbook ↗</a>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/playbooks.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/vendor/lenis/lenis.min.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>
