@@ -135,10 +135,6 @@ macOS / Linux：
 
 </details>
 
-## ❤️赞助商
-
-这里可以免费体验多种 AI 模型，例如 **Qwen3.8-Max-Preview**、**hy3**、**GLM-5.2**、**Kimi K3** 等。点击前往[免费 AI 福利指南](https://blog.88lin.eu.org/article/36)体验。
-
 ## 🧭 如何使用
 
 安装后直接说问题，不需要记 Playbook 名称。描述越具体，路由越准确：**平台 + 症状 + 约束 + 期望动作**。
