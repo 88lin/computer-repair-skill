@@ -12,9 +12,9 @@ Upstream baseline repository:
 https://github.com/noahapp/noah-for-tinkerers
 Baseline commit: e5e5536bcb925358d65d8dc6812ee6c49722373b
 
-The following repositories were reviewed on 2026-07-28 at the listed commit.
-Only behavioral observations and safety boundaries were used; no source code,
-binary or remote installer was copied into this project.
+The following repositories were reviewed on the listed commit or supplied
+working tree. Only behavioral observations and safety boundaries were used; no
+source code, binary or remote installer was copied into this project.
 
 ZyperWave/ZyperWinOptimize and tsgrgo/windows-update-disabler did not contain a
 license file in the reviewed trees. They were used only for behavioral
@@ -24,6 +24,9 @@ code, asset, binary, or installer source for this project.
 - darkmatter2048/WindowsCleaner v2 @ 37b4dfacdec71393990f1a2eae9807bfec0daf48
   CC BY-NC-SA 4.0
 - aakk007/RogueCleaner main @ e498db393a1ceabad85a5750315d9a9e072cf6fa
+  MIT; current supplied working tree reviewed 2026-08-04 (no Git metadata)
+- builtbybel/FluentCleaner supplied working tree reviewed 2026-08-04
+  (no Git metadata available)
   MIT
 - cccyd2003-qwq/pinkbin main @ dc5585560f4e87a016853097573baa43699d4e3f
   MIT

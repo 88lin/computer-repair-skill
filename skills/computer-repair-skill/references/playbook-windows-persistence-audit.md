@@ -15,6 +15,8 @@ Use for pop-ups, unknown background activity, slow boot, unexplained context-men
 ## Quick check
 Record Windows build, current user, complaint time, and whether the device is managed by MDM, Group Policy, security software or an enterprise account. Start read-only and preserve a report outside the suspected application directory.
 
+Read [cleanup-protocol.md](cleanup-protocol.md) and [rule-source-contract.md](rule-source-contract.md) before classifying a vendor or proposing removal. A name or path substring is not sufficient identity evidence.
+
 ## Standard diagnostic path
 
 ### 1. Enumerate persistence locations
@@ -31,11 +33,17 @@ For suspicious executables record the literal path, publisher, Authenticode stat
 ### 2. Evaluate evidence
 Use install date, publisher, signature, parent application, path ownership and observed behavior. “Unknown” is not the same as “malware”. Keep original registry values, task XML or service configuration as evidence. If malware is suspected, activate `endpoint-security-check` and preserve evidence before removal.
 
+Require at least two independent identity signals. Mark weak, unknown or conflicting matches as report-only; do not bulk-select them. Show the user the human-visible entry, technical location, evidence summary, impact and proposed action.
+
 ### 3. Plan a single-item change
 Default application associations, signed enterprise extensions and security software are review-only. For an unwanted application, prefer its verified uninstaller. If disabling a user-owned startup item or task is appropriate, export the exact registry key/task XML or record the original service start mode first. Do not batch-delete by vendor name, wildcard or pattern.
 
+The plan must contain fixed finding IDs, exact targets, backup location, required elevation, rollback and post-change re-scan. Launching an uninstaller only opens the vendor UI; the user must confirm there, and the Agent must not silently pass uninstall arguments.
+
 ### 4. Apply and re-scan
 After explicit approval, change only the listed item. Do not alter UAC, certificate trust, Defender, SmartScreen, Windows Update or protected services. Never use PsExec to bypass access checks.
+
+Re-check the item against the preview immediately before the change. Back up first, verify the backup is readable, apply one action, then verify the new state. Keep failed or recreated entries in the report and preserve a restore batch.
 
 ## Verification
 Re-enumerate the same location, verify the backup/export is readable, and repeat the original boot, context-menu or browser workflow. Check that no dependent service, file association or enterprise policy regressed.

@@ -15,6 +15,8 @@ Use for a named application's cache growth, WeChat received-file duplication, br
 ## Quick check
 Identify the application, version, profile/account, exact data root, current processes, synchronization state, and backup status. Use `win_app_data_ls` and `win_process_list`; do not assume a path from a README or another machine.
 
+Before proposing any deletion, read [cleanup-protocol.md](cleanup-protocol.md) and, for a Winapp2-style or community rule file, [rule-source-contract.md](rule-source-contract.md). Treat the rule as data to review, not as execution authorization.
+
 ## Standard diagnostic path
 
 ### 1. Establish the data boundary
@@ -28,8 +30,12 @@ When the request is duplicate cleanup, group candidates by size, then compare a 
 ### 3. Use explicit scopes
 Prefer the owning application's documented cleanup or a reviewed, version-specific scope. Do not recursively match `*.tmp`, `*.cache`, `node_modules`, or an entire application root. A scope must state its positive targets and redlines, and must be safe when a directory is absent or a junction is present.
 
+For each reviewed rule, run a read-only preview first. Show the concrete files, registry values, exclusions, warnings, total bytes and locked/skipped items. If a rule cannot distinguish cache from profile state, keep it report-only.
+
 ### 4. Stage a reversible action
 After the user approves the exact list, close the application through its normal UI or let the user do so. Move files to the Windows Recycle Bin or an isolated quarantine directory with `win_recycle_path`; do not use permanent deletion. Write an undo manifest containing original path, size, SHA-256, timestamp and destination. Use a backup first when the boundary touches account or chat data.
+
+Re-check each path and hash immediately before moving it. Stop the item if it changed, escaped the approved root or the backup could not be read. Never turn this playbook into a silent scheduled delete; unattended runs may produce inventory or preview reports only.
 
 ## Verification
 Re-scan the same scopes, compare byte counts and duplicate groups, and launch the application or its relevant workflow. Verify that the undo manifest and Recycle Bin/quarantine entries exist. Report skipped locked files instead of retrying with force.

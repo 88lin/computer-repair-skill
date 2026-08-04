@@ -15,6 +15,8 @@ User reports a full Windows drive, low-space warnings, update failures caused by
 ## Quick check
 Run `win_disk_usage` and record total/free space for each fixed volume. Confirm the target volume and requested free-space goal.
 
+Use [cleanup-protocol.md](cleanup-protocol.md): disk recovery is `inventory` and `analyze/preview` before any `apply`. Never treat a cleaner's silent mode or a saved selection as approval.
+
 Do not begin deletion from a drive-level percentage alone. Measure categories first.
 
 ## Standard diagnostic path
@@ -55,6 +57,8 @@ Show exact measured targets and expected recovery:
 
 Keep user files, mail stores, browser profiles, credentials, cloud roots, and unknown application data out of automatic cleanup.
 
+For every tier, produce a fixed target manifest with exact paths, measured bytes, owner, rule/source, exclusion checks, backup or quarantine destination, and rollback. Re-check size, hash and application state immediately before each approved action.
+
 ### 6. Execute with checkpoints
 Obtain approval for the listed targets. Before each delete, follow `safety-policy.md`: inspect the literal path, enumerate concrete entries, and record recovery.
 
@@ -62,6 +66,8 @@ For offload requests, copy to the target, compare size/file count or hashes, let
 
 ## Verification
 Re-run `win_disk_usage` and report exact before/after free bytes. Verify Windows Update or the original blocked workflow, plus the applications whose caches were touched.
+
+Re-run the same inventory and cleanup rules, report residual/locked items, and keep the batch manifest readable. A successful command without a post-clean scan is not a successful recovery.
 
 ## Caveats
 - Hibernation, restore points, component-store cleanup, and previous Windows installations reduce rollback options.
