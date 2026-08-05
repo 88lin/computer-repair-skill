@@ -76,7 +76,9 @@
   `credential-cleanup` 中遗留的文件大小误判。
 - Windows WLAN 配置现在对 SSID 和密码做 XML 转义，临时路径不再使用用户输入，
   且导入失败时也会清理秘密文件；密码会去除秘密文件换行，profile 使用真实
-  SSID，写入 XML 时不带 BOM，并拒绝覆盖同名已有 profile。
+  SSID，写入 XML 时不带 BOM。发现同名 profile 时会先展示（不读取明文密钥）并
+  询问，只有用户确认后才精确删除并重新导入；SSID 含 `"`、`=` 或 `>` 时改用
+  Windows Wi-Fi UI，避免 `netsh name=` 解析错误。
 - 官网生成器为 25 个 local Playbook 恢复原有 emoji，校验器现在拒绝缺失图标；
   弹窗在未来缺失图标时也不会产生前导空格。
 - OpenClaw 卸载的状态/配置删除块自包含路径解析与安全检查，不依赖上一段

@@ -631,6 +631,17 @@ def validate_review_regressions(validation: Validation) -> None:
 
     config_reference = read_text(REFERENCES_DIR / "playbook-setup-openclaw-config-reference.md", validation)
     common_channels = config_reference.split("## Feishu-specific channel settings", 1)[0]
+    feishu_heading = config_reference.find("## Feishu-specific channel settings")
+    dm_policy = config_reference.find("**DM policies:**")
+    group_behaviour = config_reference.find("**Group behaviour:**")
+    validation.check(
+        feishu_heading >= 0
+        and dm_policy >= 0
+        and group_behaviour >= 0
+        and dm_policy < feishu_heading
+        and group_behaviour < feishu_heading,
+        "通用 DM/group 说明必须位于 Feishu 专属小节之前。",
+    )
     validation.check(
         "typingIndicator" not in common_channels and "resolveSenderNames" not in common_channels,
         "通用 channel 配置块不能误用 Feishu 专有字段。",
@@ -650,7 +661,29 @@ def validate_review_regressions(validation: Validation) -> None:
     updates = read_text(REFERENCES_DIR / "playbook-windows-update-troubleshooting.md", validation)
     validation.check("net stop bits && net start bits" not in updates and "net start wuauserv" in updates, "Windows Update 服务重启不能用失败即短路的 &&。")
 
-    validation.check("profileImported" in wifi and "wlan delete profile" in wifi and "connectivity verification fails" in wifi, "Wi-Fi 连接失败后必须删除已导入的临时 profile。")
+    validation.check(
+        "profileImported" in wifi
+        and "if ($profileImported)" in wifi
+        and "wlan delete profile" in wifi
+        and "ui_user_question` with `options`" in wifi
+        and "connectivity verification fails" in wifi,
+        "Wi-Fi 连接失败后必须删除已导入的 profile，并在替换前询问用户。",
+    )
+    netsh_guard = "if ($ssid -match '[\"=>]')"
+    show_profile = "& netsh.exe wlan show profile"
+    profile_check = wifi.find("$profileExisted =")
+    ui_options = wifi.find("ui_user_question` with `options`")
+    delete_profile = wifi.find("& netsh.exe wlan delete profile")
+    validation.check(
+        netsh_guard in wifi
+        and wifi.find(netsh_guard) < wifi.find(show_profile)
+        and profile_check >= 0
+        and ui_options >= 0
+        and delete_profile >= 0
+        and profile_check < ui_options < delete_profile
+        and 'SSID contains `"`, `=` or `>`' in wifi,
+        "Wi-Fi 必须在任何 netsh name= 调用前拦截特殊 SSID，并提供 Windows UI 兜底。",
+    )
 
     network = read_text(REFERENCES_DIR / "playbook-windows-network-diagnostics.md", validation)
     validation.check("A mismatch is not itself" in network and "a fault" in network, "WinHTTP/WinINET 不一致不能无条件判定为故障。")

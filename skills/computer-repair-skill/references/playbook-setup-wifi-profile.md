@@ -37,6 +37,31 @@ the password becomes a process argument visible to every user via `ps`.
 command argument, transcript, or shell history. Do not use the SSID as a filename or
 concatenate it into a shell command string: SSIDs can contain spaces, quotes, and XML
 metacharacters. Pass it only as a separate quoted argument and escape it in XML.
+The `netsh` `name=` parser cannot reliably address an SSID containing `"`, `=` or
+`>`; the automated branch below stops and sends those networks to the Windows Wi-Fi
+UI instead of attempting to escape the argument.
+
+Before generating temporary files, run the Windows profile preflight. This keeps the
+special-SSID fallback and any user cancellation outside the import path, so there is no
+secret file to clean up if the flow stops:
+```powershell
+if ($ssid -match '["=>]') {
+  throw 'SSID contains ", =, or >; netsh name= cannot parse it reliably. Use the Windows Wi-Fi UI to connect or remove this network.'
+}
+$existingProfileOutput = & netsh.exe wlan show profile "name=$ssid" 2>&1
+$profileExisted = $LASTEXITCODE -eq 0
+$existingProfileInfo = ($existingProfileOutput | Out-String).Trim()
+```
+
+If `$profileExisted` is true, present `$existingProfileInfo` to the user without adding
+`key=clear`, then call `ui_user_question` with `options`: **Replace existing profile** /
+**Cancel**. On Cancel, stop. Only after **Replace existing profile** is selected, run:
+```powershell
+& netsh.exe wlan delete profile "name=$ssid" | Out-Null
+if ($LASTEXITCODE -ne 0) { throw "netsh wlan delete profile failed: $LASTEXITCODE" }
+```
+Do not import until the precise same-SSID deletion succeeds. If `$profileExisted` is
+false, continue without a delete.
 
 1. Generate profile and secret paths that contain no user input:
    ```powershell
@@ -80,20 +105,14 @@ metacharacters. Pass it only as a separate quoted argument and escape it in XML.
    elevation; use `user=all` only when every account needs the profile (admin required):
    ```powershell
    $profileImported = $false
-   $profileExisted = $false
    try {
-     & netsh.exe wlan show profile "name=$ssid" *> $null
-     $profileExisted = $LASTEXITCODE -eq 0
-     if ($profileExisted) {
-       throw "A WLAN profile named '$ssid' already exists; refusing to replace it. Review it first."
-     }
      & netsh.exe wlan add profile "filename=$profilePath" user=current
      if ($LASTEXITCODE -ne 0) { throw "netsh wlan add profile failed: $LASTEXITCODE" }
      $profileImported = $true
      & netsh.exe wlan connect "name=$ssid"
      if ($LASTEXITCODE -ne 0) { throw "netsh wlan connect failed: $LASTEXITCODE" }
    } catch {
-     if ($profileImported -and -not $profileExisted) {
+     if ($profileImported) {
        & netsh.exe wlan delete profile "name=$ssid" | Out-Null
      }
      throw
@@ -116,15 +135,19 @@ If the connection fails:
 - Wrong password → ask user to re-enter
 - Enterprise auth failed → check username format (may need domain\user or user@domain)
 - Captive portal → tell user to open a browser
+- If the SSID contains `"`, `=` or `>`, the `netsh name=` parser is unreliable. Use
+  Windows Settings → Network & internet → Wi-Fi to connect or remove the profile
+  manually; do not try to escape these characters in `name=`.
 - If the imported profile is no longer wanted or connectivity verification fails, remove
   this run's profile explicitly: `& netsh.exe wlan delete profile "name=$ssid"`.
-  The import refuses to replace an existing profile with the same SSID; do not delete
-  another profile by SSID or by wildcard.
+  An existing same-SSID profile is shown first and replaced only after the user chooses
+  Replace; never delete another profile by wildcard.
 
 If the target device is already in an offline setup or recovery environment, do not assume the host Agent can connect it. Give the user a manual GUI or technician checklist and verify the result when a usable host is available again.
 
 ## Tools referenced
 - `shell_run` — network commands
+- `ui_user_question` with `options` — confirm replacing an existing same-SSID profile
 - `ui_user_question` with `text_input` — SSID, username
 - `ui_user_question` with `secure_input` — Wi-Fi password
 - `write_secret` — write password to config file if needed

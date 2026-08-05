@@ -81,6 +81,15 @@ All channels share the same field patterns:
 }
 ```
 
+**DM policies:**
+- `pairing` — new senders need approval (expires 1h, max 3 pending)
+- `allowlist` — only `allowFrom` senders allowed
+- `open` — anyone can message
+- `disabled` — channel off
+
+**Group behaviour:**
+- `requireMention` — in group chats, only respond when the bot is @mentioned. Defaults to `true`. Set it to `false` under `channels.<channel>.groups.<group-id>` to let one group talk to the bot without @mentions.
+
 ## Feishu-specific channel settings
 
 These optimization flags belong only to the Feishu channel; do not copy them
@@ -102,15 +111,6 @@ Google Chat has a different `typingIndicator` contract: it is a string enum,
 for example `channels.googlechat.typingIndicator: "message"`, not a boolean.
 Do not reuse the Feishu example for Google Chat, and do not assume either field
 is shared by every channel.
-
-**DM policies:**
-- `pairing` — new senders need approval (expires 1h, max 3 pending)
-- `allowlist` — only `allowFrom` senders allowed
-- `open` — anyone can message
-- `disabled` — channel off
-
-**Group behaviour:**
-- `requireMention` — in group chats, only respond when the bot is @mentioned. Defaults to `true`. Set it to `false` under `channels.<channel>.groups.<group-id>` to let one group talk to the bot without @mentions.
 
 ## Gateway Settings
 
