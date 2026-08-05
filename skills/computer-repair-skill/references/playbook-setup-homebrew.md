@@ -2,7 +2,7 @@
 name: setup-homebrew
 description: Install and configure Homebrew package manager on macOS
 platform: macos
-last_reviewed: 2026-07-28
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🍺
@@ -42,11 +42,30 @@ minutes.
 
 ## Step 3: Add Homebrew to PATH
 After installation, Homebrew often needs to be added to the shell profile.
-Check if `brew` is in PATH by running `which brew`.
-If not found, tell the user to run:
+Check if `brew` is in PATH by running `command -v brew`.
+
+The prefix differs by architecture: Apple Silicon installs to `/opt/homebrew`, Intel Macs
+to `/usr/local`. Detect it by which binary actually exists rather than hardcoding one —
+and note that Rosetta and migrated machines can have either, so `uname -m` alone is not
+reliable:
+```bash
+BREW=""
+for p in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  [ -x "$p" ] && BREW="$p" && break
+done
+if [ -z "$BREW" ]; then
+  echo "Homebrew not found in either prefix; stop before editing a shell profile." >&2
+  exit 1
+fi
 ```
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-eval "$(/opt/homebrew/bin/brew shellenv)"
+
+Append to the profile the user's login shell actually reads — `~/.zprofile` for zsh (the
+macOS default since Catalina), `~/.bash_profile` for bash:
+```bash
+PROFILE=~/.zprofile
+[ "$(basename "$SHELL")" = "bash" ] && PROFILE=~/.bash_profile
+echo "eval \"\$($BREW shellenv)\"" >> "$PROFILE"
+eval "$($BREW shellenv)"
 ```
 Then verify with `brew --version`.
 

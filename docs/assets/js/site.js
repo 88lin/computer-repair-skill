@@ -636,7 +636,7 @@ function openModal(id) {
   if (!modal || !p) return;
   var u = UI();
   var cat = LANG === "en" ? (p.category_en || p.category_zh) : p.category_zh;
-  $("#modalKicker").textContent = p.emoji + "  " + cat;
+  $("#modalKicker").textContent = (p.emoji ? p.emoji + "  " : "") + cat;
   $("#modalTitle").textContent = tx(p, "title_zh", "title_en");
   $("#modalDetail").textContent = tx(p, "detail_zh", "detail_en");
   var when = LANG === "en" ? (p.when_en || p.triggers_zh) : p.triggers_zh;

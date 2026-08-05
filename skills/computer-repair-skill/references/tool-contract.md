@@ -12,9 +12,9 @@ Playbook 中的工具名是能力别名。宿主 Agent 无需提供同名工具�
 | `ui_done` | 仅在验证成功后给出完成摘要和前后数据。 |
 | `ui_info` | 给出事实性说明、剩余阻点或需要人工处理的部分。 |
 | `secure_input` | 使用宿主的遮罩输入或秘密管理功能。缺少此能力时，让用户在本机设置变量或文件，不接收秘密正文。 |
-| `write_secret` | 让用户或受信任的本机命令从环境变量/秘密存储写入目标文件；验证文件和键存在，但不读取或打印值。 |
+| `write_secret` | 让用户或受信任的本机命令从环境变量/秘密存储以安全文件权限写入目标文件；验证文件和键存在，但不读取或打印值。 |
 | `activate_playbook` | 从 `playbook-index.md` 找到对应 `references/playbook-*.md` 并读取。 |
-| `knowledge_search` / `search_knowledge` | 使用 `rg`、宿主搜索或结构化文件搜索定位本地知识。 |
+| `knowledge_search` | 规范名称。使用 `rg`、宿主搜索或结构化文件搜索定位本地知识。别名 `search_knowledge` 语义完全相同，仅为兼容早期 Playbook 保留；新写的 Playbook 一律使用 `knowledge_search`。 |
 | `knowledge_read` | 使用宿主文件读取工具读取已选知识文件。 |
 | `write_knowledge` | 经用户确认后写入指定 Markdown 知识目录。 |
 | `web_fetch` | 使用宿主联网工具读取明确 URL，记录最终 URL、状态和获取日期。 |
@@ -56,3 +56,14 @@ Windows 专项 Playbook 使用的 `win_path_inventory`、`win_file_hash`、`win_
 - 命令超时：终止当前调用，检查是否留下后台进程，再选择更窄的查询。
 - 输出格式变化：读取原始输出并使用结构化解析，不依赖固定列宽。
 - 目标不存在：确认路径、服务名或进程 ID 是否已变化，再更新结论。
+
+## `write_secret` 的安全写入
+
+`write_secret` 必须在写入秘密字节之前建立目标文件的限制权限，不能先按默认权限创建
+或追加秘密、再用 `chmod`/ACL 收紧。具体要求：
+
+- POSIX：新文件以 `0600` 创建（实现可使用 `umask 077` 或等价的原子创建）；已有文件在追加前先收紧到 `0600`。
+- Windows：写入前先应用只允许当前用户 SID 和 LocalSystem well-known SID `S-1-5-18` 的 ACL；使用 `icacls` 时给 SID 加 `*` 前缀，避免本地化账户名。
+- 宿主无法保证上述写入前权限时必须拒绝写入，而不是留下短暂的默认权限文件。
+
+写入后的 `chmod 600` 或 ACL 命令只能作为复核/修复步骤，不能替代写入前保护。

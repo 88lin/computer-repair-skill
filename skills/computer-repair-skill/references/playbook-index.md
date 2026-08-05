@@ -10,6 +10,17 @@
 
 ## 健康、性能、存储与备份
 
+### 存储与迁移：先选对入口
+
+六个流程都会被“C 盘满了”命中，按用户的真实诉求分流，不要默认跳到最激进的那个：
+
+- 还不知道空间被谁占了 → `windows-storage-inventory`（只读盘点）
+- 确认是缓存或重复文件 → `windows-application-cleanup`
+- 想把应用或数据挪到别的盘 → `windows-application-migration`
+- 挪完出现幽灵链接或想回滚 → `windows-migration-history-recovery`
+- 只想安全释放系统盘，不动应用 → `windows-disk-space-recovery`
+- 空间确实不够，要动分区 → `windows-partition-resize-audit`（风险最高，放最后）
+
 | Playbook | 平台 | 触发症状 | 文件 |
 |---|---|---|---|
 | `health-baseline-check` | all | 全面体检、设备健康、交接前检查 | [playbook-health-baseline-check.md](playbook-health-baseline-check.md) |
@@ -98,19 +109,19 @@
 
 先加载主流程，再按选择读取一个子模块。配置字段查询可直接读取配置参考。
 
-| Playbook | 用途 | 文件 |
-|---|---|---|
-| `setup-openclaw` | 安装、引导、网关、渠道和总体验证 | [playbook-setup-openclaw.md](playbook-setup-openclaw.md) |
-| `setup-openclaw/install-node` | 安装 Node.js 22+ | [playbook-setup-openclaw-install-node.md](playbook-setup-openclaw-install-node.md) |
-| `setup-openclaw/configure` | 模型、渠道、会话和自动化配置 | [playbook-setup-openclaw-configure.md](playbook-setup-openclaw-configure.md) |
-| `setup-openclaw/config-reference` | 查询 OpenClaw 配置字段 | [playbook-setup-openclaw-config-reference.md](playbook-setup-openclaw-config-reference.md) |
-| `setup-openclaw/add-feishu` | 飞书内置插件，机器人身份 | [playbook-setup-openclaw-add-feishu.md](playbook-setup-openclaw-add-feishu.md) |
-| `setup-openclaw/add-feishu-official` | 飞书官方插件，用户身份与文档能力 | [playbook-setup-openclaw-add-feishu-official.md](playbook-setup-openclaw-add-feishu-official.md) |
-| `setup-openclaw/add-telegram` | Telegram 渠道 | [playbook-setup-openclaw-add-telegram.md](playbook-setup-openclaw-add-telegram.md) |
-| `setup-openclaw/add-whatsapp` | WhatsApp 登录或重新配置 | [playbook-setup-openclaw-add-whatsapp.md](playbook-setup-openclaw-add-whatsapp.md) |
-| `setup-openclaw/china-models` | 火山、Moonshot、DeepSeek、Qwen、GLM | [playbook-setup-openclaw-china-models.md](playbook-setup-openclaw-china-models.md) |
-| `setup-openclaw/troubleshooting` | 网关、渠道、模型和日志排错 | [playbook-setup-openclaw-troubleshooting.md](playbook-setup-openclaw-troubleshooting.md) |
-| `setup-openclaw/uninstall` | 停止服务并卸载 OpenClaw | [playbook-setup-openclaw-uninstall.md](playbook-setup-openclaw-uninstall.md) |
+| Playbook | 平台 | 触发症状 | 文件 |
+|---|---|---|---|
+| `setup-openclaw` | all | 安装、引导、网关、渠道和总体验证 | [playbook-setup-openclaw.md](playbook-setup-openclaw.md) |
+| `setup-openclaw/install-node` | all | 安装 Node.js 22+ | [playbook-setup-openclaw-install-node.md](playbook-setup-openclaw-install-node.md) |
+| `setup-openclaw/configure` | all | 模型、渠道、会话和自动化配置 | [playbook-setup-openclaw-configure.md](playbook-setup-openclaw-configure.md) |
+| `setup-openclaw/config-reference` | all | 查询 OpenClaw 配置字段 | [playbook-setup-openclaw-config-reference.md](playbook-setup-openclaw-config-reference.md) |
+| `setup-openclaw/add-feishu` | all | 飞书内置插件，机器人身份 | [playbook-setup-openclaw-add-feishu.md](playbook-setup-openclaw-add-feishu.md) |
+| `setup-openclaw/add-feishu-official` | all | 飞书官方插件，用户身份与文档能力 | [playbook-setup-openclaw-add-feishu-official.md](playbook-setup-openclaw-add-feishu-official.md) |
+| `setup-openclaw/add-telegram` | all | Telegram 渠道 | [playbook-setup-openclaw-add-telegram.md](playbook-setup-openclaw-add-telegram.md) |
+| `setup-openclaw/add-whatsapp` | all | WhatsApp 登录或重新配置 | [playbook-setup-openclaw-add-whatsapp.md](playbook-setup-openclaw-add-whatsapp.md) |
+| `setup-openclaw/china-models` | all | 火山、Moonshot、DeepSeek、Qwen、GLM | [playbook-setup-openclaw-china-models.md](playbook-setup-openclaw-china-models.md) |
+| `setup-openclaw/troubleshooting` | all | 网关、渠道、模型和日志排错 | [playbook-setup-openclaw-troubleshooting.md](playbook-setup-openclaw-troubleshooting.md) |
+| `setup-openclaw/uninstall` | all | 停止服务并卸载 OpenClaw | [playbook-setup-openclaw-uninstall.md](playbook-setup-openclaw-uninstall.md) |
 
 ## 未命中专项流程
 

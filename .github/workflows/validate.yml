@@ -32,6 +32,9 @@ jobs:
       - name: Validate Skill
         run: python tests/validate_skill.py
 
+      - name: Verify generated website data
+        run: python tools/extract_data.py --check
+
       - name: Test Bash installer
         if: runner.os == 'Linux'
         shell: bash

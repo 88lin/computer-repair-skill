@@ -2,7 +2,7 @@
 name: setup-openclaw/configure
 description: Edit OpenClaw configuration — models, channels, sessions, automation
 platform: all
-last_reviewed: 2026-03-08
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🦞
@@ -49,11 +49,18 @@ Common model IDs:
 - `openai/gpt-4o` — OpenAI alternative
 - For Chinese providers, activate `setup-openclaw/china-models`
 
-If switching providers, may need to set the API key:
-```
-openclaw config set env.ANTHROPIC_API_KEY "sk-ant-..."
-```
-Or use secure_input to collect the key, then write it.
+If switching providers, may need to set the API key. Collect it with `secure_input`, then
+store it with `write_secret` — never as a shell argument, which would leave it in shell
+history and in the process table:
+- secret_name: e.g. `anthropic_api_key`
+- file_path: expansion of `~/.openclaw/.env`
+- format: `ANTHROPIC_API_KEY={{value}}` (append, keep the trailing newline)
+
+`write_secret` must establish restrictive permissions before writing. On macOS/Linux, run
+`chmod 600 ~/.openclaw/.env` afterward only as a verification/fix-up. On Windows, apply
+the locale-independent ACL equivalent shown in the Telegram playbook instead of running
+`chmod`. That file is the documented home for provider credentials; the `env` block in
+`openclaw.json` stores them in plaintext instead.
 
 ## Step 3: Channel Configuration
 
@@ -138,4 +145,5 @@ openclaw gateway restart
 - `shell_run` — openclaw CLI commands
 - `ui_user_question` with options — what to configure
 - `ui_user_question` with `secure_input` — API keys
+- `write_secret` — 把 API key 写入 `~/.openclaw/.env`，不经命令行参数
 - `ui_user_question` with `text_input` — phone numbers, model names

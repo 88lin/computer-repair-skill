@@ -2,7 +2,7 @@
 name: endpoint-security-check
 description: Quick security posture check — antivirus, firewall, updates, and suspicious activity
 platform: all
-last_reviewed: 2026-03-17
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🛡️
@@ -19,14 +19,18 @@ Routine security audit, post-incident triage, new device onboarding, or user rep
 
 ### 1. Check endpoint protection
 Check for running antivirus/endpoint protection processes:
-- **macOS**: Look for processes like `XProtect`, `MRT`, `com.apple.ManagedClient`, CrowdStrike (`falcond`), SentinelOne (`SentinelAgent`), Sophos (`SophosScanD`), or Jamf (`jamf`).
+- **macOS**: Look for `XProtect`, `XProtectRemediator*` (the per-family scanners under `/Library/Apple/System/Library/CoreServices/XProtect.app/Contents/MacOS/`), `com.apple.ManagedClient`, CrowdStrike (`falcond`), SentinelOne (`SentinelAgent`), Sophos (`SophosScanD`), or Jamf (`jamf`). Do **not** expect `MRT` — the Malware Removal Tool was superseded by XProtect Remediator in macOS 12.3 and is not installed on current systems, so its absence is normal.
 - **Windows**: Check for `MsMpEng.exe` (Defender), `CsFalconService` (CrowdStrike), `SentinelAgent.exe`, or other known AV processes.
 - **Linux**: Check for `clamd` (ClamAV), `falcond`, or `SentinelAgent`.
 
 If no endpoint protection is found, flag as a finding. macOS XProtect should always be present — if it's missing, something is wrong.
 
 ### 2. Check firewall status
-- **macOS**: Run a shell command to check firewall state via `defaults read /Library/Preferences/com.apple.alf globalstate`. Value `1` or `2` = enabled, `0` = disabled.
+- **macOS**: Use the application firewall CLI. The old `com.apple.alf` plist is gone in macOS 15 and reading it there returns an error, so do not depend on it:
+  ```bash
+  /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+  ```
+  If you cannot get `sudo`, read it without elevation via `system_profiler SPFirewallDataType`.
 - **Windows**: Check Windows Firewall status.
 - **Linux**: Check `ufw status` or `iptables -L`.
 

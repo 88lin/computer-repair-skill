@@ -2,7 +2,7 @@
 name: backup-verify-restore
 description: Verify backup integrity by checking status, timestamps, and testing a real file restore
 platform: all
-last_reviewed: 2026-03-17
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 💾
@@ -20,7 +20,12 @@ Periodic backup verification, after setting up a new backup, compliance audit, o
 ### 1. Identify the backup tool
 Detect which backup system is in use:
 - **macOS**: Check Time Machine status via `tmutil status` and `tmutil latestbackup`.
-- **Windows**: Check File History via `fhmanagew.exe -status`, or Windows Backup settings.
+- **Windows**: `fhmanagew.exe` has no status switch (its only documented switch is `-cleanup <days>`), so query the scheduled task and the config file instead:
+  ```powershell
+  Get-ScheduledTask -TaskPath '\Microsoft\Windows\FileHistory\' | Get-ScheduledTaskInfo
+  Test-Path "$env:LOCALAPPDATA\Microsoft\Windows\FileHistory\Configuration\Config.xml"
+  ```
+  A `Config.xml` that exists means File History was configured; `LastRunTime`/`LastTaskResult` from the task tell you whether it is still running. Also check Settings → Windows Backup.
 - **Linux**: Check for Timeshift (`timeshift --list`), Borg (`borg list`), Restic (`restic snapshots`), or Deja Dup.
 
 If no backup tool is detected, report this immediately and recommend setting one up.
@@ -28,7 +33,7 @@ If no backup tool is detected, report this immediately and recommend setting one
 ### 2. Check last backup timestamp
 For the detected backup tool:
 - **Time Machine**: Parse the date from `tmutil latestbackup` output.
-- **File History**: Check the last backup timestamp from the File History log.
+- **File History**: Read `LastRunTime` from `Get-ScheduledTaskInfo` above, or take the newest timestamp under the target drive's `FileHistory\<user>\<host>\Data` folder.
 - **Timeshift**: Parse the most recent snapshot date from `timeshift --list`.
 - **Borg/Restic**: Parse the most recent archive/snapshot timestamp.
 

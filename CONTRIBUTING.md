@@ -50,8 +50,13 @@ source: local
 仓库只要求 Python 3，无第三方包：
 
 ```bash
+python tools/extract_data.py --check
 python tests/validate_skill.py
 ```
+
+官网的 `docs/assets/js/playbooks.js` 是生成文件。修改 Playbook 的 frontmatter、
+路由索引或 `tools/site_catalog.json` 后，先运行 `python tools/extract_data.py` 更新
+它，再运行上面的 `--check`；不要直接手工编辑压缩后的 JavaScript。
 
 还应在对应平台测试安装器：
 

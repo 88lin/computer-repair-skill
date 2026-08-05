@@ -2,7 +2,7 @@
 name: windows-update-troubleshooting
 description: Fix stuck Windows Updates, failed installations, and update service errors
 platform: windows
-last_reviewed: 2026-03-04
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🔄
@@ -14,9 +14,30 @@ emoji: 🔄
 User reports: Windows Update stuck, update won't install, update error code, system slow after update, "something went wrong" during update, pending restart that won't complete.
 
 ## Quick check
-Run `shell_run` with `powershell -Command "Get-WindowsUpdate -ErrorAction SilentlyContinue; Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 5"` to see recent updates.
+List the recently installed updates with a built-in cmdlet. Run `shell_run` with:
+
+```powershell
+Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 5
+```
+
+To list *pending* updates without installing anything, use the built-in Windows Update
+COM searcher — it needs no extra module:
+
+```powershell
+$searcher = (New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher()
+$searcher.Search("IsInstalled=0 and Type='Software'").Updates |
+  Select-Object Title, @{n='SizeMB';e={[math]::Round($_.MaxDownloadSize/1MB,1)}}
+```
+
 - If recent updates installed fine → problem may be a specific failed update. Ask for the error code.
 - If no recent updates → update service may be stuck. Proceed with fix path.
+
+> `Get-WindowsUpdate`, `Install-WindowsUpdate` and `Hide-WindowsUpdate` are **not** built into
+> Windows. They ship with the third-party `PSWindowsUpdate` module and fail with
+> "not recognized" on a default system. Never wrap them in `-ErrorAction SilentlyContinue`:
+> that hides the missing-module failure and makes the check silently report nothing.
+> If a step below needs them, install the module first and confirm with the user:
+> `Install-Module PSWindowsUpdate -Scope CurrentUser`.
 
 Also check `win_disk_usage` — Windows Update needs 10-20 GB free.
 
@@ -29,10 +50,14 @@ Run `shell_run` with `powershell -Command "Test-Path 'HKLM:\SOFTWARE\Microsoft\W
 
 ### 2. Restart Windows Update services
 Run `win_restart_service` for `wuauserv` (Windows Update).
-Also restart these related services via `shell_run`:
-```
-net stop bits && net start bits
-net stop cryptSvc && net start cryptSvc
+Also restart these related services via `shell_run`. Run this block in **cmd.exe** with
+`cmd /c`, not PowerShell. Keep stop and start on separate lines so a failed stop or
+cache operation cannot skip the start commands and leave a service stopped:
+```cmd
+net stop bits
+net start bits
+net stop cryptSvc
+net start cryptSvc
 ```
 - `wuauserv` — the update engine
 - `bits` — Background Intelligent Transfer Service (downloads updates)
@@ -42,12 +67,16 @@ Restarting these three services fixes most transient update failures.
 
 ### 3. Clear the update cache
 If restarting services didn't help, clear the cached update files:
-Run `shell_run` with:
-```
-net stop wuauserv && net stop bits
+Run `shell_run` with this **cmd.exe** block (`ren` is a cmd internal command; run it with
+`cmd /c`, not PowerShell). The final `net start` commands are unconditional lines, so
+they still run when a rename fails:
+```cmd
+net stop wuauserv
+net stop bits
 ren C:\Windows\SoftwareDistribution SoftwareDistribution.old
 ren C:\Windows\System32\catroot2 catroot2.old
-net start wuauserv && net start bits
+net start bits
+net start wuauserv
 ```
 This forces Windows to re-download updates from scratch. The old folders can be deleted after updates succeed.
 
@@ -57,8 +86,9 @@ Microsoft's built-in troubleshooter resets update components and fixes common is
 
 ### 5. DISM and SFC repair
 If updates still fail, the system image may be corrupted:
-Run `shell_run` with:
-```
+Run `shell_run` with this **cmd.exe** block (both are console executables; run them one per
+line so a failure in DISM does not silently skip SFC):
+```cmd
 DISM /Online /Cleanup-Image /RestoreHealth
 sfc /scannow
 ```
@@ -74,7 +104,7 @@ sfc /scannow
 - **Error code 0x800f081f** — source files not found. DISM can't download repair files. Try: `DISM /Online /Cleanup-Image /RestoreHealth /Source:C:\path\to\mounted\iso\sources\install.wim` with a mounted Windows ISO.
 - **"Updates are managed by your organization"** — Group Policy or MDM is controlling updates. Nothing to fix locally — contact IT admin.
 - **Metered connection blocking updates** — Windows won't download large updates on metered connections. Settings → Network & Internet → check if current connection is set to metered.
-- **Update loops (install → reboot → install again)** — a broken update is being retried. Hide the specific update: `powershell -Command "Hide-WindowsUpdate -KBArticleID 'KBXXXXXXX'"` or uninstall it from Settings → Update History → Uninstall updates.
+- **Update loops (install → reboot → install again)** — a broken update is being retried. Built-in options first: uninstall it from Settings → Update History → Uninstall updates, or `wusa /uninstall /kb:XXXXXXX` for older packages. To *block* it from returning there is no built-in cmdlet — use Microsoft's `wushowhide.diagcab` tool, or install the third-party module and tell the user you are doing so: `Install-Module PSWindowsUpdate -Scope CurrentUser` then `Hide-WindowsUpdate -KBArticleID 'KBXXXXXXX'`.
 
 ## Key signals
 - **"Stuck at a percentage for hours"** → if actively downloading/installing, wait up to 2 hours. If truly stuck, force-reboot and retry. Step 3 to clear cache.

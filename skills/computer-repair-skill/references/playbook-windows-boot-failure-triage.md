@@ -2,7 +2,7 @@
 name: windows-boot-failure-triage
 description: Triage Windows startup, No Boot Device, UEFI/boot-entry, and pre-login failures without blindly changing firmware
 platform: windows
-last_reviewed: 2026-07-28
+last_reviewed: 2026-08-05
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -24,7 +24,15 @@ Capture the exact message and a photograph if possible. Record whether the syste
 - Windows begins loading then fails: route to `windows-winre-system-repair` and collect stop code or event evidence.
 
 ### 2. Rule out removable and transient causes
-Disconnect unneeded USB drives, docks and external disks, but preserve the user's recovery media. Check whether a recent firmware update, battery drain, forced shutdown or driver change preceded the failure. A one-off `EARLY EXIT ON FAILURE` screen is not automatically a kernel BSOD; a tested first response is `Ctrl+Alt+Delete`, sign out, and restart if the screen accepts it.
+Disconnect unneeded USB drives, docks and external disks, but preserve the user's recovery media. Check whether a recent firmware update, battery drain, forced shutdown or driver change preceded the failure.
+
+Ask the user to read out the exact on-screen text, and classify it before acting:
+- `Preparing Automatic Repair` / `Diagnosing your PC` — Windows started and is self-repairing. Let it finish once; do not power-cycle mid-repair.
+- `Your PC did not start correctly` or `Automatic Repair couldn't repair your PC` — WinRE is up. Route to `windows-winre-system-repair`.
+- A stop code (`INACCESSIBLE_BOOT_DEVICE`, `CRITICAL_PROCESS_DIED`, …) — the kernel loaded, so this is a BSOD, not a firmware problem. Record the stop code verbatim.
+- No Windows branding at all, or a vendor POST/diagnostic message — the failure is before Windows. Stay in step 1 and treat it as firmware/storage.
+
+Do not guess at a screen the user has not actually described. A single transient failure that clears on a normal restart needs no further repair, but confirm it cleared rather than assuming it did.
 
 ### 3. Review UEFI/boot configuration safely
 Read the vendor manual and current firmware screen. A Windows installation created for UEFI normally needs a UEFI boot path; an old Legacy/MBR installation may not boot after an arbitrary switch. Present the exact proposed firmware change and its reversal before the user performs it. Do not automate BIOS changes.

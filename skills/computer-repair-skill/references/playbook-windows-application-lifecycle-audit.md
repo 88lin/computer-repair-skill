@@ -2,7 +2,7 @@
 name: windows-application-lifecycle-audit
 description: Audit Windows app install/uninstall candidates by exact package ID, publisher, source, and reversible verification
 platform: windows
-last_reviewed: 2026-07-28
+last_reviewed: 2026-08-05
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -86,8 +86,12 @@ security controls, update services and unrelated applications remain present.
   but do not execute it blindly.
 - Store package removal may be restored by Windows updates or organization
   policy. Report the policy owner rather than repeatedly removing it.
-- Sparkle-style “debloat” presets may be non-reversible even when the UI says
-  they are safe. Treat each item as an independent change.
+- Third-party Windows "debloat" or tweak utilities (Sparkle for Windows, O&O
+  ShutUp10, Winutil and similar) apply presets that may be non-reversible even
+  when the UI says they are safe — Sparkle's own documentation states some
+  tweaks cannot be unapplied. Treat each item as an independent change, and
+  record what was applied before applying it. Note this is the Windows tool
+  named Sparkle, not the macOS `Sparkle` app-update framework.
 
 ## Escalation
 Escalate unsigned installers, unknown publishers, drivers, security or MDM

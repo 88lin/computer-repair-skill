@@ -2,7 +2,7 @@
 name: setup-openclaw/add-feishu
 description: Add Feishu (飞书) as a messaging channel for OpenClaw (built-in plugin)
 platform: all
-last_reviewed: 2026-03-09
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🦞
@@ -54,6 +54,9 @@ Use WAIT_FOR_USER — the user does this in the Feishu developer console.
 
 Tell the user to batch-import permissions:
 
+Grant the **minimum** set first. Extra scopes are not free: a Feishu app secret that
+leaks carries every scope you granted, so never import scopes "just in case".
+
 > 1. Go to **权限管理** (Permissions) in the left menu
 > 2. Click **批量导入** (Batch import)
 > 3. Paste the following JSON and import:
@@ -62,15 +65,9 @@ Tell the user to batch-import permissions:
 > {
 >   "scopes": {
 >     "tenant": [
->       "aily:file:read",
->       "aily:file:write",
->       "application:application.app_message_stats.overview:readonly",
->       "application:application:self_manage",
 >       "application:bot.menu:write",
 >       "cardkit:card:write",
 >       "contact:user.employee_id:readonly",
->       "corehr:file:download",
->       "docs:document.content:read",
 >       "event:ip_list",
 >       "im:chat",
 >       "im:chat.access_event.bot_p2p_chat:read",
@@ -81,18 +78,37 @@ Tell the user to batch-import permissions:
 >       "im:message.p2p_msg:readonly",
 >       "im:message:readonly",
 >       "im:message:send_as_bot",
->       "im:resource",
->       "sheets:spreadsheet",
->       "wiki:wiki:readonly"
+>       "im:resource"
 >     ],
 >     "user": [
->       "aily:file:read",
->       "aily:file:write",
 >       "im:chat.access_event.bot_p2p_chat:read"
 >     ]
 >   }
 > }
 > ```
+
+`contact:user.employee_id:readonly` is only needed if `resolveSenderNames` stays on.
+Drop it if the user is fine seeing raw sender IDs.
+
+**Only if the user explicitly wants the bot to read or write their documents**, import
+this second block as well. Say out loud what it grants before importing:
+
+> ```json
+> {
+>   "scopes": {
+>     "tenant": [
+>       "docs:document.content:read",
+>       "sheets:spreadsheet",
+>       "wiki:wiki:readonly"
+>     ]
+>   }
+> }
+> ```
+
+Do **not** grant these, which earlier versions of this playbook included by mistake:
+- `aily:file:read` / `aily:file:write` — Aily platform file access, unrelated to a chat bot
+- `corehr:file:download` — downloads HR files; an org's personnel data is not chat-bot scope
+- `application:application:self_manage` — lets the app rewrite its own configuration
 
 Use WAIT_FOR_USER — the user does this in the Feishu developer console.
 
@@ -105,6 +121,9 @@ Tell the user to find their credentials:
 > - Copy the **App Secret**
 >
 > Keep the App Secret private — do not share it.
+>
+> If it ever leaks: reset it in **凭证与基础信息**, update the stored value, then run
+> `openclaw gateway restart`. Resetting invalidates the old secret immediately.
 
 Collect the App ID via `text_input` (placeholder: "cli_xxxxxxxxx").
 Collect the App Secret via `secure_input` (secret_name: "feishu_app_secret").
@@ -129,24 +148,54 @@ Run `shell_run` with:
 openclaw config set channels.feishu.enabled true
 ```
 
-Write the App ID (collected in Step 4):
+Write the App ID (collected in Step 4). The App ID is not a secret:
 Run `shell_run` with `openclaw config set channels.feishu.accounts.main.appId "<app_id from Step 4>"`.
 
-Write the App Secret:
-Use `write_secret` with secret_name "feishu_app_secret",
-file_path "~/.openclaw/openclaw.json",
-format: use `openclaw config set channels.feishu.accounts.main.appSecret "{{value}}"` via shell_run.
+**Write the App Secret — never through a shell argument.** A secret passed on a command
+line lands in the process table and in shell history. Do not use
+`openclaw config set env.FEISHU_APP_SECRET "$(cat ...)"` or any variant that expands the
+value into `argv`.
 
-Alternatively, use `write_secret` with:
-- secret_name: "feishu_app_secret"
-- file_path: expansion of `~/.openclaw/secrets/feishu_app_secret`
-- format: "{{value}}"
+Use `write_secret` to put it in the global runtime dotenv, which is the documented home
+for credentials (`~/.openclaw/.env`, a.k.a. `$OPENCLAW_STATE_DIR/.env`):
+- secret_name: `feishu_app_secret`
+- file_path: expansion of `~/.openclaw/.env`
+- format: `FEISHU_APP_SECRET={{value}}`
+- append to the file rather than replacing it, and make sure the line ends with a newline
 
-Then set the env reference:
+Then verify or restore the file permissions and point the config at the variable **without
+letting the shell expand it** — note the single quotes. `write_secret` must establish the
+restrictive permissions before writing; on macOS/Linux use `chmod 600` afterward only as
+a verification/fix-up, and on Windows use the locale-independent ACL shown in the Telegram
+playbook:
+```bash
+chmod 600 ~/.openclaw/.env
+openclaw config set channels.feishu.accounts.main.appSecret '${FEISHU_APP_SECRET}'
 ```
-openclaw config set channels.feishu.accounts.main.appSecret "${FEISHU_APP_SECRET}"
-openclaw config set env.FEISHU_APP_SECRET "$(cat ~/.openclaw/secrets/feishu_app_secret)"
+
+Double quotes here would make the shell substitute the value and write the plaintext
+secret straight into `openclaw.json`, which is the exact outcome we are avoiding.
+Verify with `openclaw config get channels.feishu.accounts.main.appSecret` — it must print
+the literal `${FEISHU_APP_SECRET}`, not the secret.
+
+If the user prefers structured secret storage, a SecretRef is equivalent and avoids
+interpolation entirely:
+```json5
+{
+  channels: { feishu: { accounts: { main: {
+    appSecret: { source: "env", provider: "default", id: "FEISHU_APP_SECRET" },
+  } } } }
+}
 ```
+
+Fully interactive alternative — the official wizard prompts for both values and never
+puts them in `argv`:
+```bash
+openclaw channels login --channel feishu
+```
+
+See `playbook-setup-openclaw-config-reference.md` for the full env resolution order, and
+`safety-policy.md` for the rule this follows.
 
 Restart gateway:
 ```

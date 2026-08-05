@@ -2,7 +2,7 @@
 name: windows-partition-resize-audit
 description: Audit Windows partition and C-drive expansion requests with backup, BitLocker, adjacency and offline-tool safety checks
 platform: windows
-last_reviewed: 2026-07-28
+last_reviewed: 2026-08-05
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -11,6 +11,19 @@ source: local
 
 ## When to activate
 Use when the user wants to expand C:, shrink or move a data partition, merge free space, change a disk layout or prepare a disk for reinstall.
+
+### 相邻流程：存储与迁移集群
+
+「C 盘满了」会同时命中下面六个流程。先确认用户的真实诉求，命中错了就改路由，不要在本流程里硬做别的流程的事：
+
+- 只想知道空间被谁占了（只读盘点） → [windows-storage-inventory](playbook-windows-storage-inventory.md)
+- 确认是缓存或重复文件 → [windows-application-cleanup](playbook-windows-application-cleanup.md)
+- 要把应用或数据挪到别的盘 → [windows-application-migration](playbook-windows-application-migration.md)
+- 迁移后出现幽灵链接或要回滚 → [windows-migration-history-recovery](playbook-windows-migration-history-recovery.md)
+- 只想安全释放系统盘，不动应用 → [windows-disk-space-recovery](playbook-windows-disk-space-recovery.md)
+- 空间确实不够，要动分区（风险最高） → [windows-partition-resize-audit](playbook-windows-partition-resize-audit.md) ← **本流程**
+
+完整分流表见 [playbook-index.md](playbook-index.md)。
 
 ## Quick check
 Build a read-only map of physical disks, partition order, sizes, filesystem, free space, boot/recovery partitions, BitLocker state and mounted volumes. Record which filesystems and user data are on every partition that would move. Do not infer that free space at the end of D: is adjacent to C:.
@@ -24,7 +37,7 @@ Back up important data from every partition that may move and verify the copy. F
 Run `windows-storage-inventory` and `windows-disk-space-recovery` first. Remove only confirmed regenerable data or move verified archives if that solves the capacity problem. A small C: drive is not by itself a reason to repartition.
 
 ### 3. Check geometry and tool boundary
-Windows Disk Management can extend into immediately adjacent unallocated space, but cannot safely move arbitrary intervening data. Moving a partition requires an offline PE/WinToGo environment and a reviewed tool. Do not resize the running system volume with an unreviewed hot operation.
+Windows Disk Management can extend into immediately adjacent unallocated space, but cannot safely move arbitrary intervening data. Moving a partition requires an offline environment and a reviewed tool — boot WinRE (Shift + Restart → Troubleshoot), a WinPE image, or the vendor's own bootable media. Do not plan around Windows To Go: it was deprecated in Windows 10 version 2004 and removed, so it is not available on any current system. Do not resize the running system volume with an unreviewed hot operation.
 
 ### 4. Produce a human-executed plan
 List the exact disk, partitions, source of free space, expected new sizes, order of any moves, AC-power requirement, estimated downtime, backup location and rollback limitation. When multiple partitions are crossed, the plan must move them from the farthest affected partition toward C: and must stop if any partition is dynamic, encrypted, failing or unknown.

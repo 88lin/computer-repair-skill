@@ -2,7 +2,7 @@
 name: browser-security-audit
 description: Audit browser extensions, saved passwords, and update status for security risks
 platform: all
-last_reviewed: 2026-03-17
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🔍
@@ -36,9 +36,34 @@ Flag extensions that match any of these patterns:
 Present findings and let the user decide what to remove.
 
 ### 3. Check for saved passwords in browsers
-- **Chrome**: Check if `~/Library/Application Support/Google/Chrome/Default/Login Data` exists and has entries (it's a SQLite DB — check file size, don't dump passwords).
-- **Firefox**: Check for `logins.json` in the Firefox profile.
-- **Edge**: Check the equivalent Edge Login Data file.
+Count the entries — do not infer from file size. `Login Data` is a SQLite database with a
+fixed schema, so it is several kilobytes even with zero saved passwords, and "file exists
+and is nonzero" always reports true.
+
+- **Chrome**: `~/Library/Application Support/Google/Chrome/Default/Login Data`. Chrome holds
+  a lock on the live file, so copy it first and query a unique temporary copy:
+  ```bash
+  login_db="$HOME/Library/Application Support/Google/Chrome/Default/Login Data"
+  if ! query_db=$(mktemp "${TMPDIR:-/tmp}/computer-repair-login-data.XXXXXX"); then
+    echo "Could not create a temporary database copy" >&2
+    exit 1
+  fi
+  cleanup() { rm -f "$query_db"; }
+  trap cleanup EXIT HUP INT TERM
+  if ! cp "$login_db" "$query_db"; then
+    echo "Could not copy Login Data; count is unknown" >&2
+    exit 1
+  fi
+  sqlite3 "$query_db" "SELECT COUNT(*) FROM logins;"
+  ```
+  The `trap` removes only the file created by this run, including on failure. This
+  returns a count only. Never select `password_value` — read no credential material.
+- **Firefox**: `logins.json` in the Firefox profile. It is JSON; count the `logins` array
+  length rather than checking existence, because the file is created empty.
+- **Edge**: use the same unique-copy method, under `~/Library/Application Support/Microsoft Edge/Default/Login Data`.
+
+If `sqlite3` is unavailable, say the count could not be determined rather than guessing
+from file size.
 
 If saved passwords are found, warn the user: browser password storage is less secure than a dedicated password manager. Recommend migrating to 1Password, Bitwarden, or similar. Don't be preachy — just note the finding and the recommendation.
 

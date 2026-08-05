@@ -2,7 +2,7 @@
 name: windows-network-diagnostics
 description: Systematic Windows connectivity troubleshooting for adapters, DHCP, routes, DNS, proxy, VPN, and HTTP
 platform: windows
-last_reviewed: 2026-07-26
+last_reviewed: 2026-08-05
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -59,12 +59,29 @@ Run `Resolve-DnsName` for the affected domain and a known-good domain.
 Flush DNS only after observing stale or inconsistent resolver results. Re-run the original query after `win_flush_dns`.
 
 ### 5. Validate proxy, VPN, and captive portal
-Inspect:
-```
+Windows keeps **two independent proxy configurations**, and checking only one is the usual
+reason a proxy problem looks unreproducible:
+
+- **WinHTTP** — machine-level, used by services and system components (Windows Update,
+  activation, most CLI tools). Set separately from the user's browser settings.
+- **WinINET** — per-user, what Internet Options / Settings → Proxy edits. Browsers and
+  most desktop apps use this.
+
+A proxy configured in only one of them produces the classic split symptom: the browser
+works but Windows Update fails, or the reverse. Read both:
+```powershell
+# WinHTTP (machine / services)
 netsh winhttp show proxy
-Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings'
+# WinINET (current user / browsers)
+Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings' |
+  Select-Object ProxyEnable, ProxyServer, ProxyOverride, AutoConfigURL
+# VPN / virtual adapters
 Get-NetAdapter | Where-Object InterfaceDescription -Match 'VPN|Virtual|Tunnel'
 ```
+Report which of the two is set and which is empty as context. A mismatch is not itself
+a fault: call it a finding only when the failed layer (for example Windows Update or a
+browser) actually uses the affected proxy and the behavior reproduces. Do not copy one
+proxy configuration into the other or clear either one without evidence and approval.
 
 Do not disable a managed proxy or security client. Compare behavior with the user's approved VPN state and check organization policy.
 
