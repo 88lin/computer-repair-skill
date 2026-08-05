@@ -2,7 +2,7 @@
 name: setup-backup
 description: Set up Time Machine backup on macOS or configure basic backup strategy
 platform: macos
-last_reviewed: 2026-03-07
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🛡️
@@ -31,7 +31,22 @@ For USB drives:
 3. Enable Time Machine: `tmutil setdestination /Volumes/<DriveName>`
 4. Start first backup: `tmutil startbackup`
 
-For network drives: ask for the network path using `text_input`, then mount and configure.
+For network drives (NAS / SMB share):
+1. Ask for the share path using `text_input` (e.g. `smb://nas.local/TimeMachine`).
+2. Mount it in Finder first (Go → Connect to Server) so macOS stores the credentials in
+   the keychain. `tmutil` will not prompt for a password, so an unauthenticated share
+   fails with a permissions error rather than asking.
+3. Point Time Machine at it:
+   ```bash
+   tmutil setdestination -a "smb://<user>@<host>/<share>"
+   ```
+   `-a` **adds** a destination alongside any existing ones; omitting `-a` **replaces** the
+   destination list. Use `-a` unless the user explicitly wants to drop the old target.
+4. Confirm with `tmutil destinationinfo`, then `tmutil startbackup`.
+
+The share must be an Apple-compatible SMB target that advertises Time Machine support; a
+plain SMB folder is often rejected. If `setdestination` fails, check on the NAS whether the
+share has Time Machine / `fruit` support enabled before troubleshooting the Mac.
 
 Use WAIT_FOR_USER if the user needs to plug in a drive first.
 

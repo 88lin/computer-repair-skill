@@ -2,7 +2,7 @@
 name: windows-partition-resize-audit
 description: Audit Windows partition and C-drive expansion requests with backup, BitLocker, adjacency and offline-tool safety checks
 platform: windows
-last_reviewed: 2026-07-28
+last_reviewed: 2026-08-05
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -24,7 +24,7 @@ Back up important data from every partition that may move and verify the copy. F
 Run `windows-storage-inventory` and `windows-disk-space-recovery` first. Remove only confirmed regenerable data or move verified archives if that solves the capacity problem. A small C: drive is not by itself a reason to repartition.
 
 ### 3. Check geometry and tool boundary
-Windows Disk Management can extend into immediately adjacent unallocated space, but cannot safely move arbitrary intervening data. Moving a partition requires an offline PE/WinToGo environment and a reviewed tool. Do not resize the running system volume with an unreviewed hot operation.
+Windows Disk Management can extend into immediately adjacent unallocated space, but cannot safely move arbitrary intervening data. Moving a partition requires an offline environment and a reviewed tool — boot WinRE (Shift + Restart → Troubleshoot), a WinPE image, or the vendor's own bootable media. Do not plan around Windows To Go: it was deprecated in Windows 10 version 2004 and removed, so it is not available on any current system. Do not resize the running system volume with an unreviewed hot operation.
 
 ### 4. Produce a human-executed plan
 List the exact disk, partitions, source of free space, expected new sizes, order of any moves, AC-power requirement, estimated downtime, backup location and rollback limitation. When multiple partitions are crossed, the plan must move them from the farthest affected partition toward C: and must stop if any partition is dynamic, encrypted, failing or unknown.
