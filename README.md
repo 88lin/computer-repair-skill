@@ -8,7 +8,7 @@
 
 ### 让 Agent 像一名谨慎的电脑维修工程师：先取证，再判断；先计划，再修改。
 
-C 盘告急、运行迟缓、流氓软件反复出现、网页迟迟打不开——多数电脑问题并不需要立刻送修，它们需要的是一次有条理的诊断。Computer Repair Skill 是一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill：它为 Agent 提供完整的维修规程——先取证、再给计划，经你确认才执行，全程可审计、可回滚。
+C 盘满了、电脑越来越卡、流氓软件删不掉、网页打不开——多数电脑问题并不需要立刻送修，它们需要的是一次有条理的诊断。Computer Repair Skill 是一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill：它为 Agent 提供完整的维修规程——先取证、再给计划，经你确认才执行，全程可审计、可回滚。
 
 [![Validate Skill](https://github.com/88lin/computer-repair-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/88lin/computer-repair-skill/actions/workflows/validate.yml)
 [![skills.sh](https://skills.sh/b/88lin/computer-repair-skill)](https://skills.sh/88lin/computer-repair-skill)
@@ -19,7 +19,7 @@ C 盘告急、运行迟缓、流氓软件反复出现、网页迟迟打不开—
 </div>
 
 > [!NOTE]
-> C 盘告急、电脑日益迟缓、流氓软件屡清不尽、弹窗反复出现、Wi-Fi 已连接却打不开网页、应用占满系统盘需要迁移——用自然语言描述问题，Agent 会先取证、再给出计划，经你确认后才执行。全程只读优先、可审计、可回滚。
+> C 盘爆满、电脑卡顿、流氓软件删不掉、弹窗广告关不完、Wi-Fi 已连接却打不开网页、应用占满系统盘需要迁移——用自然语言描述问题，Agent 会先取证、再给出计划，经你确认后才执行。全程只读优先、可审计、可回滚。
 
 ## ✨ 为什么选择 Computer Repair Skill
 
