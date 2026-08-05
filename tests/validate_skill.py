@@ -21,6 +21,7 @@ EXPECTED_BUNDLED_COUNT = 37
 REQUIRED_SKILL_FIELDS = {"name", "description", "version"}
 OPTIONAL_SKILL_FIELDS = {"when_to_use"}
 MAX_SKILL_DESCRIPTION_CHARS = 600
+# Keep headroom below the host trigger limits so a one-word maintenance edit does not fail CI.
 MAX_SKILL_DESCRIPTION_WORDS = 80
 # Claude Code 把 description 与 when_to_use 一起注入系统提示，超出上限会被截断。
 MAX_SKILL_TRIGGER_CHARS = 1536
@@ -593,6 +594,52 @@ def validate_review_regressions(validation: Validation) -> None:
     validation.check(
         "SecurityElement]::Escape" in wifi and "finally" in wifi,
         "Wi-Fi XML 必须转义用户输入，并在失败时清理临时秘密。",
+    )
+
+    backup = read_text(REFERENCES_DIR / "playbook-setup-backup.md", validation)
+    destination_lines = [line.strip() for line in backup.splitlines() if "tmutil setdestination" in line]
+    validation.check(
+        len(destination_lines) == 2
+        and all("sudo tmutil setdestination" in line for line in destination_lines)
+        and "sudo tmutil setdestination -ap" in backup
+        and "`-p`" in backup
+        and "Mount it in Finder first" not in backup
+        and "tmutil will not prompt" not in backup,
+        "Time Machine 的两个 setdestination 都必须使用 sudo；网络目标必须用 -ap 交互式输入密码。",
+    )
+
+    telegram = read_text(REFERENCES_DIR / "playbook-setup-openclaw-add-telegram.md", validation)
+    validation.check(
+        "WindowsIdentity" in telegram
+        and "*${me}:(F)" in telegram
+        and "*S-1-5-18:(F)" in telegram
+        and "SYSTEM:(F)" not in telegram
+        and "$($env:USERNAME):(F)" not in telegram,
+        "Windows OpenClaw ACL 必须使用当前用户 SID 和 *S-1-5-18，不能依赖本地化账户名。",
+    )
+
+    tool_contract = read_text(REFERENCES_DIR / "tool-contract.md", validation)
+    validation.check(
+        "write_secret" in tool_contract
+        and "在写入秘密字节之前" in tool_contract
+        and "0600" in tool_contract
+        and "S-1-5-18" in tool_contract
+        and "拒绝写入" in tool_contract,
+        "write_secret 必须在写入秘密前建立安全权限，无法保证时拒绝写入。",
+    )
+    secret_playbooks = (
+        "playbook-setup-openclaw-add-feishu.md",
+        "playbook-setup-openclaw-add-feishu-official.md",
+        "playbook-setup-openclaw-add-telegram.md",
+        "playbook-setup-openclaw-china-models.md",
+        "playbook-setup-openclaw-config-reference.md",
+        "playbook-setup-openclaw-configure.md",
+        "playbook-setup-openclaw-troubleshooting.md",
+    )
+    secret_guidance = [read_text(REFERENCES_DIR / name, validation) for name in secret_playbooks]
+    validation.check(
+        all("write_secret" in text and "before writing" in text for text in secret_guidance),
+        "所有 OpenClaw 秘密写入 Playbook 都必须要求 write_secret 在写入前建立权限。",
     )
 
     browser = read_text(REFERENCES_DIR / "playbook-browser-security-audit.md", validation)

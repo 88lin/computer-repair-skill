@@ -85,7 +85,8 @@
   shell 会话中的变量。
 - Volcengine 流程改为先确认当前 provider/model catalog，避免引用不存在的插件或
   过期模型；健康基线同时接受 macOS 防火墙 `State = 1` 与 `State = 2`。
-- OpenClaw 的密钥文件权限说明增加 Windows ACL 分支；卸载覆盖 `OPENCLAW_HOME`、
+- OpenClaw 的密钥文件权限说明改用当前用户 SID 与 `*S-1-5-18`，并要求
+  `write_secret` 在写入前建立安全权限；卸载覆盖 `OPENCLAW_HOME`、
   `OPENCLAW_STATE_DIR`、`OPENCLAW_CONFIG_PATH`、多 profile 服务，并保留路径安全检查。
 - `playbook-windows-partition-resize-audit.md` 把已停止支持的 Windows To Go
   改为 WinRE/WinPE/厂商启动介质。
@@ -93,8 +94,8 @@
   只有在受影响层复现故障时才把不一致判定为问题。
 - `playbook-windows-application-lifecycle-audit.md` 区分 Windows 精简工具
   Sparkle 与 macOS 更新框架 Sparkle。
-- `playbook-setup-backup.md` 补上 Time Machine 网络目标的钥匙串挂载前置条件
-  与 `tmutil setdestination -a` 的追加语义。
+- `playbook-setup-backup.md` 为 USB 与 SMB 目标补齐 `sudo`，网络目标改用
+  `sudo tmutil setdestination -ap` 的非回显密码提示，不依赖 Finder 登录钥匙串。
 - 同步 `docs/assets/js/playbooks.js` 中本次修改文件的 `last_reviewed`。
 
 ### Known issues

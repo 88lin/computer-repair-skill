@@ -70,8 +70,9 @@ Then, on macOS/Linux:
 chmod 600 ~/.openclaw/.env
 openclaw config set channels.feishu.accounts.main.appSecret '${FEISHU_APP_SECRET}'
 ```
-On Windows, apply the ACL equivalent shown in the Telegram playbook instead of running
-`chmod`.
+`write_secret` must establish restrictive permissions before writing; this `chmod` is only
+a verification/fix-up. On Windows, apply the locale-independent ACL equivalent shown in
+the Telegram playbook instead of running `chmod`.
 Single quotes matter — double quotes would let the shell expand the value and write the
 plaintext secret into `openclaw.json`.
 

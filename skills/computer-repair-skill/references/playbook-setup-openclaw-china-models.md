@@ -78,9 +78,10 @@ inside `openclaw.json`:
 - format: `<ENV_VAR_NAME>={{value}}` (append, keep the trailing newline)
 
 For example, for Volcano Engine the line becomes `VOLCANO_ENGINE_API_KEY={{value}}`.
-On macOS/Linux, run `chmod 600 ~/.openclaw/.env`. On Windows, apply the ACL equivalent
-shown in the Telegram playbook instead of running `chmod`. Config fields reference it
-as `"${VOLCANO_ENGINE_API_KEY}"`.
+`write_secret` must establish restrictive permissions before writing. On macOS/Linux, run
+`chmod 600 ~/.openclaw/.env` afterward only as a verification/fix-up. On Windows, apply
+the locale-independent ACL equivalent shown in the Telegram playbook instead of running
+`chmod`. Config fields reference it as `"${VOLCANO_ENGINE_API_KEY}"`.
 
 ## Step 3: Configure the Model
 

@@ -60,9 +60,17 @@ inside `openclaw.json`. Use `write_secret` instead:
 - file_path: expansion of `~/.openclaw/.env`
 - format: `TELEGRAM_BOT_TOKEN={{value}}` (append, keep the trailing newline)
 
-On macOS/Linux, run `chmod 600 ~/.openclaw/.env`. On Windows, do not run `chmod`:
-restrict the file to the current user and `SYSTEM` with the host's ACL tool, for example
-`icacls.exe $env:USERPROFILE\.openclaw\.env /inheritance:r /grant:r "$($env:USERNAME):(F)" "SYSTEM:(F)"`.
+`write_secret` must establish restrictive permissions before writing: mode `0600` on
+macOS/Linux, and an ACL for the current user plus LocalSystem on Windows. On macOS/Linux,
+run `chmod 600 ~/.openclaw/.env` afterward only as a verification/fix-up. On Windows, do
+not run `chmod`; use locale-independent well-known SIDs with the host's ACL tool:
+```powershell
+$me = ([Security.Principal.WindowsIdentity]::GetCurrent()).User.Value
+icacls.exe "$env:USERPROFILE\.openclaw\.env" /inheritance:r /grant:r "*${me}:(F)" "*S-1-5-18:(F)"
+```
+The `*` prefix tells `icacls` to parse the values as SIDs instead of localized account
+names. If the host cannot create or update the file with these permissions before the
+secret bytes are written, stop rather than creating a default-permission file.
 The `"${TELEGRAM_BOT_TOKEN}"` reference above resolves from that file — see
 `playbook-setup-openclaw-config-reference.md` for the resolution order. If the token
 leaks, revoke it with `/revoke` in BotFather and repeat this step.

@@ -207,9 +207,10 @@ Only uppercase `[A-Z_][A-Z0-9_]*`. Missing vars cause load errors.
 5. Optional login-shell import (`env.shellEnv.enabled`) — only fills in expected keys that are still missing
 
 Because of rule 3, put secrets in `~/.openclaw/.env`, not in the `env` block of
-`openclaw.json`. On macOS/Linux use `chmod 600`; on Windows apply an ACL that grants
-access only to the gateway user (and `SYSTEM`). For structured secret storage use a
-SecretRef instead of a literal, e.g. `{ source: "env", provider: "default", id: "FEISHU_APP_SECRET" }`,
+`openclaw.json`. `write_secret` must establish permissions before writing. On macOS/Linux
+use `chmod 600` afterward only as a verification/fix-up; on Windows apply an ACL that
+grants access only to the gateway user and LocalSystem (`S-1-5-18`). For structured secret
+storage use a SecretRef instead of a literal, e.g. `{ source: "env", provider: "default", id: "FEISHU_APP_SECRET" }`,
 or a file-backed provider declared under `secrets.providers`.
 
 ## Custom Model Providers

@@ -56,10 +56,11 @@ history and in the process table:
 - file_path: expansion of `~/.openclaw/.env`
 - format: `ANTHROPIC_API_KEY={{value}}` (append, keep the trailing newline)
 
-On macOS/Linux, run `chmod 600 ~/.openclaw/.env`. On Windows, apply the ACL equivalent
-shown in the Telegram playbook instead of running `chmod`. That file is the documented
-home for provider credentials; the `env` block in `openclaw.json` stores them in
-plaintext instead.
+`write_secret` must establish restrictive permissions before writing. On macOS/Linux, run
+`chmod 600 ~/.openclaw/.env` afterward only as a verification/fix-up. On Windows, apply
+the locale-independent ACL equivalent shown in the Telegram playbook instead of running
+`chmod`. That file is the documented home for provider credentials; the `env` block in
+`openclaw.json` stores them in plaintext instead.
 
 ## Step 3: Channel Configuration
 

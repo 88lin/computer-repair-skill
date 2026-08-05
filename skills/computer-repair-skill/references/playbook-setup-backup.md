@@ -28,21 +28,21 @@ Ask the user what they want to back up to:
 For USB drives:
 1. Check connected drives with `diskutil list`
 2. Identify the right volume
-3. Enable Time Machine: `tmutil setdestination /Volumes/<DriveName>`
+3. Enable Time Machine: `sudo tmutil setdestination "/Volumes/<DriveName>"`
 4. Start first backup: `tmutil startbackup`
 
 For network drives (NAS / SMB share):
 1. Ask for the share path using `text_input` (e.g. `smb://nas.local/TimeMachine`).
-2. Mount it in Finder first (Go → Connect to Server) so macOS stores the credentials in
-   the keychain. `tmutil` will not prompt for a password, so an unauthenticated share
-   fails with a permissions error rather than asking.
-3. Point Time Machine at it:
+2. Do not rely on mounting the share in Finder first: Finder credentials go to the login
+   keychain, while the Time Machine service may need the system keychain. Point Time
+   Machine at the share directly with `sudo` and `-p`, which prompts for the SMB password
+   without putting it in the URL, process arguments, or shell history:
    ```bash
-   tmutil setdestination -a "smb://<user>@<host>/<share>"
+   sudo tmutil setdestination -ap "smb://<user>@<host>/<share>"
    ```
    `-a` **adds** a destination alongside any existing ones; omitting `-a` **replaces** the
    destination list. Use `-a` unless the user explicitly wants to drop the old target.
-4. Confirm with `tmutil destinationinfo`, then `tmutil startbackup`.
+3. Confirm with `tmutil destinationinfo`, then `tmutil startbackup`.
 
 The share must be an Apple-compatible SMB target that advertises Time Machine support; a
 plain SMB folder is often rejected. If `setdestination` fails, check on the NAS whether the

@@ -264,7 +264,8 @@ The host Agent should use a secure credential pipeline:
 
 1. **Collect** — `ui_user_question` with `secure_input` (masked input field)
 2. **Store** — Orchestrator keeps value in ephemeral HashMap (never in LLM context)
-3. **Write** — `write_secret` tool substitutes `{{value}}` into a file
+3. **Write** — `write_secret` substitutes `{{value}}` into a file that it creates or opens
+   with restrictive permissions before writing; see the `write_secret` contract.
 
 ```markdown
 Collect the API key via `secure_input` (secret_name: "api_key").
