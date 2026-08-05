@@ -30,6 +30,8 @@
 - `tests/validate_skill.py` 新增三类断言：路由表表头与列数一致、站点数据
   （`docs/assets/js/playbooks.js`）与 frontmatter 同步、版本号在 SKILL.md
   与 `agents/openai.yaml` 之间一致且 CHANGELOG 有对应条目。
+- 新增 `tools/extract_data.py` 和 `tools/site_catalog.json`，官网数据现在可从
+  Playbook 元数据、路由索引和明确的文案目录重复生成；`--check` 已接入验证器与 CI。
 
 ### Changed
 
@@ -87,6 +89,4 @@
 
 ### Known issues
 
-- `docs/assets/js/playbooks.js` 声明由 `python3 tools/extract_data.py` 生成，
-  但该脚本不在仓库内，本次仍需手工同步该文件。已单独开 issue 跟踪。
 - 2026-03 引入的上游 Playbook 中，本次未涉及的文件仍待逐个复核。

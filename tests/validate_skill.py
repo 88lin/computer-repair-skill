@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -12,6 +13,7 @@ from urllib.parse import unquote
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+EXTRACT_DATA = REPO_ROOT / "tools" / "extract_data.py"
 SKILL_DIR = REPO_ROOT / "skills" / "computer-repair-skill"
 REFERENCES_DIR = SKILL_DIR / "references"
 EXPECTED_PLAYBOOK_COUNT = 62
@@ -550,6 +552,30 @@ def validate_site_data(validation: Validation) -> None:
     )
 
 
+def validate_generated_site_data(validation: Validation) -> None:
+    """官网压缩数据必须由仓库内的可重复生成器产生。"""
+    validation.check(EXTRACT_DATA.is_file(), "缺少 tools/extract_data.py，官网数据无法重复生成。")
+    if not EXTRACT_DATA.is_file():
+        return
+    try:
+        result = subprocess.run(
+            [sys.executable, str(EXTRACT_DATA), "--check"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+    except OSError as exc:
+        validation.errors.append(f"无法运行 tools/extract_data.py --check：{exc}")
+        return
+    validation.check(
+        result.returncode == 0,
+        "docs/assets/js/playbooks.js 不是 tools/extract_data.py 的最新生成结果："
+        + (result.stderr.strip() or result.stdout.strip()),
+    )
+
+
 def validate_review_regressions(validation: Validation) -> None:
     """防止已修复的平台命令和敏感数据处理问题回归。"""
     wifi = read_text(REFERENCES_DIR / "playbook-setup-wifi-profile.md", validation)
@@ -619,6 +645,9 @@ def validate_release_files(validation: Validation) -> None:
         REPO_ROOT / ".github" / "workflows" / "validate.yml",
         REPO_ROOT / "scripts" / "install.ps1",
         REPO_ROOT / "scripts" / "install.sh",
+        REPO_ROOT / "tools" / "extract_data.py",
+        REPO_ROOT / "tools" / "site_catalog.json",
+        REPO_ROOT / "tools" / "site_catalog.json",
     ]
     for path in required:
         validation.check(path.is_file(), f"缺少发布文件：{path.relative_to(REPO_ROOT)}")
@@ -648,6 +677,7 @@ def validate_release_files(validation: Validation) -> None:
         SKILL_DIR / "references" / "playbook-index.md",
         REPO_ROOT / "scripts" / "install.ps1",
         REPO_ROOT / "scripts" / "install.sh",
+        REPO_ROOT / "tools" / "extract_data.py",
     ] + [REFERENCES_DIR / name for name in EXPECTED_LOCAL_PLAYBOOKS]
 
     for path in authored_files:
@@ -684,6 +714,7 @@ def main() -> int:
     validate_readme_summary(validation)
     validate_index_table_shape(validation)
     validate_site_data(validation)
+    validate_generated_site_data(validation)
     validate_review_regressions(validation)
     validate_release_files(validation)
     return validation.finish()
