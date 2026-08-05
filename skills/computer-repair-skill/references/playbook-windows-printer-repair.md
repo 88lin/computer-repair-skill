@@ -2,7 +2,7 @@
 name: windows-printer-repair
 description: Fix stuck print jobs, offline printers, and spooler issues on Windows
 platform: windows
-last_reviewed: 2026-03-04
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🖨️
@@ -51,7 +51,17 @@ Based on printer type (visible in `win_printer_list`):
 If the printer shows "Driver is unavailable":
 - Open Settings → Bluetooth & devices → Printers & scanners → select the printer → Remove.
 - Re-add: Settings → Add a printer → let Windows search, or add manually by IP.
-- Windows Update often has the right driver. If not, download from the manufacturer's website.
+- Windows Update often has the right driver. Prefer it — those packages are already signed and verified.
+- If you must download from the manufacturer's website, verify the file **before running it**:
+  ```powershell
+  Get-FileHash -Algorithm SHA256 "<downloaded-installer>"
+  Get-AuthenticodeSignature "<downloaded-installer>" | Format-List Status, SignerCertificate
+  ```
+  Compare the hash against the checksum published on the vendor's own download page, and
+  require `Status = Valid` with a signer name that matches the printer vendor. If either
+  check fails, or the vendor publishes no checksum, stop and tell the user — printer
+  "drivers" are a common malware delivery vector. Never download from a driver-aggregator
+  site.
 
 > Steps 1-2 fix ~80% of Windows print issues. The most common cause is a stuck job that crashed the spooler.
 
