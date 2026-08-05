@@ -6,7 +6,7 @@
 
 涉及缓存、应用残留、启动项、服务、计划任务、浏览器外部宿主、右键菜单、文件关联或 Appx 清理时，先读取 [cleanup-protocol.md](cleanup-protocol.md)；规则来自外部数据库、用户自定义文件或远程仓库时，再读取 [rule-source-contract.md](rule-source-contract.md)。
 
-本索引登记 58 个可执行 Playbook：37 个来自 `NOTICE` 记录的上游基准，21 个由本项目补充，用于覆盖 Windows 和 Linux 的网络、性能、存储、安全、启动、硬件和恢复诊断。
+本索引登记 62 个可执行 Playbook：37 个来自 `NOTICE` 记录的上游基准，25 个由本项目补充，用于覆盖 Windows 和 Linux 的网络、性能、存储、安全、启动、硬件和恢复诊断。
 
 ## 健康、性能、存储与备份
 
@@ -20,6 +20,9 @@
 | `disk-space-recovery` | macOS | 磁盘爆满、释放空间、大文件与缓存审计 | [playbook-disk-space-recovery.md](playbook-disk-space-recovery.md) |
 | `windows-disk-space-recovery` | Windows | 系统盘爆满、更新空间不足、安全释放空间 | [playbook-windows-disk-space-recovery.md](playbook-windows-disk-space-recovery.md) |
 | `windows-storage-inventory` | Windows | 大目录盘点、陌生路径、清理前空间分布 | [playbook-windows-storage-inventory.md](playbook-windows-storage-inventory.md) |
+| `windows-large-folder-management` | Windows | 懒加载大文件夹、应用数据模板、自定义目录和安全 offload | [playbook-windows-large-folder-management.md](playbook-windows-large-folder-management.md) |
+| `windows-application-migration` | Windows | 应用或选定数据目录迁移到本地 NTFS 磁盘并保留原路径 | [playbook-windows-application-migration.md](playbook-windows-application-migration.md) |
+| `windows-migration-history-recovery` | Windows | Junction 健康、幽灵链接、迁移历史审计和恢复 | [playbook-windows-migration-history-recovery.md](playbook-windows-migration-history-recovery.md) |
 | `windows-application-cleanup` | Windows | 应用缓存、微信重复文件、浏览器或包缓存 | [playbook-windows-application-cleanup.md](playbook-windows-application-cleanup.md) |
 | `windows-application-lifecycle-audit` | Windows | 应用安装/卸载、WinGet/Chocolatey/Appx、残留审计 | [playbook-windows-application-lifecycle-audit.md](playbook-windows-application-lifecycle-audit.md) |
 | `windows-new-device-intake` | Windows | 新机验机、官方支持、保修证据和首次设置 | [playbook-windows-new-device-intake.md](playbook-windows-new-device-intake.md) |
@@ -53,6 +56,7 @@
 | `printer-repair` | macOS | 打印队列、找不到打印机、CUPS | [playbook-printer-repair.md](playbook-printer-repair.md) |
 | `windows-printer-repair` | Windows | 离线打印机、卡住作业、Spooler | [playbook-windows-printer-repair.md](playbook-windows-printer-repair.md) |
 | `windows-configuration-review` | Windows | Windows 优化、隐私、电源、去臃肿或配置导入 | [playbook-windows-configuration-review.md](playbook-windows-configuration-review.md) |
+| `windows-uninstall-residue-cleanup` | Windows | 卸载后严格残留扫描、回收站清理和强制移除审计 | [playbook-windows-uninstall-residue-cleanup.md](playbook-windows-uninstall-residue-cleanup.md) |
 
 ## Windows 维修、启动与硬件
 

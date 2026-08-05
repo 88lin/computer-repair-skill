@@ -13,7 +13,7 @@ from urllib.parse import unquote
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = REPO_ROOT / "skills" / "computer-repair-skill"
 REFERENCES_DIR = SKILL_DIR / "references"
-EXPECTED_PLAYBOOK_COUNT = 58
+EXPECTED_PLAYBOOK_COUNT = 62
 EXPECTED_BUNDLED_COUNT = 37
 REQUIRED_SKILL_FIELDS = {"name", "description"}
 MAX_SKILL_DESCRIPTION_CHARS = 600
@@ -22,7 +22,10 @@ MAX_PLAYBOOK_DESCRIPTION_CHARS = 120
 OPTIONAL_PLAYBOOK_FIELDS = {"emoji"}
 EXPECTED_LOCAL_PLAYBOOKS = {
     "playbook-windows-application-cleanup.md",
+    "playbook-windows-application-migration.md",
     "playbook-windows-application-lifecycle-audit.md",
+    "playbook-windows-large-folder-management.md",
+    "playbook-windows-migration-history-recovery.md",
     "playbook-windows-browser-policy-audit.md",
     "playbook-windows-configuration-review.md",
     "playbook-windows-data-recovery-triage.md",
@@ -42,6 +45,7 @@ EXPECTED_LOCAL_PLAYBOOKS = {
     "playbook-windows-partition-resize-audit.md",
     "playbook-windows-new-device-intake.md",
     "playbook-windows-hardware-maintenance-safety.md",
+    "playbook-windows-uninstall-residue-cleanup.md",
 }
 REQUIRED_PLAYBOOK_FIELDS = {
     "name",

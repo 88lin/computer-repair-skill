@@ -6,7 +6,7 @@ baseline. The baseline commit and original attribution are preserved in the
 project history; current files use generic host-Agent wording and
 "author: upstream-maintainers". This project adds a portable Agent Skill
 workflow, host-tool mappings, safety guidance, installers, validation, and
-21 Windows/Linux playbooks marked "source: local".
+25 Windows/Linux playbooks marked "source: local".
 
 Upstream baseline repository:
 https://github.com/noahapp/noah-for-tinkerers
@@ -28,6 +28,9 @@ code, asset, binary, or installer source for this project.
 - builtbybel/FluentCleaner supplied working tree reviewed 2026-08-04
   (no Git metadata available)
   MIT
+- Chunyu33/viap supplied working tree reviewed 2026-08-05 (no Git metadata available)
+  MIT; only migration, recovery, folder-management, and residue-cleanup
+  behavior and safety boundaries were used; no source code or assets copied
 - cccyd2003-qwq/pinkbin main @ dc5585560f4e87a016853097573baa43699d4e3f
   MIT
 - yqxie1991/WxCleaner main @ 359013fb2da473f2a7ef123f420acf699eb4ec30

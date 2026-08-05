@@ -10,7 +10,7 @@ en: {
   /* meta ------------------------------------------------------------------ */
   "meta.title":   "Computer Repair Skill — make your agent behave like a careful repair engineer",
   "meta.ogtitle": "Computer Repair Skill — make your agent behave like a careful repair engineer",
-  "meta.desc":    "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. 58 on-demand playbooks, read-only first, evidence first, auditable and reversible. Open source under AGPL-3.0.",
+  "meta.desc":    "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. 62 on-demand playbooks, read-only first, evidence first, auditable and reversible. Open source under AGPL-3.0.",
 
   /* a11y ------------------------------------------------------------------ */
   "a11y.skip":     "Skip to main content",
@@ -41,7 +41,7 @@ en: {
   "hero.lead":    "Evidence before conclusions; a plan before any change.",
   "hero.sub":     "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. Slow machine, dropped network, failed updates, printer offline, a full C: drive, driver trouble, Windows that will not boot, OpenClaw configuration problems — describe it in plain language and the agent picks a troubleshooting procedure that matches your platform and the risk involved.",
   "hero.cta1":    "Four ways to install",
-  "hero.cta2":    "Browse 58 playbooks",
+  "hero.cta2":    "Browse 62 playbooks",
   "hero.pill1":   "focused playbooks",
   "hero.pill2":   "supported platforms",
   "hero.pill3":   "3.0 open source",
@@ -73,7 +73,7 @@ en: {
   "what.r3yd":    "Only after you confirm does it apply the smallest change that fixes the problem.",
   "what.r3n":     "\u201cOne-click Windows optimization\u201d",
   "what.r3nd":    "Tuning presets can affect updates, privacy, drivers, enterprise policy and your ability to roll back.",
-  "what.r4y":     "58 on-demand playbooks",
+  "what.r4y":     "62 on-demand playbooks",
   "what.r4yd":    "Loaded through a routing index according to the problem, so irrelevant context stays out.",
   "what.r4n":     "One giant prompt that fills the context window",
   "what.r4nd":    "It loads only the process relevant to the problem, keeping unrelated steps out.",
@@ -179,7 +179,7 @@ en: {
   "install.p4n":   "The directory must keep <code>SKILL.md</code>, <code>agents/</code> and <code>references/</code> — <b>do not copy just one playbook</b>.",
 
   /* 05 · playbooks -------------------------------------------------------- */
-  "pb.title":       "58 focused playbooks",
+  "pb.title":       "62 focused playbooks",
   "pb.desc":        "From slow computers, dropped networks and full disks to system updates, boot repair and OpenClaw setup. Search for your symptom, or open any row to see when it applies and what you can ask.",
   "pb.byCat":       "By category",
   "pb.colCat":      "Category",
@@ -188,8 +188,8 @@ en: {
   "pb.statNote":    "\u201cCross-platform\u201d means the procedure does not depend on a single operating system — DNS, mail, identity services, SSH, Wi-Fi, Outlook, OpenClaw, credential and local-data audits.",
   "pb.searchLabel": "Search playbooks",
   "pb.searchPh":    "Search: bitlocker, DNS, disk space, printer\u2026",
-  "pb.nojs":        "JavaScript is disabled, so search, filtering and detail dialogs are unavailable. You can still browse all 58 playbooks in the table below.",
-  "pb.tableCap":    "Complete routing index for all 58 playbooks",
+  "pb.nojs":        "JavaScript is disabled, so search, filtering and detail dialogs are unavailable. You can still browse all 62 playbooks in the table below.",
+  "pb.tableCap":    "Complete routing index for all 62 playbooks",
   "pb.colTitle":    "Playbook",
   "pb.colPlat":     "Platform",
   "pb.colRoute":    "Route ID",
@@ -237,7 +237,7 @@ en: {
   "foot.tagline": "Evidence before conclusions; a plan before any change.",
   "foot.h1":      "Quick start",
   "foot.quick1":  "Choose an installation method",
-  "foot.quick2":  "Browse 58 playbooks",
+  "foot.quick2":  "Browse 62 playbooks",
   "foot.quick3":  "See sample prompts",
   "foot.quick4":  "Understand the safety boundaries",
   "foot.h2":      "Project",

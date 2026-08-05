@@ -29,7 +29,7 @@ Playbook 中的工具名是能力别名。宿主 Agent 无需提供同名工具�
 
 优先调用宿主已有的专用工具。例如宿主直接提供进程、服务或网络查询时，使用该工具并保持 Playbook 所需字段。否则执行映射中的平台原生命令。
 
-Windows 专项 Playbook 使用的 `win_path_inventory`、`win_file_hash`、`win_registry_snapshot`、`win_recycle_path`、`win_policy_list`、`win_recovery_image_scan`、`win_package_inventory`、`win_package_metadata`、`win_package_install`、`win_package_uninstall` 和 `win_persistence_snapshot` 也只是能力别名。宿主没有同名工具时，读取 `tools-windows.md` 的推荐实现；任何回收、注册表导出、包安装/卸载或管理员操作仍遵守安全策略并单独确认。
+Windows 专项 Playbook 使用的 `win_path_inventory`、`win_file_hash`、`win_registry_snapshot`、`win_recycle_path`、`win_policy_list`、`win_recovery_image_scan`、`win_package_inventory`、`win_package_metadata`、`win_package_install`、`win_package_uninstall` 和 `win_persistence_snapshot` 也只是能力别名。迁移与恢复流程新增的 `win_path_metadata`、`win_path_lock_check`、`win_directory_size`、`win_copy_verify`、`win_junction_create`、`win_junction_inspect`、`win_junction_remove`、`win_json_atomic_write`、`win_registry_query` 和 `win_operation_log` 同样按平台映射执行。宿主没有同名工具时，读取 `tools-windows.md` 的推荐实现；任何回收、注册表导出、链接创建/删除、文件复制、包安装/卸载或管理员操作仍遵守安全策略并单独确认。
 
 ## 结果契约
 

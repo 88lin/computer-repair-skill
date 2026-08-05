@@ -68,7 +68,9 @@ and stop on a failed or ambiguous result instead of retrying with force.
 Re-enumerate the package by exact ID, inspect services/startup/tasks and the
 uninstall registry entry, then test the user's stated workflow. Do not delete
 leftover files or registry keys until they are separately identified, hashed or
-exported, and approved.
+exported, and approved. For a dedicated post-uninstall residue preview or
+guarded force-removal review, continue with
+[windows-uninstall-residue-cleanup](playbook-windows-uninstall-residue-cleanup.md).
 
 ## Verification
 Compare the before/after package inventory, persistence snapshot and disk

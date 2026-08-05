@@ -14,7 +14,7 @@
 [![skills.sh](https://skills.sh/b/88lin/computer-repair-skill)](https://skills.sh/88lin/computer-repair-skill)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
-[官方网站](https://repair.88lin.eu.org/) · [在线浏览 58 个 Playbook](https://repair.88lin.eu.org/#playbooks)
+[官方网站](https://repair.88lin.eu.org/) · [在线浏览 62 个 Playbook](https://repair.88lin.eu.org/#playbooks)
 
 </div>
 
@@ -25,7 +25,7 @@
 
 - **证据优先**：先读取系统状态、日志、配置和硬件事实，再建立候选原因，不凭症状猜结论。
 - **只读优先**：诊断和盘点可以先做；删除、安装、提权、重启、分区和服务修改会先给出影响、回滚与验证方案。
-- **按需加载**：58 个专项 Playbook 通过路由索引按问题加载，减少无关上下文，也方便维护和扩展。
+- **按需加载**：62 个专项 Playbook 通过路由索引按问题加载，减少无关上下文，也方便维护和扩展。
 - **跨平台**：覆盖 Windows、macOS、Linux，并提供 DNS、邮件、身份、SSH、Wi-Fi 和 OpenClaw 等跨平台流程。
 - **适合真实维修**：包含新机验收、BitLocker/PE 前置分诊、WinRE、数据恢复、拆机安全和设备回收等维修现场边界。
 - **不绑定桌面应用**：Skill 本身是 Markdown/YAML 资源，不需要安装配套桌面程序、额外模型或专用云端 API。
@@ -165,13 +165,13 @@ Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问�
 
 ## 🧰 功能总览
 
-本 Skill 内置 58 个可按需加载的专项 Playbook。下面的分类数量与[完整路由索引](skills/computer-repair-skill/references/playbook-index.md)一致。
+本 Skill 内置 62 个可按需加载的专项 Playbook。下面的分类数量与[完整路由索引](skills/computer-repair-skill/references/playbook-index.md)一致。
 
 | 分类 | 数量 | 主要内容 |
 |---|---|---|
-| 健康、性能、存储与备份 | 15 | 体检、性能、磁盘/目录盘点、应用缓存、备份和新机验收 |
+| 健康、性能、存储与备份 | 18 | 体检、性能、磁盘/目录盘点、应用缓存、文件夹迁移、备份和新机验收 |
 | 网络、DNS、VPN、身份与邮件 | 9 | Wi-Fi、路由、DNS、VPN、邮件连通性、SSO 和邮箱配置 |
-| 应用、系统更新与打印 | 7 | 应用崩溃、Outlook、macOS/Windows 更新、打印机和 Windows 配置审查 |
+| 应用、系统更新与打印 | 8 | 应用崩溃、卸载残留、Outlook、macOS/Windows 更新、打印机和 Windows 配置审查 |
 | Windows 维修、启动与硬件 | 7 | 驱动、摄像头/音频、启动失败、WinRE、BitLocker、分区和拆机安全 |
 | Windows 数据恢复 | 1 | 镜像优先、只读扫描和独立目标恢复 |
 | 安全与凭据 | 5 | 终端安全、浏览器、浏览器策略、持久化和凭据清理 |
@@ -192,8 +192,12 @@ Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问�
 | macOS 磁盘恢复 — 大文件、缓存和可释放空间审计 | “Mac 磁盘快满了，先列出可以安全释放的空间。” |
 | Windows 磁盘恢复 — 系统盘爆满、更新空间不足和安全释放 | “C 盘只剩 5GB，先按风险分级给出清理计划。” |
 | Windows 存储盘点 — 按路径和大小解释空间分配 | “帮我找出 C 盘最大的目录，但不要删除任何东西。” |
+| Windows 大文件夹管理 — 懒加载系统/应用数据/自定义目录，明确分类后再 offload | “先异步统计几个大文件夹，确认后把指定应用数据迁移到 D 盘。” |
+| Windows 应用迁移 — 复制校验后用 Junction 保留原路径，支持回滚 | “把这个应用迁移到 D 盘，先检查 NTFS、空间、进程占用和恢复方案。” |
+| Windows 迁移历史恢复 — 检查 Junction、幽灵记录并安全还原 | “这个软件迁移后打不开，先检查链接状态，不要覆盖原目录。” |
 | Windows 应用清理 — 微信重复文件、浏览器缓存和包缓存 | “帮我清理微信重复文件，聊天记录和原文件不能动。” |
 | Windows 应用生命周期审计 — WinGet、Chocolatey、Appx、来源、发布者和残留 | “审计这台电脑装了什么应用，先不要卸载。” |
+| Windows 卸载残留清理 — 厂商卸载优先、严格匹配、注册表备份和回收站恢复 | “卸载后还有残留，先预览证据和回滚，不要直接强删。” |
 | Windows 新机验收 — 本地硬件、序列号、配置、开箱证据和首次设置 | “先做新机本地验收，不联网激活；查保修前先问我。” |
 | Linux 磁盘恢复 — 文件系统、inode、日志和容器存储增长 | “Linux 根分区满了，先判断是 inode、日志还是容器占用。” |
 | 本地数据审计 — 离职、设备回收前盘点敏感数据 | “这台电脑要回收，先盘点敏感数据和残留账号，不要删除。” |
@@ -295,7 +299,7 @@ Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问�
 skills/computer-repair-skill/
 ├── SKILL.md                 # 核心路由与强制安全工作流
 ├── agents/openai.yaml       # Codex 展示元数据
-├── references/              # 平台工具映射与 58 个专项 Playbook
+├── references/              # 平台工具映射与 62 个专项 Playbook
 ├── LICENSE                  # 随 Skill 分发的 AGPL-3.0 许可证
 └── NOTICE                   # 来源与归属记录
 assets/
@@ -323,7 +327,7 @@ macOS / Linux：
 PYTHONUTF8=1 python tests/validate_skill.py
 ```
 
-验证器会检查 Skill frontmatter、Agent 元数据、58 个 Playbook 的描述唯一性、工具契约、路由索引、README 分类数量、本地 Markdown 链接、许可证一致性、占位符和疑似凭据。GitHub Actions 会在 Windows 和 Ubuntu 上重复验证，并测试安装器的首次安装、拒绝覆盖、备份和强制更新路径。
+验证器会检查 Skill frontmatter、Agent 元数据、62 个 Playbook 的描述唯一性、工具契约、路由索引、README 分类数量、本地 Markdown 链接、许可证一致性、占位符和疑似凭据。GitHub Actions 会在 Windows 和 Ubuntu 上重复验证，并测试安装器的首次安装、拒绝覆盖、备份和强制更新路径。
 
 新增或修改 Playbook 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 

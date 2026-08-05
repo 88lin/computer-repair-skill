@@ -123,4 +123,4 @@ description: Use this skill when a user asks to diagnose, repair, clean up, reco
 
 ## 上游与许可
 
-本 Skill 包含 58 个可按需加载的 Playbook。上游项目、原作者归属和许可证记录在根目录 `NOTICE`；分发和修改时保留 `LICENSE` 与 `NOTICE`。
+本 Skill 包含 62 个可按需加载的 Playbook。上游项目、原作者归属和许可证记录在根目录 `NOTICE`；分发和修改时保留 `LICENSE` 与 `NOTICE`。

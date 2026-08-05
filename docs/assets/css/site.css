@@ -661,7 +661,7 @@ h1,h2,h3,h4{margin:0;font-family:var(--f-heading);font-weight:800;line-height:1.
 .c-c{color:#526779}
 
 /* ============================================================================
-   05 · 58 个 Playbook — 信息密度型单栏（scene-app.md）
+   05 · 62 个 Playbook — 信息密度型单栏（scene-app.md）
    ========================================================================= */
 .s-pb{background:var(--cream);position:relative}
 .pb-head{position:relative;margin-bottom:clamp(30px,4vw,56px)}

@@ -54,6 +54,7 @@ Get-PrintJob -PrinterName '<PRINTER>' |
 | `win_system_info` | 查询 `Win32_OperatingSystem`、`Win32_ComputerSystem`、`Win32_Processor` | 只读 |
 | `win_process_list` | `Get-Process`，分别按 CPU 和工作集排序 | 只读 |
 | `win_disk_usage` | 优先查询 `Win32_LogicalDisk`；`Storage` 模块可用时补充 `Get-Volume` | 只读 |
+| `win_directory_size` | 对已确认的字面目录做有深度/时间预算的递归大小扫描，跳过 Junction 和其他 reparse point | 只读但可能较慢 |
 | `win_kill_process` | `Stop-Process -Id <PID>` | 高影响，确认 PID 和用途 |
 | `win_clear_caches` | 先测量并枚举具体缓存目录，再删除明确条目 | 高影响，读取安全策略 |
 
@@ -94,6 +95,12 @@ CPU 字段通常是进程累计 CPU 时间，不等同于瞬时百分比。需�
 | `win_app_data_ls` | 对 `%APPDATA%`、`%LOCALAPPDATA%` 的具体应用目录使用 `Get-ChildItem` | 只读 |
 | `win_clear_app_cache` | 检查并关闭应用后清理具体缓存子目录 | 高影响，读取安全策略 |
 | `win_move_file` | `Move-Item -LiteralPath '<SOURCE>' -Destination '<DESTINATION>'` | 状态变更，先确认并检查目标冲突 |
+| `win_path_metadata` | `Get-Item -LiteralPath '<PATH>'`，输出类型、大小、属性、reparse/link target 和时间 | 只读 |
+| `win_path_lock_check` | 对已确认目录的文件做非破坏性占用检查，并与进程快照交叉验证；无法确认时返回 unknown | 只读但可能较慢 |
+| `win_copy_verify` | `robocopy.exe '<SOURCE>' '<TARGET>' /E /COPY:DAT /DCOPY:DAT /XJ /R:1 /W:1`，再比较文件数、字节和抽样/全量哈希 | 状态变更，先确认 |
+| `win_junction_create` | `New-Item -ItemType Junction -Path '<LINK>' -Target '<TARGET>'`，随后读取并核对目标 | 状态变更，先确认 |
+| `win_junction_inspect` | 读取 `Attributes`/`LinkType`/`Target`，必要时对字面路径执行 `fsutil reparsepoint query` | 只读 |
+| `win_junction_remove` | 仅在确认目标是 Junction/reparse point 后使用 `Remove-Item -LiteralPath '<LINK>' -Force` | 状态变更，先确认 |
 
 ```powershell
 $uninstallRoots = @(
@@ -139,6 +146,9 @@ Shell。先列出精确 ID、发布者、版本、来源和卸载字符串，再
 | `win_file_hash` | 对明确文件使用 `Get-FileHash -Algorithm SHA256` | 只读 |
 | `win_recycle_path` | 使用宿主的回收站能力或 `Microsoft.VisualBasic.FileIO.FileSystem`，只传入已确认的字面路径 | 高影响，先确认 |
 | `win_registry_snapshot` | `reg.exe export '<KEY>' '<BACKUP_FILE>' /y`，备份文件放在已确认的隔离目录 | 可逆变更，先确认目标 |
+| `win_registry_query` | 读取已确认的 HKLM/HKCU 注册表键和值，限制到卸载、发布者、应用和文件关联子树 | 只读 |
+| `win_json_atomic_write` | 写入同目录临时 JSON、刷盘、保留旧副本后原子替换；不写入秘密 | 可逆变更，先确认目标 |
+| `win_operation_log` | 向已确认的隔离 JSON 日志追加操作、路径、结果、字节和恢复位置，原子轮转 | 可逆变更，先确认目标 |
 | `win_scheduled_task_list` | `Get-ScheduledTask`，按 TaskPath、TaskName、State 和 Actions 输出 | 只读 |
 | `win_policy_list` | 读取明确的 `HKLM/HKCU:\Software\Policies` 子项和浏览器策略页 | 只读 |
 | `win_recovery_image_scan` | 对写保护的磁盘镜像调用宿主的取证/恢复工具，报告输出到独立目标卷 | 只读；源盘禁止写入 |
