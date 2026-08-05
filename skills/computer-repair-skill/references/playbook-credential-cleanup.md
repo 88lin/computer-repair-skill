@@ -2,7 +2,7 @@
 name: credential-cleanup
 description: Audit and clean up stored credentials on a device — for offboarding or post-incident response
 platform: all
-last_reviewed: 2026-03-17
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🔑
@@ -28,7 +28,12 @@ Count saved passwords in each installed browser (don't dump the actual passwords
 Report: "Chrome has ~N saved passwords" etc. If any are found, note they should be cleared for offboarding.
 
 ### 2. Check saved Wi-Fi passwords
-- **macOS**: Wi-Fi passwords are stored in the system keychain. Run `security find-generic-password -D "AirPort network password"` to list known networks (names only, not passwords).
+- **macOS**: `security find-generic-password` returns only the *first* match, so it cannot enumerate networks. List the preferred-network list instead:
+  ```bash
+  dev=$(networksetup -listallhardwareports | awk '/Wi-Fi|AirPort/{getline; print $2; exit}')
+  networksetup -listpreferredwirelessnetworks "$dev"
+  ```
+  This prints network names only. The passwords themselves stay in the system keychain — do not dump them.
 - **Windows**: Run `netsh wlan show profiles` to list saved networks.
 - **Linux**: Check `/etc/NetworkManager/system-connections/`.
 

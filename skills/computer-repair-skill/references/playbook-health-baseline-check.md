@@ -2,7 +2,7 @@
 name: health-baseline-check
 description: Comprehensive device health check — disk, memory, uptime, updates, firewall, backup, and network
 platform: all
-last_reviewed: 2026-03-17
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🩺
@@ -44,9 +44,9 @@ Run `uptime` to check how long since last reboot.
 - **Red**: security updates pending.
 
 ### 5. Check firewall status
-- **macOS**: Check `defaults read /Library/Preferences/com.apple.alf globalstate`.
-- **Green**: firewall enabled (value 1 or 2).
-- **Red**: firewall disabled (value 0). Recommend enabling it.
+- **macOS**: Check `/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate`. The `com.apple.alf` plist is removed in macOS 15, so do not read it. Without `sudo`, fall back to `system_profiler SPFirewallDataType`.
+- **Green**: firewall enabled (`State = 1`, i.e. "Firewall is enabled").
+- **Red**: firewall disabled (`State = 0`). Recommend enabling it.
 
 ### 6. Check backup status
 - **macOS**: Check Time Machine status via `tmutil status` and `tmutil latestbackup`.
