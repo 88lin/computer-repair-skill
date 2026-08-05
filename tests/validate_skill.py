@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from datetime import date
@@ -15,9 +16,13 @@ SKILL_DIR = REPO_ROOT / "skills" / "computer-repair-skill"
 REFERENCES_DIR = SKILL_DIR / "references"
 EXPECTED_PLAYBOOK_COUNT = 62
 EXPECTED_BUNDLED_COUNT = 37
-REQUIRED_SKILL_FIELDS = {"name", "description"}
+REQUIRED_SKILL_FIELDS = {"name", "description", "version"}
+OPTIONAL_SKILL_FIELDS = {"when_to_use"}
 MAX_SKILL_DESCRIPTION_CHARS = 600
 MAX_SKILL_DESCRIPTION_WORDS = 80
+# Claude Code 把 description 与 when_to_use 一起注入系统提示，超出上限会被截断。
+MAX_SKILL_TRIGGER_CHARS = 1536
+SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
 MAX_PLAYBOOK_DESCRIPTION_CHARS = 120
 OPTIONAL_PLAYBOOK_FIELDS = {"emoji"}
 EXPECTED_LOCAL_PLAYBOOKS = {
@@ -60,6 +65,7 @@ MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 INDEX_ROW = re.compile(r"(?m)^\|\s*`([^`]+)`\s*\|.*?\]\(([^)\s]+)\)\s*\|\s*$")
 INDEX_SECTION = re.compile(r"(?ms)^## (.+?)\r?\n(.*?)(?=^## |\Z)")
 README_SUMMARY_ROW = re.compile(r"(?m)^\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|")
+INDEX_TABLE_HEADER = re.compile(r"^\|\s*Playbook\s*\|")
 TOOL_SECTION = re.compile(r"(?ms)^## Tools referenced\s*(.*?)(?=^## |\Z)")
 TOOL_BULLET = re.compile(r"(?m)^\s*-\s+`([a-z][a-z0-9_]*)`")
 TOOL_ALIAS = re.compile(r"`([a-z][a-z0-9_]*)`")
@@ -178,7 +184,14 @@ def validate_skill_metadata(validation: Validation) -> None:
     """检查 Skill 触发元数据、长度和 Codex 展示元数据。"""
     skill_path = SKILL_DIR / "SKILL.md"
     metadata = parse_frontmatter(skill_path, validation)
-    validation.check(set(metadata) == REQUIRED_SKILL_FIELDS, "SKILL.md frontmatter 只能包含 name 和 description。")
+    allowed = REQUIRED_SKILL_FIELDS | OPTIONAL_SKILL_FIELDS
+    unexpected = set(metadata) - allowed
+    missing = REQUIRED_SKILL_FIELDS - set(metadata)
+    validation.check(
+        not unexpected,
+        "SKILL.md frontmatter 只允许 " + "、".join(sorted(allowed)) + f"；发现多余字段：{', '.join(sorted(unexpected))}。",
+    )
+    validation.check(not missing, f"SKILL.md frontmatter 缺少字段：{', '.join(sorted(missing))}。")
     validation.check(metadata.get("name") == "computer-repair-skill", "SKILL.md 的 name 必须是 computer-repair-skill。")
     description = metadata.get("description", "").strip()
     validation.check(bool(description), "SKILL.md 缺少非空 description。")
@@ -195,6 +208,14 @@ def validate_skill_metadata(validation: Validation) -> None:
         "SKILL.md description 应使用 'Use this skill when ...' 表达触发意图。",
     )
 
+    when_to_use = metadata.get("when_to_use", "").strip()
+    trigger_chars = len(description) + len(when_to_use)
+    validation.check(
+        trigger_chars <= MAX_SKILL_TRIGGER_CHARS,
+        f"SKILL.md 的 description 与 when_to_use 合计 {trigger_chars} 字符，"
+        f"超过宿主注入上限 {MAX_SKILL_TRIGGER_CHARS} 字符，会被截断。",
+    )
+
     skill_lines = read_text(skill_path, validation).splitlines()
     validation.check(len(skill_lines) <= 500, f"SKILL.md 超过 500 行：{len(skill_lines)}。")
 
@@ -203,6 +224,28 @@ def validate_skill_metadata(validation: Validation) -> None:
     for field in ("display_name:", "short_description:", "default_prompt:"):
         validation.check(field in agent_text, f"agents/openai.yaml 缺少 {field[:-1]}。")
     validation.check("$computer-repair-skill" in agent_text, "agents/openai.yaml 的 default_prompt 必须显式调用 Skill。")
+
+    skill_version = metadata.get("version", "")
+    validation.check(
+        bool(SEMVER.match(skill_version)),
+        f"SKILL.md 的 version 必须是 MAJOR.MINOR.PATCH：{skill_version or '缺失'}。",
+    )
+    agent_version_match = re.search(r"(?m)^\s*version:\s*[\"']?([^\"'\s]+)[\"']?\s*$", agent_text)
+    agent_version = agent_version_match.group(1) if agent_version_match else ""
+    validation.check(
+        bool(agent_version), "agents/openai.yaml 缺少 version，无法与 SKILL.md 对齐。"
+    )
+    validation.check(
+        agent_version == skill_version,
+        f"版本号不一致：SKILL.md 为 {skill_version or '缺失'}，agents/openai.yaml 为 {agent_version or '缺失'}。",
+    )
+
+    changelog_path = REPO_ROOT / "CHANGELOG.md"
+    changelog_text = read_text(changelog_path, validation)
+    validation.check(
+        f"## [{skill_version}]" in changelog_text,
+        f"CHANGELOG.md 缺少当前版本条目：## [{skill_version}]。",
+    )
 
 
 def validate_playbooks(validation: Validation) -> None:
@@ -403,10 +446,115 @@ def validate_readme_summary(validation: Validation) -> None:
     )
 
 
+def validate_index_table_shape(validation: Validation) -> None:
+    """确保路由索引的每张表都用同一组表头，避免某些分类漏掉平台或症状列。"""
+    index_text = read_text(REFERENCES_DIR / "playbook-index.md", validation)
+    headers = [line.strip() for line in index_text.splitlines() if INDEX_TABLE_HEADER.match(line)]
+    validation.check(bool(headers), "playbook-index.md 未找到任何路由表表头。")
+    distinct = sorted(set(headers))
+    validation.check(
+        len(distinct) <= 1,
+        "playbook-index.md 的路由表表头不一致：" + " / ".join(distinct),
+    )
+
+    expected_columns = len(headers[0].strip("|").split("|")) if headers else 0
+    for match in INDEX_ROW.finditer(index_text):
+        row = match.group(0).strip()
+        columns = len(row.strip("|").split("|"))
+        validation.check(
+            columns == expected_columns,
+            f"路由索引行的列数应为 {expected_columns}，实际为 {columns}：{row[:60]}",
+        )
+
+
+def load_site_data(validation: Validation) -> dict:
+    """从站点数据文件中取出内嵌的 JSON，供一致性检查使用。"""
+    path = REPO_ROOT / "docs" / "assets" / "js" / "playbooks.js"
+    text = read_text(path, validation)
+    if not text:
+        return {}
+    marker = "window.CRS_DATA"
+    if marker not in text:
+        validation.errors.append("docs/assets/js/playbooks.js 缺少 window.CRS_DATA。")
+        return {}
+    payload = text[text.index("{", text.index(marker)) :].rstrip().rstrip(";")
+    try:
+        return json.loads(payload)
+    except json.JSONDecodeError as exc:
+        validation.errors.append(f"docs/assets/js/playbooks.js 不是合法 JSON：{exc}")
+        return {}
+
+
+def validate_site_data(validation: Validation) -> None:
+    """站点数据必须与 Playbook frontmatter 和路由索引同步，否则网页会展示过期信息。"""
+    data = load_site_data(validation)
+    if not data:
+        return
+
+    entries = data.get("playbooks", [])
+    validation.check(
+        data.get("total") == EXPECTED_PLAYBOOK_COUNT and len(entries) == EXPECTED_PLAYBOOK_COUNT,
+        f"站点数据的 Playbook 数量应为 {EXPECTED_PLAYBOOK_COUNT}，"
+        f"实际 total={data.get('total')}、条目 {len(entries)} 个。",
+    )
+
+    frontmatter = {path.name: parse_frontmatter(path, validation) for path in find_playbooks()}
+    site_files = {entry.get("file", "") for entry in entries}
+    missing = set(frontmatter) - site_files
+    extra = site_files - set(frontmatter)
+    validation.check(not missing, "站点数据缺少 Playbook：" + ", ".join(sorted(missing)))
+    validation.check(not extra, "站点数据包含不存在的 Playbook：" + ", ".join(sorted(extra)))
+
+    for entry in entries:
+        filename = entry.get("file", "")
+        meta = frontmatter.get(filename)
+        if not meta:
+            continue
+        for field in ("last_reviewed", "platform", "source"):
+            validation.check(
+                entry.get(field) == meta.get(field),
+                f"站点数据与 frontmatter 不一致：{filename} 的 {field} 为 {entry.get(field)}，应为 {meta.get(field)}。",
+            )
+        route = meta.get("name", "")
+        validation.check(
+            entry.get("route") == route,
+            f"站点数据的 route 与 frontmatter name 不一致：{filename} -> {entry.get('route')}（应为 {route}）。",
+        )
+        # id 是 DOM/锚点用的 slug，把 name 里的斜杠换成连字符。
+        validation.check(
+            entry.get("id") == route.replace("/", "-"),
+            f"站点数据的 id 应为 name 的 slug 形式：{filename} -> {entry.get('id')}"
+            f"（应为 {route.replace('/', '-')}）。",
+        )
+
+    index_text = read_text(REFERENCES_DIR / "playbook-index.md", validation)
+    index_routes = {name for name, _ in INDEX_ROW.findall(index_text)}
+    site_routes = {entry.get("route", "") for entry in entries}
+    validation.check(
+        index_routes == site_routes,
+        "路由索引与站点数据的路由集合不一致：仅索引有 "
+        + ", ".join(sorted(index_routes - site_routes))
+        + "；仅站点有 "
+        + ", ".join(sorted(site_routes - index_routes)),
+    )
+
+    index_counts = {
+        heading: len(INDEX_ROW.findall(body))
+        for heading, body in INDEX_SECTION.findall(index_text)
+        if heading != "未命中专项流程"
+    }
+    site_counts = {item.get("zh", ""): item.get("count") for item in data.get("categories", [])}
+    validation.check(
+        site_counts == index_counts,
+        "站点分类计数与路由索引不一致。",
+    )
+
+
 def validate_release_files(validation: Validation) -> None:
     """检查发布所需文件、许可证一致性、占位符和高置信度凭据模式。"""
     required = [
         REPO_ROOT / "README.md",
+        REPO_ROOT / "CHANGELOG.md",
         REPO_ROOT / "NOTICE",
         REPO_ROOT / "CONTRIBUTING.md",
         REPO_ROOT / "SECURITY.md",
@@ -436,6 +584,7 @@ def validate_release_files(validation: Validation) -> None:
 
     authored_files = [
         REPO_ROOT / "README.md",
+        REPO_ROOT / "CHANGELOG.md",
         REPO_ROOT / "NOTICE",
         REPO_ROOT / "CONTRIBUTING.md",
         REPO_ROOT / "SECURITY.md",
@@ -477,6 +626,8 @@ def main() -> int:
     validate_links(validation)
     validate_tool_references(validation)
     validate_readme_summary(validation)
+    validate_index_table_shape(validation)
+    validate_site_data(validation)
     validate_release_files(validation)
     return validation.finish()
 

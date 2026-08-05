@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: carsteneu/mystarhistory@v1
+      # 第三方 Action 固定到 v1.3.5 对应的提交，避免可变标签被重写后引入未审阅代码。
+      - uses: carsteneu/mystarhistory@ec82d645a6df185f4d845b33691a6bcdd02f608a # v1.3.5
         with:
           repos: ${{ github.repository }}
           token: ${{ secrets.STAR_HISTORY_TOKEN }}

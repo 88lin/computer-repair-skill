@@ -1,3 +1,5 @@
+# 与 skills/computer-repair-skill/SKILL.md 的 version 保持一致。
+version: "1.1.0"
 interface:
   display_name: "Computer Repair Skill"
   short_description: "Safe cross-platform diagnosis, cleanup, and repair"

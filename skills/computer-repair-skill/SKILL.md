@@ -1,6 +1,8 @@
 ---
 name: computer-repair-skill
-description: Use this skill when a user asks to diagnose, repair, clean up, recover, configure, secure, or maintain a Windows, macOS, or Linux computer. It covers slow or unstable systems, storage, apps, app or data migration, updates, networking, printers, backups, credentials, drivers, hardware, startup/WinRE, BitLocker, partitions, data recovery, developer tools, and OpenClaw setup or troubleshooting. Do not use for general programming, software design, buying advice, or product questions that do not require inspecting or changing a computer.
+description: Use this skill when a user asks to diagnose, repair, clean up, recover, migrate, configure, secure, or maintain a Windows, macOS, or Linux computer. It covers full system drives, app or data migration to another drive, slow or unstable machines, storage, apps, updates, networking, printers, backups, credentials, drivers, hardware, startup/WinRE, BitLocker, partitions, data recovery, developer tools, and OpenClaw setup. Do not use for general programming, software design, buying advice, or questions that do not require inspecting or changing a computer.
+when_to_use: 典型请求：C 盘变红/爆满、电脑卡顿、开机很慢、流氓软件、弹窗广告、突然断网、Windows 更新失败、打印机离线、把微信或应用迁到 D 盘、误删文件找回、蓝屏进不了系统、新机验收、OpenClaw 装不上。
+version: 1.1.0
 ---
 
 # Computer Repair Skill
