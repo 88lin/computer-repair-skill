@@ -22,6 +22,15 @@ Ask the user what kind of network they're connecting to:
 ## Step 2: Collect network name
 Ask for the Wi-Fi network name (SSID). Use `text_input` — this is not sensitive.
 
+On Windows, check the SSID immediately after collecting it and before asking for the
+password. The `netsh` `name=` parser cannot reliably address an SSID containing `"`, `=`
+or `>`; stop this automated branch and direct the user to the Windows Wi-Fi UI:
+```powershell
+if ($ssid -match '["=>]') {
+  throw 'SSID contains ", =, or >; netsh name= cannot parse it reliably. Use the Windows Wi-Fi UI to connect or remove this network.'
+}
+```
+
 ## Step 3: Collect credentials
 For WPA2 Personal: collect the Wi-Fi password using `secure_input` (secret_name: "wifi_password").
 For WPA2 Enterprise: collect username via `text_input`, then password via `secure_input`.
@@ -37,17 +46,11 @@ the password becomes a process argument visible to every user via `ps`.
 command argument, transcript, or shell history. Do not use the SSID as a filename or
 concatenate it into a shell command string: SSIDs can contain spaces, quotes, and XML
 metacharacters. Pass it only as a separate quoted argument and escape it in XML.
-The `netsh` `name=` parser cannot reliably address an SSID containing `"`, `=` or
-`>`; the automated branch below stops and sends those networks to the Windows Wi-Fi
-UI instead of attempting to escape the argument.
 
 Before generating temporary files, run the Windows profile preflight. This keeps the
-special-SSID fallback and any user cancellation outside the import path, so there is no
-secret file to clean up if the flow stops:
+user cancellation outside the import path, so there is no secret file to clean up if the
+flow stops:
 ```powershell
-if ($ssid -match '["=>]') {
-  throw 'SSID contains ", =, or >; netsh name= cannot parse it reliably. Use the Windows Wi-Fi UI to connect or remove this network.'
-}
 $existingProfileOutput = & netsh.exe wlan show profile "name=$ssid" 2>&1
 $profileExisted = $LASTEXITCODE -eq 0
 $existingProfileInfo = ($existingProfileOutput | Out-String).Trim()
@@ -55,13 +58,9 @@ $existingProfileInfo = ($existingProfileOutput | Out-String).Trim()
 
 If `$profileExisted` is true, present `$existingProfileInfo` to the user without adding
 `key=clear`, then call `ui_user_question` with `options`: **Replace existing profile** /
-**Cancel**. On Cancel, stop. Only after **Replace existing profile** is selected, run:
-```powershell
-& netsh.exe wlan delete profile "name=$ssid" | Out-Null
-if ($LASTEXITCODE -ne 0) { throw "netsh wlan delete profile failed: $LASTEXITCODE" }
-```
-Do not import until the precise same-SSID deletion succeeds. If `$profileExisted` is
-false, continue without a delete.
+**Cancel**. On Cancel, stop. On **Replace existing profile**, continue to step 1. The
+`netsh wlan add profile` call below overwrites this exact same-SSID profile in place; do
+not delete it first. If `$profileExisted` is false, continue to step 1 without a prompt.
 
 1. Generate profile and secret paths that contain no user input:
    ```powershell
@@ -105,14 +104,17 @@ false, continue without a delete.
    elevation; use `user=all` only when every account needs the profile (admin required):
    ```powershell
    $profileImported = $false
+   $profileExistedAtImport = $false
    try {
+     & netsh.exe wlan show profile "name=$ssid" *> $null
+     $profileExistedAtImport = $LASTEXITCODE -eq 0
      & netsh.exe wlan add profile "filename=$profilePath" user=current
      if ($LASTEXITCODE -ne 0) { throw "netsh wlan add profile failed: $LASTEXITCODE" }
      $profileImported = $true
      & netsh.exe wlan connect "name=$ssid"
      if ($LASTEXITCODE -ne 0) { throw "netsh wlan connect failed: $LASTEXITCODE" }
    } catch {
-     if ($profileImported) {
+     if ($profileImported -and -not $profileExistedAtImport) {
        & netsh.exe wlan delete profile "name=$ssid" | Out-Null
      }
      throw
@@ -120,8 +122,8 @@ false, continue without a delete.
      Remove-Item -LiteralPath $profilePath, $secretPath -Force -ErrorAction SilentlyContinue
    }
 
-   # Run Step 5 after this block. A failed connection removes the imported profile.
-   # If later verification fails, delete this run's profile explicitly and regenerate it.
+   # Run Step 5 after this block. A failed connection removes a newly created profile;
+   # a replaced profile is left in place so the user can correct its settings.
    ```
 
 The `finally` block deletes both temporary files even when import or connection fails.
@@ -139,9 +141,10 @@ If the connection fails:
   Windows Settings → Network & internet → Wi-Fi to connect or remove the profile
   manually; do not try to escape these characters in `name=`.
 - If the imported profile is no longer wanted or connectivity verification fails, remove
-  this run's profile explicitly: `& netsh.exe wlan delete profile "name=$ssid"`.
-  An existing same-SSID profile is shown first and replaced only after the user chooses
-  Replace; never delete another profile by wildcard.
+  a newly created profile explicitly: `& netsh.exe wlan delete profile "name=$ssid"`.
+  If an existing same-SSID profile was replaced, do not delete it automatically: the
+  new settings are already in place and the old settings cannot be restored by this flow.
+  Never delete another profile by wildcard.
 
 If the target device is already in an offline setup or recovery environment, do not assume the host Agent can connect it. Give the user a manual GUI or technician checklist and verify the result when a usable host is available again.
 

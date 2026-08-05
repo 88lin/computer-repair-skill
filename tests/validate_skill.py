@@ -663,26 +663,32 @@ def validate_review_regressions(validation: Validation) -> None:
 
     validation.check(
         "profileImported" in wifi
-        and "if ($profileImported)" in wifi
+        and "if ($profileImported -and -not $profileExistedAtImport)" in wifi
         and "wlan delete profile" in wifi
         and "ui_user_question` with `options`" in wifi
         and "connectivity verification fails" in wifi,
-        "Wi-Fi 连接失败后必须删除已导入的 profile，并在替换前询问用户。",
+        "Wi-Fi 连接失败后的 profile 清理必须区分新建与原地覆盖，并在替换前询问用户。",
     )
-    netsh_guard = "if ($ssid -match '[\"=>]')"
+    guard_match = re.search(r"if\s*\(\$ssid\s+-match\s+'([^']+)'\)", wifi)
     show_profile = "& netsh.exe wlan show profile"
     profile_check = wifi.find("$profileExisted =")
     ui_options = wifi.find("ui_user_question` with `options`")
-    delete_profile = wifi.find("& netsh.exe wlan delete profile")
+    step_one = wifi.find("1. Generate profile and secret paths")
+    preflight = wifi[:step_one] if step_one >= 0 else ""
+    guard_pattern = guard_match.group(1) if guard_match else ""
     validation.check(
-        netsh_guard in wifi
-        and wifi.find(netsh_guard) < wifi.find(show_profile)
+        guard_match is not None
+        and all(character in guard_pattern for character in '"=>')
+        and guard_match.start() < wifi.find(show_profile)
+        and guard_match.start() < wifi.find("## Step 3: Collect credentials")
         and profile_check >= 0
         and ui_options >= 0
-        and delete_profile >= 0
-        and profile_check < ui_options < delete_profile
-        and 'SSID contains `"`, `=` or `>`' in wifi,
-        "Wi-Fi 必须在任何 netsh name= 调用前拦截特殊 SSID，并提供 Windows UI 兜底。",
+        and step_one >= 0
+        and profile_check < ui_options < step_one
+        and "wlan add profile` call below overwrites" in wifi
+        and "wlan delete profile" not in preflight
+        and "Windows Wi-Fi UI" in wifi,
+        "Wi-Fi 必须在收集密码前拦截特殊 SSID；替换确认后应由 add profile 原地覆盖，不能提前删除。",
     )
 
     network = read_text(REFERENCES_DIR / "playbook-windows-network-diagnostics.md", validation)
