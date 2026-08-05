@@ -517,6 +517,15 @@ def validate_site_data(validation: Validation) -> None:
                 entry.get(field) == meta.get(field),
                 f"站点数据与 frontmatter 不一致：{filename} 的 {field} 为 {entry.get(field)}，应为 {meta.get(field)}。",
             )
+        validation.check(
+            is_single_emoji(entry.get("emoji", "")),
+            f"站点数据的 emoji 不能为空且必须是单个 emoji：{filename}。",
+        )
+        if meta.get("emoji"):
+            validation.check(
+                entry.get("emoji") == meta["emoji"],
+                f"站点数据与 frontmatter 不一致：{filename} 的 emoji 为 {entry.get('emoji')}，应为 {meta['emoji']}。",
+            )
         route = meta.get("name", "")
         validation.check(
             entry.get("route") == route,
@@ -599,16 +608,19 @@ def validate_review_regressions(validation: Validation) -> None:
 
     china_models = read_text(REFERENCES_DIR / "playbook-setup-openclaw-china-models.md", validation)
     validation.check(
-        "doubao-seed-1-8-251228" not in china_models,
-        "国产模型 Playbook 仍包含已过时的 doubao-seed-1-8-251228。",
-    )
-    validation.check(
         "openclaw models status" in china_models and "dated model ID" in china_models,
         "国产模型 Playbook 必须要求从当前 catalog 确认模型 ID。",
     )
     validation.check(
-        "deepseek-v4-pro-260425" not in china_models and "deepseek-v4-flash-260425" not in china_models,
-        "国产模型 Playbook 不能残留带日期的过期 DeepSeek 模型 ID。",
+        "openclaw plugins install @openclaw/moonshot-provider" in china_models
+        and all(model in china_models for model in (
+            "moonshot/kimi-k3",
+            "moonshot/kimi-k2.7-code",
+            "moonshot/kimi-k2.7-code-highspeed",
+            "deepseek-chat",
+            "deepseek-reasoner",
+        )),
+        "国产模型 Playbook 必须保留可复制的 Moonshot/DeepSeek 示例，并要求运行时复核可用性。",
     )
 
     uninstall = read_text(REFERENCES_DIR / "playbook-setup-openclaw-uninstall.md", validation)
@@ -618,7 +630,19 @@ def validate_review_regressions(validation: Validation) -> None:
     validation.check("where.exe openclaw" in uninstall and "which openclaw" not in uninstall, "Windows OpenClaw 验证不能使用 Unix which/redirection。")
 
     config_reference = read_text(REFERENCES_DIR / "playbook-setup-openclaw-config-reference.md", validation)
-    validation.check("typingIndicator" not in config_reference and "resolveSenderNames" not in config_reference, "OpenClaw 配置参考不能包含未注册字段。")
+    common_channels = config_reference.split("## Feishu-specific channel settings", 1)[0]
+    validation.check(
+        "typingIndicator" not in common_channels and "resolveSenderNames" not in common_channels,
+        "通用 channel 配置块不能误用 Feishu 专有字段。",
+    )
+    validation.check(
+        "typingIndicator: true" in config_reference and "resolveSenderNames: true" in config_reference,
+        "Feishu 配置参考必须保留两个可选布尔优化字段及其默认值。",
+    )
+    validation.check(
+        'typingIndicator: "message"' in config_reference,
+        "配置参考必须注明 Google Chat 的 typingIndicator 是字符串枚举。",
+    )
 
     homebrew = read_text(REFERENCES_DIR / "playbook-setup-homebrew.md", validation)
     validation.check("if [ -z \"$BREW\" ]" in homebrew and "stop before editing" in homebrew, "Homebrew 找不到 brew 时必须停止写 profile。")
@@ -646,7 +670,6 @@ def validate_release_files(validation: Validation) -> None:
         REPO_ROOT / "scripts" / "install.ps1",
         REPO_ROOT / "scripts" / "install.sh",
         REPO_ROOT / "tools" / "extract_data.py",
-        REPO_ROOT / "tools" / "site_catalog.json",
         REPO_ROOT / "tools" / "site_catalog.json",
     ]
     for path in required:

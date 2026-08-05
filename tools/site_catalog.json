@@ -60,6 +60,7 @@
   ],
   "playbooks": {
     "playbook-health-baseline-check.md": {
+      "emoji": "🩺",
       "title_zh": "全面体检",
       "title_en": "Health Baseline Check",
       "detail_zh": "建立系统健康基线，适合交接、验收和维修前留档",
@@ -70,6 +71,7 @@
       "when_en": "New device setup, periodic health audit, pre-migration baseline, user reports general slowness, or \"just check everything is OK.\""
     },
     "playbook-performance-forensics.md": {
+      "emoji": "⚡",
       "title_zh": "macOS 性能取证",
       "title_en": "Performance Forensics",
       "detail_zh": "CPU、内存压力、IO、风扇和无响应",
@@ -80,6 +82,7 @@
       "when_en": "User reports: computer is slow, fans are loud, spinning beach ball, apps freezing, system lagging, \"everything takes forever.\""
     },
     "playbook-windows-performance-forensics.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 性能取证",
       "title_en": "Windows Performance Forensics",
       "detail_zh": "CPU、内存、磁盘瓶颈、启动慢和应用无响应",
@@ -90,6 +93,7 @@
       "when_en": "User reports a slow Windows machine, high CPU, low memory, heavy disk use, fan noise, freezes, delayed startup, or an unresponsive application."
     },
     "playbook-linux-performance-forensics.md": {
+      "emoji": "🩺",
       "title_zh": "Linux 性能取证",
       "title_en": "Linux Performance Forensics",
       "detail_zh": "负载、CPU、内存、交换、IO 等待和容器限额",
@@ -100,6 +104,7 @@
       "when_en": "User reports a slow Linux host, high load, CPU saturation, memory pressure, swapping, IO waits, container throttling, service latency, or process hangs."
     },
     "playbook-mac-tune-up.md": {
+      "emoji": "🧹",
       "title_zh": "Mac 调优",
       "title_en": "Mac Tune-Up",
       "detail_zh": "缓存、权限和基础安全维护",
@@ -110,6 +115,7 @@
       "when_en": "- User asks to \"tune up\", \"optimize\", \"speed up\", or \"clean up\" their Mac in"
     },
     "playbook-disk-space-recovery.md": {
+      "emoji": "💾",
       "title_zh": "macOS 磁盘恢复",
       "title_en": "Disk Space Recovery",
       "detail_zh": "大文件、缓存和可释放空间审计",
@@ -120,6 +126,7 @@
       "when_en": "Explicit: \"clean up my storage\", \"free disk space\", \"find space hogs\", \"check storage\", \"storage almost full\", \"low storage\", \"can't install update\". Symptom-driven: Mac feels slow AND free space is below the healthy target."
     },
     "playbook-windows-disk-space-recovery.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 磁盘恢复",
       "title_en": "Windows Disk Space Recovery",
       "detail_zh": "系统盘爆满、更新空间不足和安全释放",
@@ -130,6 +137,7 @@
       "when_en": "User reports a full Windows drive, low-space warnings, update failures caused by storage, or asks to reclaim space without losing personal data."
     },
     "playbook-windows-storage-inventory.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 存储盘点",
       "title_en": "Windows Storage Inventory",
       "detail_zh": "按路径和大小解释空间分配",
@@ -140,6 +148,7 @@
       "when_en": "Use when a Windows volume is unexpectedly full, an unfamiliar directory is large, or the user wants a map of storage before deciding what to remove."
     },
     "playbook-windows-large-folder-management.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 大文件夹管理",
       "title_en": "Windows Large Folder Management",
       "detail_zh": "懒加载系统/应用数据/自定义目录和安全 offload",
@@ -150,6 +159,7 @@
       "when_en": "Use when the user wants to find large Windows folders, inspect application-data locations, or move a selected folder to another local volume."
     },
     "playbook-windows-application-migration.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 应用迁移",
       "title_en": "Windows Application Migration",
       "detail_zh": "复制校验后用 Junction 保留原路径，支持回滚",
@@ -160,6 +170,7 @@
       "when_en": "Use when the user wants to move an installed application, selected application data, or a custom folder while preserving the original path."
     },
     "playbook-windows-migration-history-recovery.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 迁移历史恢复",
       "title_en": "Windows Migration History and Recovery",
       "detail_zh": "检查 Junction、幽灵记录并安全还原",
@@ -170,6 +181,7 @@
       "when_en": "Use when a migrated application or folder no longer opens, a Junction may be broken, or data must be restored to its original path."
     },
     "playbook-windows-application-cleanup.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 应用清理",
       "title_en": "Windows Application Cleanup",
       "detail_zh": "微信重复文件、浏览器缓存和包缓存",
@@ -180,6 +192,7 @@
       "when_en": "Use for a named application's cache growth, WeChat received-file duplication, browser cache growth, package caches, or a request to reclaim application storage safely."
     },
     "playbook-windows-application-lifecycle-audit.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 应用生命周期审计",
       "title_en": "Windows Application Lifecycle Audit",
       "detail_zh": "WinGet、Chocolatey、Appx、来源、发布者和残留",
@@ -190,6 +203,7 @@
       "when_en": "Use when the user wants to remove bloatware, review installed applications,"
     },
     "playbook-windows-new-device-intake.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 新机验收",
       "title_en": "Windows New Device Intake",
       "detail_zh": "本地硬件、序列号、配置、开箱证据和首次设置",
@@ -200,6 +214,7 @@
       "when_en": "Use for a new laptop or desktop unboxing, acceptance check, return or warranty decision, first-time setup, suspected wrong specification, or a repair request on a recently purchased device."
     },
     "playbook-linux-disk-space-recovery.md": {
+      "emoji": "🩺",
       "title_zh": "Linux 磁盘恢复",
       "title_en": "Linux Disk Space Recovery",
       "detail_zh": "文件系统、inode、日志和容器存储增长",
@@ -210,6 +225,7 @@
       "when_en": "User reports a full filesystem, inode exhaustion, package/update failures, runaway logs, container storage growth, or asks to reclaim Linux disk space safely."
     },
     "playbook-local-data-audit.md": {
+      "emoji": "📂",
       "title_zh": "本地数据审计",
       "title_en": "Local Data Audit",
       "detail_zh": "离职、设备回收前盘点敏感数据",
@@ -220,6 +236,7 @@
       "when_en": "Employee offboarding, device reassignment, compliance audit, or when verifying that company data has been properly backed up before a wipe."
     },
     "playbook-backup-verify-restore.md": {
+      "emoji": "💾",
       "title_zh": "备份验证与抽样恢复",
       "title_en": "Backup Verify & Restore Test",
       "detail_zh": "时间戳、完整性、可读性和独立目标恢复",
@@ -230,6 +247,7 @@
       "when_en": "Periodic backup verification, after setting up a new backup, compliance audit, or when the admin wants to confirm RPO/RTO for a device."
     },
     "playbook-setup-backup.md": {
+      "emoji": "🛡️",
       "title_zh": "macOS 备份设置",
       "title_en": "Set Up Backup",
       "detail_zh": "Time Machine 和基础备份策略",
@@ -240,6 +258,7 @@
       "when_en": "User wants to set up backups, configure Time Machine, asks about data protection, or says they're worried about losing files."
     },
     "playbook-network-diagnostics.md": {
+      "emoji": "🌐",
       "title_zh": "macOS 网络诊断",
       "title_en": "Network Diagnostics",
       "detail_zh": "Wi-Fi、地址、路由、DNS 和网页访问",
@@ -250,6 +269,7 @@
       "when_en": "User reports: can't connect, Wi-Fi dropping, slow internet, DNS errors, pages not loading, \"no internet\" warning."
     },
     "playbook-windows-network-diagnostics.md": {
+      "emoji": "🌐",
       "title_zh": "Windows 网络诊断",
       "title_en": "Windows Network Diagnostics",
       "detail_zh": "网卡、DHCP、路由、DNS、代理、VPN 和 HTTP",
@@ -260,6 +280,7 @@
       "when_en": "User reports no internet, limited connectivity, DNS failures, Wi-Fi or Ethernet drops, VPN side effects, proxy errors, or one service not loading on Windows."
     },
     "playbook-linux-network-diagnostics.md": {
+      "emoji": "🌐",
       "title_zh": "Linux 网络诊断",
       "title_en": "Linux Network Diagnostics",
       "detail_zh": "链路、地址、路由、DNS、防火墙和命名空间",
@@ -270,6 +291,7 @@
       "when_en": "User reports no connectivity, DNS failure, intermittent network, service reachability problems, VPN side effects, or container versus host networking differences on Linux."
     },
     "playbook-vpn-troubleshooting.md": {
+      "emoji": "🔒",
       "title_zh": "macOS VPN 排障",
       "title_en": "VPN Troubleshooting",
       "detail_zh": "连接、掉线、分流和 DNS 异常",
@@ -280,6 +302,7 @@
       "when_en": "User reports: VPN won't connect, VPN keeps disconnecting, can't access work resources on VPN, slow internet with VPN, DNS not resolving with VPN on."
     },
     "playbook-dns-record-check.md": {
+      "emoji": "📋",
       "title_zh": "DNS 记录检查",
       "title_en": "DNS Record Check",
       "detail_zh": "MX、SPF、DKIM、DMARC 和邮件域名记录",
@@ -290,6 +313,7 @@
       "when_en": "Email delivery issues (bounces, going to spam), setting up a new email domain, migrating email providers, or verifying DNS configuration after changes."
     },
     "playbook-email-connectivity-test.md": {
+      "emoji": "📡",
       "title_zh": "邮件连通性测试",
       "title_en": "Email Connectivity Test",
       "detail_zh": "SMTP、IMAP、POP3 和邮件服务器",
@@ -300,6 +324,7 @@
       "when_en": "User can't send or receive email, email client shows connection errors, suspected firewall or network blocking email ports, or verifying connectivity after network changes."
     },
     "playbook-identity-provider-test.md": {
+      "emoji": "🪪",
       "title_zh": "身份提供商测试",
       "title_en": "Identity Provider Test",
       "detail_zh": "Entra ID、Google Workspace 和 SSO 端点",
@@ -310,6 +335,7 @@
       "when_en": "User can't sign in to corporate services, SSO failures, \"session expired\" loops, MFA not working, or diagnosing whether the problem is network vs. account vs. IdP outage."
     },
     "playbook-setup-wifi-profile.md": {
+      "emoji": "📶",
       "title_zh": "Wi-Fi 配置",
       "title_en": "Set Up Wi-Fi Network",
       "detail_zh": "家庭或企业 WPA2/WPA3 配置",
@@ -320,6 +346,7 @@
       "when_en": "User needs to connect to Wi-Fi, join a corporate network, enter Wi-Fi credentials, or set up WPA2-Enterprise / 802.1x."
     },
     "playbook-setup-email-account.md": {
+      "emoji": "✉️",
       "title_zh": "macOS 邮箱配置",
       "title_en": "Set Up Email Account",
       "detail_zh": "Apple Mail 或 Outlook 添加邮箱",
@@ -330,6 +357,7 @@
       "when_en": "User wants to add an email account, set up Mail.app, configure Outlook, or can't receive/send email on their Mac."
     },
     "playbook-app-doctor.md": {
+      "emoji": "🩺",
       "title_zh": "macOS 应用修复",
       "title_en": "App Doctor",
       "detail_zh": "崩溃、打不开、权限和配置损坏",
@@ -340,6 +368,7 @@
       "when_en": "User reports: app crashes, app won't open, app frozen, \"app is damaged\" error, app unexpectedly quit."
     },
     "playbook-outlook-troubleshooting.md": {
+      "emoji": "📧",
       "title_zh": "Outlook 排障",
       "title_en": "Outlook Troubleshooting",
       "detail_zh": "同步、卡信、崩溃和配置文件",
@@ -350,6 +379,7 @@
       "when_en": "User reports: Outlook won't sync, email stuck in outbox, calendar not updating, Outlook crashes, search not working, \"need password\" loop, Outlook slow, OST corrupted."
     },
     "playbook-update-troubleshooting.md": {
+      "emoji": "🔄",
       "title_zh": "macOS 更新排障",
       "title_en": "Update Troubleshooting",
       "detail_zh": "下载、安装和更新卡住",
@@ -360,6 +390,7 @@
       "when_en": "User reports: macOS update stuck, update won't install, \"unable to check for updates\" error, update failed, \"not enough space\" for update, app updates failing."
     },
     "playbook-windows-update-troubleshooting.md": {
+      "emoji": "🔄",
       "title_zh": "Windows Update 排障",
       "title_en": "Windows Update Troubleshooting",
       "detail_zh": "错误码、服务、待重启和更新缓存",
@@ -370,6 +401,7 @@
       "when_en": "User reports: Windows Update stuck, update won't install, update error code, system slow after update, \"something went wrong\" during update, pending restart that won't complete."
     },
     "playbook-printer-repair.md": {
+      "emoji": "🖨️",
       "title_zh": "macOS 打印机修复",
       "title_en": "Printer Repair",
       "detail_zh": "队列、CUPS 和设备发现",
@@ -380,6 +412,7 @@
       "when_en": "User reports: can't print, print jobs stuck, printer not found, printing fails, printer offline."
     },
     "playbook-windows-printer-repair.md": {
+      "emoji": "🖨️",
       "title_zh": "Windows 打印机修复",
       "title_en": "Windows Printer Repair",
       "detail_zh": "离线状态、打印队列和 Spooler",
@@ -390,6 +423,7 @@
       "when_en": "User reports: can't print, print jobs stuck, printer offline, printer not found, printing fails, \"driver is unavailable.\""
     },
     "playbook-windows-configuration-review.md": {
+      "emoji": "🧩",
       "title_zh": "Windows 配置审查",
       "title_en": "Windows Configuration Review",
       "detail_zh": "隐私、电源、去臃肿设置的差异、风险和回滚",
@@ -400,6 +434,7 @@
       "when_en": "Use for “optimize Windows”, debloat, privacy, power-plan, taskbar, update or gaming-tweak requests, and when importing a configuration from another machine."
     },
     "playbook-windows-uninstall-residue-cleanup.md": {
+      "emoji": "🩺",
       "title_zh": "Windows 卸载残留清理",
       "title_en": "Windows Uninstall Residue Cleanup",
       "detail_zh": "严格残留扫描、回收站清理和强制移除审计",
@@ -410,6 +445,7 @@
       "when_en": "Use after uninstalling a Windows application when leftover files, registry keys, services or a guarded force-removal review are needed."
     },
     "playbook-windows-driver-lifecycle-audit.md": {
+      "emoji": "🪟",
       "title_zh": "驱动生命周期审计",
       "title_en": "Windows Driver Lifecycle Audit",
       "detail_zh": "硬件 ID、官方来源、重装、回滚和兼容性",
@@ -420,6 +456,7 @@
       "when_en": "Use when a Windows device has a yellow warning icon, disappeared after an update, cannot connect, has broken audio/video, or requires an old USB, printer, serial or vendor-specific driver."
     },
     "playbook-windows-av-input-triage.md": {
+      "emoji": "🪟",
       "title_zh": "摄像头与音视频输入分诊",
       "title_en": "Windows Audio and Video Input Triage",
       "detail_zh": "开关、权限、系统设备和会议软件",
@@ -430,6 +467,7 @@
       "when_en": "Use when a camera, microphone, headset, speaker or meeting application cannot see, open or select an input/output device."
     },
     "playbook-windows-boot-failure-triage.md": {
+      "emoji": "🪟",
       "title_zh": "启动失败分诊",
       "title_en": "Windows Boot Failure Triage",
       "detail_zh": "No Boot Device、启动循环、UEFI/Legacy 和启动界面",
@@ -440,6 +478,7 @@
       "when_en": "Use for `No Boot Device`, missing Windows Boot Manager, boot loops, a machine that reaches firmware but not Windows, or a blue pre-login screen that may not be a normal BSOD."
     },
     "playbook-windows-winre-system-repair.md": {
+      "emoji": "🪟",
       "title_zh": "WinRE 系统修复",
       "title_en": "Windows WinRE System Repair",
       "detail_zh": "SFC、DISM、安全模式、启动修复和还原",
@@ -450,6 +489,7 @@
       "when_en": "Use for repeated startup repair, system-file corruption, update-related boot failures, safe-mode requests, damaged Windows components or a machine that cannot reach the desktop reliably."
     },
     "playbook-windows-bitlocker-recovery-triage.md": {
+      "emoji": "🪟",
       "title_zh": "BitLocker/PE 前置分诊",
       "title_en": "Windows BitLocker Recovery Triage",
       "detail_zh": "加密状态、TPM/BIOS、恢复密钥和离线清单",
@@ -460,6 +500,7 @@
       "when_en": "Use before entering PE or Linux, changing BIOS/UEFI or TPM, upgrading firmware, opening a laptop, resizing partitions, reinstalling Windows, moving a disk to another computer, or responding to a BitLocker recovery prompt."
     },
     "playbook-windows-partition-resize-audit.md": {
+      "emoji": "🪟",
       "title_zh": "分区扩容审计",
       "title_en": "Windows Partition Resize Audit",
       "detail_zh": "邻接空间、备份、移动分区和离线操作边界",
@@ -470,6 +511,7 @@
       "when_en": "Use when the user wants to expand C:, shrink or move a data partition, merge free space, change a disk layout or prepare a disk for reinstall."
     },
     "playbook-windows-hardware-maintenance-safety.md": {
+      "emoji": "🪟",
       "title_zh": "硬件维护安全",
       "title_en": "Windows Hardware Maintenance Safety",
       "detail_zh": "断电放电、ESD、清灰、换件和停工条件",
@@ -480,6 +522,7 @@
       "when_en": "Use before opening a Windows laptop, replacing storage, memory, wireless cards, battery or display parts, cleaning dust, or renewing thermal compound."
     },
     "playbook-endpoint-security-check.md": {
+      "emoji": "🛡️",
       "title_zh": "终端安全检查",
       "title_en": "Endpoint Security Check",
       "detail_zh": "防病毒、防火墙、更新和可疑活动",
@@ -490,6 +533,7 @@
       "when_en": "Routine security audit, post-incident triage, new device onboarding, or user reports suspicious behavior."
     },
     "playbook-browser-security-audit.md": {
+      "emoji": "🔍",
       "title_zh": "浏览器安全审计",
       "title_en": "Browser Security Audit",
       "detail_zh": "扩展、密码存储、版本和安全设置",
@@ -500,6 +544,7 @@
       "when_en": "Routine security review, post-phishing incident, user reports browser behaving strangely, adware/toolbar complaints, or new device onboarding."
     },
     "playbook-windows-browser-policy-audit.md": {
+      "emoji": "🔐",
       "title_zh": "Windows 浏览器策略审计",
       "title_en": "Windows Browser Policy Audit",
       "detail_zh": "Chrome、Edge、Firefox、Brave 策略和遥测",
@@ -510,6 +555,7 @@
       "when_en": "Use when the user wants a minimal browser, less telemetry or sponsored content, suspects policy tampering, or needs to understand a browser configuration file."
     },
     "playbook-windows-persistence-audit.md": {
+      "emoji": "🔐",
       "title_zh": "Windows 持久化审计",
       "title_en": "Windows Persistence Audit",
       "detail_zh": "启动项、服务、计划任务、右键菜单和文件关联",
@@ -520,6 +566,7 @@
       "when_en": "Use for pop-ups, unknown background activity, slow boot, unexplained context-menu items, browser add-ons, file-association hijacks, or a request to remove residual software."
     },
     "playbook-credential-cleanup.md": {
+      "emoji": "🔑",
       "title_zh": "凭据清理",
       "title_en": "Credential Cleanup",
       "detail_zh": "SSH key、token、云凭据和事件后残留",
@@ -530,6 +577,7 @@
       "when_en": "Employee offboarding, device being reassigned, compromised credential response, or user wants to clean up old credentials."
     },
     "playbook-windows-data-recovery-triage.md": {
+      "emoji": "🧯",
       "title_zh": "Windows 数据恢复分诊",
       "title_en": "Windows Data Recovery Triage",
       "detail_zh": "先成像、只读扫描、报告，再写入独立目标",
@@ -540,6 +588,7 @@
       "when_en": "Use for accidental deletion, an inaccessible volume, a damaged filesystem, or a request to recover files from a Windows disk or image."
     },
     "playbook-setup-homebrew.md": {
+      "emoji": "🍺",
       "title_zh": "Homebrew",
       "title_en": "Set Up Homebrew",
       "detail_zh": "安装、配置和基础诊断",
@@ -550,6 +599,7 @@
       "when_en": "User wants to install Homebrew, set up a package manager, or says they need to install software on their Mac and doesn't have Homebrew yet."
     },
     "playbook-setup-cuda.md": {
+      "emoji": "🎮",
       "title_zh": "CUDA",
       "title_en": "Set Up NVIDIA CUDA Toolkit",
       "detail_zh": "Ubuntu、Debian、RHEL/Fedora 的驱动与工具链",
@@ -560,6 +610,7 @@
       "when_en": "User wants to install CUDA, set up GPU computing, needs NVIDIA drivers for deep learning/ML, or mentions nvcc/nvidia-smi not found on Linux."
     },
     "playbook-setup-ssh-key.md": {
+      "emoji": "🔑",
       "title_zh": "SSH Key",
       "title_en": "Set Up SSH Key",
       "detail_zh": "生成、GitHub 配置和 publickey 排障",
@@ -570,6 +621,7 @@
       "when_en": "User wants to set up SSH keys, connect to GitHub via SSH, push to git without password, or says \"permission denied (publickey)\"."
     },
     "playbook-setup-openclaw.md": {
+      "emoji": "🦞",
       "title_zh": "OpenClaw 总体安装",
       "title_en": "Set Up OpenClaw",
       "detail_zh": "Node.js、网关、渠道和安装验证",
@@ -580,6 +632,7 @@
       "when_en": "User wants to install OpenClaw, set up an AI assistant on WhatsApp/Telegram/"
     },
     "playbook-setup-openclaw-install-node.md": {
+      "emoji": "🦞",
       "title_zh": "Node.js 22+",
       "title_en": "Install Node.js",
       "detail_zh": "安装或核对 OpenClaw 所需运行时",
@@ -590,6 +643,7 @@
       "when_en": ""
     },
     "playbook-setup-openclaw-configure.md": {
+      "emoji": "🦞",
       "title_zh": "OpenClaw 配置",
       "title_en": "Configure OpenClaw",
       "detail_zh": "模型、渠道、会话和自动化",
@@ -600,6 +654,7 @@
       "when_en": ""
     },
     "playbook-setup-openclaw-config-reference.md": {
+      "emoji": "🦞",
       "title_zh": "OpenClaw 配置字段参考",
       "title_en": "OpenClaw Configuration Reference",
       "detail_zh": "查询配置项和安全默认值",
@@ -610,6 +665,7 @@
       "when_en": ""
     },
     "playbook-setup-openclaw-add-feishu.md": {
+      "emoji": "🦞",
       "title_zh": "飞书内置插件",
       "title_en": "Add Feishu Channel (Built-in Plugin)",
       "detail_zh": "机器人身份接入",
@@ -620,6 +676,7 @@
       "when_en": "User wants to connect Feishu/飞书 to OpenClaw, set up a Feishu chatbot,"
     },
     "playbook-setup-openclaw-add-feishu-official.md": {
+      "emoji": "🦞",
       "title_zh": "飞书官方插件",
       "title_en": "Add Feishu Official Plugin",
       "detail_zh": "用户身份和文档能力",
@@ -630,6 +687,7 @@
       "when_en": "User wants the Feishu official plugin, needs document/calendar/task capabilities"
     },
     "playbook-setup-openclaw-add-telegram.md": {
+      "emoji": "🦞",
       "title_zh": "Telegram 渠道",
       "title_en": "Add Telegram Channel",
       "detail_zh": "Bot 接入和连通性",
@@ -640,6 +698,7 @@
       "when_en": ""
     },
     "playbook-setup-openclaw-add-whatsapp.md": {
+      "emoji": "🦞",
       "title_zh": "WhatsApp 渠道",
       "title_en": "Add WhatsApp Channel",
       "detail_zh": "登录、重新配置和会话状态",
@@ -650,6 +709,7 @@
       "when_en": ""
     },
     "playbook-setup-openclaw-china-models.md": {
+      "emoji": "🦞",
       "title_zh": "国产模型",
       "title_en": "Chinese Model Providers",
       "detail_zh": "火山、Moonshot、DeepSeek、Qwen、GLM",
@@ -660,6 +720,7 @@
       "when_en": ""
     },
     "playbook-setup-openclaw-troubleshooting.md": {
+      "emoji": "🦞",
       "title_zh": "OpenClaw 排障",
       "title_en": "OpenClaw Troubleshooting",
       "detail_zh": "网关、渠道、模型和日志",
@@ -670,6 +731,7 @@
       "when_en": ""
     },
     "playbook-setup-openclaw-uninstall.md": {
+      "emoji": "🦞",
       "title_zh": "OpenClaw 卸载",
       "title_en": "Uninstall OpenClaw",
       "detail_zh": "停止服务、移除配置和验证残留",

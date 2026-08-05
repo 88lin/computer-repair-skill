@@ -106,7 +106,9 @@ def build_data() -> dict:
         item = {
             "id": route.replace("/", "-"),
             "route": route,
-            "emoji": meta.get("emoji", existing_item.get("emoji", "")),
+            # Local Playbooks may omit the optional frontmatter field; keep the
+            # previously published icon from the explicit catalog in that case.
+            "emoji": meta.get("emoji") or existing_item.get("emoji", ""),
             "platform": platform,
             "platform_zh": PLATFORM_LABELS[platform][0],
             "platform_en": PLATFORM_LABELS[platform][1],

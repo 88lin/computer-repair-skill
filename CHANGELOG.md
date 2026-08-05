@@ -35,9 +35,12 @@
 
 ### Changed
 
-- `playbook-setup-openclaw-china-models.md` 不再硬编码易过期的模型 id，要求从
-  当前 OpenClaw/provider catalog 确认 provider 和模型；配置示例的 `api` 值改为
-  `openai-completions`。
+- `playbook-setup-openclaw-china-models.md` 对 Volcengine 仍要求从当前
+  OpenClaw/provider catalog 确认 provider 和模型，同时恢复可复制的 Moonshot
+  插件、Kimi、DeepSeek 示例，并明确这些 ID 需要运行时复核；配置示例的 `api`
+  值改为 `openai-completions`。
+- `playbook-setup-openclaw-config-reference.md` 将 `typingIndicator` 与
+  `resolveSenderNames` 放回 Feishu 专属小节，并注明 Google Chat 的类型差异。
 - `playbook-setup-openclaw-uninstall.md` 以官方 `openclaw uninstall` 为主路径，
   补上 Windows 计划任务与桌面端清理，手工删除降级为兜底。
 - `playbook-setup-openclaw-add-feishu.md` 的批量导入权限收敛到最小租户权限，
@@ -72,7 +75,12 @@
 - 后续审阅补强了 Chrome/Edge 临时数据库的唯一文件名与失败清理，并同步修正
   `credential-cleanup` 中遗留的文件大小误判。
 - Windows WLAN 配置现在对 SSID 和密码做 XML 转义，临时路径不再使用用户输入，
-  且导入失败时也会清理秘密文件。
+  且导入失败时也会清理秘密文件；密码会去除秘密文件换行，profile 使用真实
+  SSID，写入 XML 时不带 BOM，并拒绝覆盖同名已有 profile。
+- 官网生成器为 25 个 local Playbook 恢复原有 emoji，校验器现在拒绝缺失图标；
+  弹窗在未来缺失图标时也不会产生前导空格。
+- OpenClaw 卸载的状态/配置删除块自包含路径解析与安全检查，不依赖上一段
+  shell 会话中的变量。
 - Volcengine 流程改为先确认当前 provider/model catalog，避免引用不存在的插件或
   过期模型；健康基线同时接受 macOS 防火墙 `State = 1` 与 `State = 2`。
 - OpenClaw 的密钥文件权限说明增加 Windows ACL 分支；卸载覆盖 `OPENCLAW_HOME`、

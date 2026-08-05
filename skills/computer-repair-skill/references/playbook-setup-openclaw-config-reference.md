@@ -81,6 +81,28 @@ All channels share the same field patterns:
 }
 ```
 
+## Feishu-specific channel settings
+
+These optimization flags belong only to the Feishu channel; do not copy them
+into the shared channel pattern above. Both fields are optional booleans and
+default to `true` in the Feishu plugin:
+
+```json5
+{
+  channels: {
+    feishu: {
+      typingIndicator: true,       // set false to skip typing reaction calls
+      resolveSenderNames: true     // set false to skip sender profile lookups
+    }
+  }
+}
+```
+
+Google Chat has a different `typingIndicator` contract: it is a string enum,
+for example `channels.googlechat.typingIndicator: "message"`, not a boolean.
+Do not reuse the Feishu example for Google Chat, and do not assume either field
+is shared by every channel.
+
 **DM policies:**
 - `pairing` — new senders need approval (expires 1h, max 3 pending)
 - `allowlist` — only `allowFrom` senders allowed

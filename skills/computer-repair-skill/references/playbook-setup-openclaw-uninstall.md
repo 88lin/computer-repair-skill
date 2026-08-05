@@ -161,10 +161,30 @@ using a bounded listing (for example `~/.openclaw-*` directly under the selected
 show every resolved candidate, and delete each one only after the user confirms that
 profile. Never use `rm -rf ~/.openclaw-*` or an equivalent wildcard deletion.
 
-For a reviewed existing state directory, run the platform-specific deletion with the
-resolved literal path (skip it when the path is already absent):
+The deletion blocks below intentionally repeat path resolution and safety checks. Each
+code block is self-contained because an Agent may execute Markdown code blocks in
+separate shell sessions; never rely on variables from the preview block above.
 ```bash
-if [ -n "${state_dir:-}" ] && [ -d "$state_dir" ]; then
+home_dir="${OPENCLAW_HOME:-$HOME}"
+state_dir="${OPENCLAW_STATE_DIR:-$home_dir/.openclaw}"
+config_path="${OPENCLAW_CONFIG_PATH:-$state_dir/openclaw.json}"
+home_root="$(cd -P -- "$home_dir" 2>/dev/null && pwd)" || {
+  echo "Home directory cannot be resolved; stop before deleting." >&2
+  exit 1
+}
+if [ -e "$state_dir" ]; then
+  state_dir="$(cd -P -- "$state_dir" 2>/dev/null && pwd)" || {
+    echo "State directory cannot be resolved; stop before deleting." >&2
+    exit 1
+  }
+  case "$state_dir" in
+    /|"$home_root")
+      echo "Refusing to delete filesystem or home root: $state_dir" >&2
+      exit 1
+      ;;
+  esac
+fi
+if [ -n "$state_dir" ] && [ -d "$state_dir" ]; then
   rm -rf -- "$state_dir"
 fi
 if [ -f "$config_path" ] && [ "$config_path" != "$state_dir/openclaw.json" ]; then
@@ -172,6 +192,24 @@ if [ -f "$config_path" ] && [ "$config_path" != "$state_dir/openclaw.json" ]; th
 fi
 ```
 ```powershell
+$homeDir = if ([string]::IsNullOrWhiteSpace($env:OPENCLAW_HOME)) {
+  $env:USERPROFILE
+} else { $env:OPENCLAW_HOME }
+$stateDir = if ([string]::IsNullOrWhiteSpace($env:OPENCLAW_STATE_DIR)) {
+  Join-Path $homeDir '.openclaw'
+} else { $env:OPENCLAW_STATE_DIR }
+$configPath = if ([string]::IsNullOrWhiteSpace($env:OPENCLAW_CONFIG_PATH)) {
+  Join-Path $stateDir 'openclaw.json'
+} else { $env:OPENCLAW_CONFIG_PATH }
+$resolvedHome = (Resolve-Path -LiteralPath $homeDir -ErrorAction Stop).Path.TrimEnd('\')
+$resolvedState = $null
+if (Test-Path -LiteralPath $stateDir) {
+  $resolvedState = (Resolve-Path -LiteralPath $stateDir -ErrorAction Stop).Path
+  $stateRoot = [IO.Path]::GetPathRoot($resolvedState).TrimEnd('\')
+  if ($resolvedState.TrimEnd('\') -in @($stateRoot, $resolvedHome)) {
+    throw "Refusing to delete filesystem or home root: $resolvedState"
+  }
+}
 if ($resolvedState -and (Test-Path -LiteralPath $resolvedState -PathType Container)) {
   Remove-Item -LiteralPath $resolvedState -Recurse -Force
 }

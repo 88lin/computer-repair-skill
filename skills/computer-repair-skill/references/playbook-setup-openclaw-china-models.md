@@ -35,9 +35,13 @@ Ask the user which provider they want to use:
 - API key env var: `BYTEPLUS_API_KEY`
 
 ### Moonshot AI (月之暗面 / Kimi)
-- Provider registration and model IDs vary by OpenClaw version and account. Confirm the
-  provider and exact model IDs with `openclaw models status` and the Moonshot console;
-  do not install an unverified plugin package or copy model names from this guide.
+- Ships as an external plugin. Install it before onboarding:
+  `openclaw plugins install @openclaw/moonshot-provider`, then run
+  `openclaw gateway restart`.
+- Known model refs at this review: `moonshot/kimi-k3` (onboarding default),
+  `moonshot/kimi-k2.7-code`, and `moonshot/kimi-k2.7-code-highspeed`. Run
+  `openclaw models status` and use the exact provider/model IDs available to the
+  current account; a dated model ID is only a snapshot, not a permanent guarantee.
 - API key env var: `MOONSHOT_API_KEY`
 - Base URL: `https://api.moonshot.ai/v1` (international) or `https://api.moonshot.cn/v1` (China)
 - Kimi Coding is a **separate** provider with its own key and a `kimi/` prefix (`kimi/kimi-for-coding`, `kimi/k3`). Keys are not interchangeable — do not mix the prefixes.
@@ -55,9 +59,9 @@ Ask the user which provider they want to use:
 - Auth via device code flow (see Step 3)
 
 ### DeepSeek (深度求索)
-- Uses an OpenAI-compatible endpoint. Confirm the currently available model IDs in
-  the DeepSeek console before configuring them; do not copy a dated model ID from this
-  guide. "DeepSeek Coder" is not a separate model in the current API.
+- Uses an OpenAI-compatible endpoint. The own-endpoint examples are
+  `deepseek-chat` and `deepseek-reasoner`; confirm both in the DeepSeek console
+  before configuring them. "DeepSeek Coder" is not a separate model in the current API.
 - API key env var: `DEEPSEEK_API_KEY`
 - Base URL: `https://api.deepseek.com/v1`
 - Sign up: https://platform.deepseek.com/
@@ -93,31 +97,15 @@ openclaw models auth login --provider qwen-portal --set-default
 ```
 This opens a device code flow — use WAIT_FOR_USER.
 
-**For OpenAI-compatible providers** (Moonshot, DeepSeek):
-These need a custom provider entry in `~/.openclaw/openclaw.json`:
-```json5
-{
-  models: {
-    providers: {
-      moonshot: {
-        baseUrl: "https://api.moonshot.ai/v1",
-        apiKey: "${MOONSHOT_API_KEY}",
-        api: "openai-completions",
-        models: [{ id: "<verified-moonshot-model-id>" }]
-      }
-    }
-  },
-  agents: {
-    defaults: {
-      model: {
-        primary: "moonshot/<verified-moonshot-model-id>"
-      }
-    }
-  }
-}
+**For Moonshot** (after installing the plugin and restarting the gateway):
 ```
+openclaw config set agents.defaults.model.primary "moonshot/kimi-k3"
+```
+Use `moonshot/kimi-k2.7-code` or `moonshot/kimi-k2.7-code-highspeed` only when
+`openclaw models status` shows that exact model for the current account.
 
-For DeepSeek:
+**For DeepSeek** (OpenAI-compatible endpoint):
+Add a custom provider entry in `~/.openclaw/openclaw.json`:
 ```json5
 {
   models: {
@@ -126,14 +114,17 @@ For DeepSeek:
         baseUrl: "https://api.deepseek.com/v1",
         apiKey: "${DEEPSEEK_API_KEY}",
         api: "openai-completions",
-        models: [{ id: "<verified-deepseek-model-id>" }]
+        models: [
+          { id: "deepseek-chat" },
+          { id: "deepseek-reasoner" }
+        ]
       }
     }
   },
   agents: {
     defaults: {
       model: {
-        primary: "deepseek/<verified-deepseek-model-id>"
+        primary: "deepseek/deepseek-chat"
       }
     }
   }
@@ -161,12 +152,17 @@ For reliability, configure fallback models from a different provider:
     defaults: {
       model: {
         primary: "volcengine/<model-id-from-current-catalog>",
-        fallbacks: ["<verified-model-from-another-provider>"]
+        fallbacks: ["moonshot/kimi-k3", "deepseek/deepseek-reasoner"]
       }
     }
   }
 }
 ```
+
+The Moonshot and DeepSeek IDs above are copyable starting points, not a promise
+that every account or future OpenClaw release exposes the same catalog. Always
+run `openclaw models status` after installation and replace an unavailable ID
+with the exact current provider/model pair before saving the configuration.
 
 ## Tools referenced
 - `shell_run` — openclaw CLI commands, config edits

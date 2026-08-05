@@ -35,14 +35,14 @@ the password becomes a process argument visible to every user via `ps`.
 
 **Windows** — build a WLAN profile XML and import it. Never put the password in a
 command argument, transcript, or shell history. Do not use the SSID as a filename or
-interpolate it into a shell command: SSIDs can contain spaces, quotes, and XML
-metacharacters.
+concatenate it into a shell command string: SSIDs can contain spaces, quotes, and XML
+metacharacters. Pass it only as a separate quoted argument and escape it in XML.
 
 1. Generate profile and secret paths that contain no user input:
    ```powershell
-   $profileName = 'computer-repair-' + [guid]::NewGuid().ToString('N')
-   $profilePath = Join-Path $env:TEMP ($profileName + '.xml')
-   $secretPath = Join-Path $env:TEMP ($profileName + '.secret')
+   $tempToken = 'computer-repair-' + [guid]::NewGuid().ToString('N')
+   $profilePath = Join-Path $env:TEMP ($tempToken + '.xml')
+   $secretPath = Join-Path $env:TEMP ($tempToken + '.secret')
    ```
 2. Call `write_secret` for `$secretPath` with format `{{value}}` and an ACL restricted
    to the current user. This is a temporary plaintext file; never print it or include
@@ -51,12 +51,12 @@ metacharacters.
    exact value collected by `text_input`:
    ```powershell
    $ssidXml = [System.Security.SecurityElement]::Escape($ssid)
-   $password = Get-Content -LiteralPath $secretPath -Raw
+   $password = (Get-Content -LiteralPath $secretPath -Raw).TrimEnd([char[]]"`r`n")
    $passwordXml = [System.Security.SecurityElement]::Escape($password)
    $xml = @"
    <?xml version="1.0"?>
    <WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">
-     <name>$profileName</name>
+     <name>$ssidXml</name>
      <SSIDConfig><SSID><name>$ssidXml</name></SSID></SSIDConfig>
      <connectionType>ESS</connectionType>
      <connectionMode>auto</connectionMode>
@@ -74,21 +74,27 @@ metacharacters.
      </security></MSM>
    </WLANProfile>
    "@
-   Set-Content -LiteralPath $profilePath -Value $xml -Encoding UTF8 -NoNewline
+   [IO.File]::WriteAllText($profilePath, $xml, [Text.UTF8Encoding]::new($false))
    ```
 4. Import and connect with argument-safe PowerShell invocation. `user=current` needs no
    elevation; use `user=all` only when every account needs the profile (admin required):
    ```powershell
    $profileImported = $false
+   $profileExisted = $false
    try {
+     & netsh.exe wlan show profile "name=$ssid" *> $null
+     $profileExisted = $LASTEXITCODE -eq 0
+     if ($profileExisted) {
+       throw "A WLAN profile named '$ssid' already exists; refusing to replace it. Review it first."
+     }
      & netsh.exe wlan add profile "filename=$profilePath" user=current
      if ($LASTEXITCODE -ne 0) { throw "netsh wlan add profile failed: $LASTEXITCODE" }
      $profileImported = $true
-     & netsh.exe wlan connect "name=$profileName"
+     & netsh.exe wlan connect "name=$ssid"
      if ($LASTEXITCODE -ne 0) { throw "netsh wlan connect failed: $LASTEXITCODE" }
    } catch {
-     if ($profileImported) {
-       & netsh.exe wlan delete profile "name=$profileName" | Out-Null
+     if ($profileImported -and -not $profileExisted) {
+       & netsh.exe wlan delete profile "name=$ssid" | Out-Null
      }
      throw
    } finally {
@@ -96,7 +102,7 @@ metacharacters.
    }
 
    # Run Step 5 after this block. A failed connection removes the imported profile.
-   # If later verification fails, delete the profile explicitly and regenerate it.
+   # If later verification fails, delete this run's profile explicitly and regenerate it.
    ```
 
 The `finally` block deletes both temporary files even when import or connection fails.
@@ -111,8 +117,9 @@ If the connection fails:
 - Enterprise auth failed → check username format (may need domain\user or user@domain)
 - Captive portal → tell user to open a browser
 - If the imported profile is no longer wanted or connectivity verification fails, remove
-  this run's profile explicitly: `& netsh.exe wlan delete profile "name=$profileName"`.
-  Do not delete other profiles by SSID or by wildcard.
+  this run's profile explicitly: `& netsh.exe wlan delete profile "name=$ssid"`.
+  The import refuses to replace an existing profile with the same SSID; do not delete
+  another profile by SSID or by wildcard.
 
 If the target device is already in an offline setup or recovery environment, do not assume the host Agent can connect it. Give the user a manual GUI or technician checklist and verify the result when a usable host is available again.
 
