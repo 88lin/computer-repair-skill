@@ -164,7 +164,8 @@ for credentials (`~/.openclaw/.env`, a.k.a. `$OPENCLAW_STATE_DIR/.env`):
 - append to the file rather than replacing it, and make sure the line ends with a newline
 
 Then lock the file down and point the config at the variable **without letting the shell
-expand it** — note the single quotes:
+expand it** — note the single quotes. On macOS/Linux use `chmod 600`; on Windows use the
+ACL equivalent shown in the Telegram playbook:
 ```bash
 chmod 600 ~/.openclaw/.env
 openclaw config set channels.feishu.accounts.main.appSecret '${FEISHU_APP_SECRET}'

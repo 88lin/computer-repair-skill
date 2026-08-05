@@ -21,9 +21,16 @@ Employee offboarding, device being reassigned, compromised credential response, 
 
 ### 1. Check browser saved passwords
 Count saved passwords in each installed browser (don't dump the actual passwords):
-- **Chrome**: Check size of `~/Library/Application Support/Google/Chrome/Default/Login Data`.
+- **Chrome**: Copy `~/Library/Application Support/Google/Chrome/Default/Login Data` to
+  a unique temporary file and run `sqlite3 <copy> "SELECT COUNT(*) FROM logins;"`.
+  Never use file size as a proxy: the SQLite database has a fixed schema and remains
+  non-empty with zero saved passwords. Remove the copy with a `trap` even on failure.
 - **Firefox**: Check `~/Library/Application Support/Firefox/Profiles/*/logins.json` for entry count.
-- **Edge**: Check `~/Library/Application Support/Microsoft Edge/Default/Login Data`.
+- **Edge**: Use the same unique-copy and `COUNT(*)` method for
+  `~/Library/Application Support/Microsoft Edge/Default/Login Data`.
+
+Paths vary by OS and profile. If the database cannot be copied or `sqlite3` is not
+available, report the count as unknown rather than inferring it from existence or size.
 
 Report: "Chrome has ~N saved passwords" etc. If any are found, note they should be cleared for offboarding.
 

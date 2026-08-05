@@ -45,7 +45,8 @@ Run `uptime` to check how long since last reboot.
 
 ### 5. Check firewall status
 - **macOS**: Check `/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate`. The `com.apple.alf` plist is removed in macOS 15, so do not read it. Without `sudo`, fall back to `system_profiler SPFirewallDataType`.
-- **Green**: firewall enabled (`State = 1`, i.e. "Firewall is enabled").
+- **Green**: firewall enabled (`State = 1` or `State = 2`; state 2 also blocks all
+  incoming connections).
 - **Red**: firewall disabled (`State = 0`). Recommend enabling it.
 
 ### 6. Check backup status

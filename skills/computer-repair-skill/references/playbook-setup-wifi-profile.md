@@ -33,16 +33,31 @@ Never interpolate the password into a transcript, shell command, process argumen
 prompt locally. Do **not** use `networksetup -setairportnetwork <device> <ssid> <password>`:
 the password becomes a process argument visible to every user via `ps`.
 
-**Windows** — build a WLAN profile XML and import it. Write the file with `write_secret` so
-the key never passes through a command line:
+**Windows** — build a WLAN profile XML and import it. Never put the password in a
+command argument, transcript, or shell history. Do not use the SSID as a filename or
+interpolate it into a shell command: SSIDs can contain spaces, quotes, and XML
+metacharacters.
 
-1. `write_secret` to a protected temp path (e.g. `%TEMP%\wlan-<ssid>.xml`, ACL'd to the
-   current user) with this template — `{{value}}` is the `secure_input` password:
-   ```xml
+1. Generate profile and secret paths that contain no user input:
+   ```powershell
+   $profileName = 'computer-repair-' + [guid]::NewGuid().ToString('N')
+   $profilePath = Join-Path $env:TEMP ($profileName + '.xml')
+   $secretPath = Join-Path $env:TEMP ($profileName + '.secret')
+   ```
+2. Call `write_secret` for `$secretPath` with format `{{value}}` and an ACL restricted
+   to the current user. This is a temporary plaintext file; never print it or include
+   its contents in a command argument.
+3. Build the XML in memory and escape both text fields before writing it. `$ssid` is the
+   exact value collected by `text_input`:
+   ```powershell
+   $ssidXml = [System.Security.SecurityElement]::Escape($ssid)
+   $password = Get-Content -LiteralPath $secretPath -Raw
+   $passwordXml = [System.Security.SecurityElement]::Escape($password)
+   $xml = @"
    <?xml version="1.0"?>
    <WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">
-     <name>SSID_HERE</name>
-     <SSIDConfig><SSID><name>SSID_HERE</name></SSID></SSIDConfig>
+     <name>$profileName</name>
+     <SSIDConfig><SSID><name>$ssidXml</name></SSID></SSIDConfig>
      <connectionType>ESS</connectionType>
      <connectionMode>auto</connectionMode>
      <MSM><security>
@@ -54,23 +69,30 @@ the key never passes through a command line:
        <sharedKey>
          <keyType>passPhrase</keyType>
          <protected>false</protected>
-         <keyMaterial>{{value}}</keyMaterial>
+         <keyMaterial>$passwordXml</keyMaterial>
        </sharedKey>
      </security></MSM>
    </WLANProfile>
+   "@
+   Set-Content -LiteralPath $profilePath -Value $xml -Encoding UTF8 -NoNewline
    ```
-2. Import and connect. `user=current` needs no elevation; only use `user=all` when the
-   profile must be available to every account on the machine, which requires admin:
+4. Import and connect with argument-safe PowerShell invocation. `user=current` needs no
+   elevation; use `user=all` only when every account needs the profile (admin required):
    ```powershell
-   netsh wlan add profile filename="$env:TEMP\wlan-<ssid>.xml" user=current
-   netsh wlan connect name="<SSID>"
-   ```
-3. After Step 5 confirms connectivity, delete the temp file:
-   ```powershell
-   Remove-Item "$env:TEMP\wlan-<ssid>.xml" -Force
+   try {
+     & netsh.exe wlan add profile "filename=$profilePath" user=current
+     if ($LASTEXITCODE -ne 0) { throw "netsh wlan add profile failed: $LASTEXITCODE" }
+     & netsh.exe wlan connect "name=$profileName"
+     if ($LASTEXITCODE -ne 0) { throw "netsh wlan connect failed: $LASTEXITCODE" }
+   } finally {
+     Remove-Item -LiteralPath $profilePath, $secretPath -Force -ErrorAction SilentlyContinue
+   }
+
+   # Run Step 5 after this block. If verification fails, regenerate the profile rather
+   # than reusing a secret file that should already have been deleted.
    ```
 
-Delete the file even if the connection failed — it holds the plaintext passphrase.
+The `finally` block deletes both temporary files even when import or connection fails.
 For WPA2 Enterprise the profile needs an `<OneX>` EAP block instead of `<sharedKey>`;
 those profiles are usually supplied by the organization, so ask for the official one
 rather than hand-writing it.

@@ -550,6 +550,38 @@ def validate_site_data(validation: Validation) -> None:
     )
 
 
+def validate_review_regressions(validation: Validation) -> None:
+    """防止已修复的平台命令和敏感数据处理问题回归。"""
+    wifi = read_text(REFERENCES_DIR / "playbook-setup-wifi-profile.md", validation)
+    validation.check("SSID_HERE" not in wifi, "Wi-Fi Playbook 仍包含未替换的 SSID_HERE 占位符。")
+    validation.check("wlan-<ssid>" not in wifi, "Wi-Fi 临时路径不能直接使用用户提供的 SSID。")
+    validation.check(
+        "SecurityElement]::Escape" in wifi and "finally" in wifi,
+        "Wi-Fi XML 必须转义用户输入，并在失败时清理临时秘密。",
+    )
+
+    browser = read_text(REFERENCES_DIR / "playbook-browser-security-audit.md", validation)
+    validation.check("/tmp/ld.db" not in browser, "浏览器审计不能使用固定的 /tmp/ld.db。")
+    validation.check("mktemp" in browser and "trap" in browser, "浏览器审计必须使用唯一临时文件并注册清理 trap。")
+
+    credentials = read_text(REFERENCES_DIR / "playbook-credential-cleanup.md", validation)
+    validation.check("Check size of" not in credentials, "凭据清理不能通过 Login Data 文件大小推断密码数量。")
+    validation.check("COUNT(*)" in credentials, "凭据清理必须按数据库行数统计保存的密码。")
+
+    health = read_text(REFERENCES_DIR / "playbook-health-baseline-check.md", validation)
+    validation.check("State = 1" in health and "State = 2" in health, "健康基线必须把 macOS 防火墙 State 1 和 State 2 都视为启用。")
+
+    china_models = read_text(REFERENCES_DIR / "playbook-setup-openclaw-china-models.md", validation)
+    validation.check(
+        "doubao-seed-1-8-251228" not in china_models,
+        "国产模型 Playbook 仍包含已过时的 doubao-seed-1-8-251228。",
+    )
+    validation.check(
+        "@openclaw/volcengine-provider" in china_models,
+        "Volcengine Playbook 必须说明官方 provider 插件安装步骤。",
+    )
+
+
 def validate_release_files(validation: Validation) -> None:
     """检查发布所需文件、许可证一致性、占位符和高置信度凭据模式。"""
     required = [
@@ -628,6 +660,7 @@ def main() -> int:
     validate_readme_summary(validation)
     validate_index_table_shape(validation)
     validate_site_data(validation)
+    validate_review_regressions(validation)
     validate_release_files(validation)
     return validation.finish()
 

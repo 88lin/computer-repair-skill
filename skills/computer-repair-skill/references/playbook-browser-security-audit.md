@@ -41,16 +41,26 @@ fixed schema, so it is several kilobytes even with zero saved passwords, and "fi
 and is nonzero" always reports true.
 
 - **Chrome**: `~/Library/Application Support/Google/Chrome/Default/Login Data`. Chrome holds
-  a lock on the live file, so copy it first and query the copy:
+  a lock on the live file, so copy it first and query a unique temporary copy:
   ```bash
-  cp "$HOME/Library/Application Support/Google/Chrome/Default/Login Data" /tmp/ld.db
-  sqlite3 /tmp/ld.db "SELECT COUNT(*) FROM logins;"
-  rm -f /tmp/ld.db
+  login_db="$HOME/Library/Application Support/Google/Chrome/Default/Login Data"
+  if ! query_db=$(mktemp "${TMPDIR:-/tmp}/computer-repair-login-data.XXXXXX"); then
+    echo "Could not create a temporary database copy" >&2
+    exit 1
+  fi
+  cleanup() { rm -f "$query_db"; }
+  trap cleanup EXIT HUP INT TERM
+  if ! cp "$login_db" "$query_db"; then
+    echo "Could not copy Login Data; count is unknown" >&2
+    exit 1
+  fi
+  sqlite3 "$query_db" "SELECT COUNT(*) FROM logins;"
   ```
-  This returns a count only. Never select `password_value` — read no credential material.
+  The `trap` removes only the file created by this run, including on failure. This
+  returns a count only. Never select `password_value` — read no credential material.
 - **Firefox**: `logins.json` in the Firefox profile. It is JSON; count the `logins` array
   length rather than checking existence, because the file is created empty.
-- **Edge**: same schema and same method, under `~/Library/Application Support/Microsoft Edge/Default/Login Data`.
+- **Edge**: use the same unique-copy method, under `~/Library/Application Support/Microsoft Edge/Default/Login Data`.
 
 If `sqlite3` is unavailable, say the count could not be determined rather than guessing
 from file size.

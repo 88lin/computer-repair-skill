@@ -68,6 +68,14 @@
   `fhmanagew.exe`，改用计划任务与配置文件状态判断文件历史记录。
 - `playbook-browser-security-audit.md` 不再用文件大小推测密码条数，改为复制
   数据库后用 `sqlite3` 计数（Chrome 会锁定在用数据库）。
+- 后续审阅补强了 Chrome/Edge 临时数据库的唯一文件名与失败清理，并同步修正
+  `credential-cleanup` 中遗留的文件大小误判。
+- Windows WLAN 配置现在对 SSID 和密码做 XML 转义，临时路径不再使用用户输入，
+  且导入失败时也会清理秘密文件。
+- Volcengine 流程补上官方插件安装步骤和当前模型目录；健康基线同时接受 macOS
+  防火墙 `State = 1` 与 `State = 2`。
+- OpenClaw 的密钥文件权限说明增加 Windows ACL 分支，手工卸载也尊重
+  `OPENCLAW_STATE_DIR`，避免留下自定义状态目录。
 - `playbook-windows-partition-resize-audit.md` 把已停止支持的 Windows To Go
   改为 WinRE/WinPE/厂商启动介质。
 - `playbook-windows-network-diagnostics.md` 补上 WinHTTP 与 WinINET 的区别，

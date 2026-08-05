@@ -20,8 +20,9 @@ Ask the user which provider they want to use:
 
 ### Volcano Engine (火山引擎 / 豆包)
 - Provider ID: `volcengine`
-- Models (use the dated ids verbatim): `doubao-seed-1-8-251228`, `kimi-k2-5-260127`, `glm-4-7-251222`, `deepseek-v3-2-251201`
-- Has separate coding-optimized models under `volcengine-plan`
+- Install the official provider first: `openclaw plugins install @openclaw/volcengine-provider`, then `openclaw gateway restart`
+- General models (read the current catalog before pinning a dated id): `doubao-seed-evolving`, `doubao-seed-2-1-pro-260628`, `doubao-seed-2-1-turbo-260628`, `glm-5-2-260617`, `deepseek-v4-pro-260425`, `deepseek-v4-flash-260425`
+- Coding models use the separate `volcengine-plan` provider: `ark-code-latest`, `doubao-seed-2.1-turbo`, `glm-5.2`, `deepseek-v4-pro`, `deepseek-v4-flash`
 - API key env var: `VOLCANO_ENGINE_API_KEY`
 - Sign up: https://www.volcengine.com/
 
@@ -68,13 +69,15 @@ inside `openclaw.json`:
 - format: `<ENV_VAR_NAME>={{value}}` (append, keep the trailing newline)
 
 For example, for Volcano Engine the line becomes `VOLCANO_ENGINE_API_KEY={{value}}`.
-Then `chmod 600 ~/.openclaw/.env`. Config fields reference it as `"${VOLCANO_ENGINE_API_KEY}"`.
+On macOS/Linux, run `chmod 600 ~/.openclaw/.env`. On Windows, apply the ACL equivalent
+shown in the Telegram playbook instead of running `chmod`. Config fields reference it
+as `"${VOLCANO_ENGINE_API_KEY}"`.
 
 ## Step 3: Configure the Model
 
-**For built-in providers** (volcengine, byteplus, zai):
+**For Volcengine** (after installing `@openclaw/volcengine-provider`):
 ```
-openclaw config set agents.defaults.model.primary "volcengine/doubao-seed-1-8-251228"
+openclaw config set agents.defaults.model.primary "volcengine/doubao-seed-2-1-pro-260628"
 ```
 
 **For Qwen Portal** (free, OAuth):
@@ -156,7 +159,7 @@ For reliability, configure fallback models from a different provider:
   agents: {
     defaults: {
       model: {
-        primary: "volcengine/doubao-seed-1-8-251228",
+        primary: "volcengine/doubao-seed-2-1-pro-260628",
         fallbacks: ["moonshot/kimi-k3", "deepseek/deepseek-chat"]
       }
     }

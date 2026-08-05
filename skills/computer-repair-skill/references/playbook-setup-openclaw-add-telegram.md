@@ -60,9 +60,12 @@ inside `openclaw.json`. Use `write_secret` instead:
 - file_path: expansion of `~/.openclaw/.env`
 - format: `TELEGRAM_BOT_TOKEN={{value}}` (append, keep the trailing newline)
 
-Then `chmod 600 ~/.openclaw/.env`. The `"${TELEGRAM_BOT_TOKEN}"` reference above resolves
-from that file — see `playbook-setup-openclaw-config-reference.md` for the resolution
-order. If the token leaks, revoke it with `/revoke` in BotFather and repeat this step.
+On macOS/Linux, run `chmod 600 ~/.openclaw/.env`. On Windows, do not run `chmod`:
+restrict the file to the current user and `SYSTEM` with the host's ACL tool, for example
+`icacls.exe $env:USERPROFILE\.openclaw\.env /inheritance:r /grant:r "$($env:USERNAME):(F)" "SYSTEM:(F)"`.
+The `"${TELEGRAM_BOT_TOKEN}"` reference above resolves from that file — see
+`playbook-setup-openclaw-config-reference.md` for the resolution order. If the token
+leaks, revoke it with `/revoke` in BotFather and repeat this step.
 
 ## Step 3: Set Access Policy
 

@@ -87,14 +87,28 @@ leaves a task that fails on every logon. Unregister the task first.
 
 ### 2b. Delete configuration and state
 
-The main state directory is `~/.openclaw` (or `$OPENCLAW_STATE_DIR` if set).
+The main state directory is `~/.openclaw` (or `$OPENCLAW_STATE_DIR` if set). Resolve the
+exact path before deleting it; do not use a broad glob:
 
-Run `shell_run` with `rm -rf ~/.openclaw`.
-This removes config, state, workspace, and all stored data.
+On macOS/Linux:
+```bash
+state_dir="${OPENCLAW_STATE_DIR:-$HOME/.openclaw}"
+rm -rf "$state_dir"
+```
 
-Also check for multi-profile directories (legacy feature):
-Run `shell_run` with `ls -d ~/.openclaw-* 2>/dev/null || echo "none"`.
-If any exist, delete each one: `rm -rf ~/.openclaw-*`.
+On Windows:
+```powershell
+$stateDir = if ([string]::IsNullOrWhiteSpace($env:OPENCLAW_STATE_DIR)) {
+  Join-Path $env:USERPROFILE '.openclaw'
+} else {
+  $env:OPENCLAW_STATE_DIR
+}
+Remove-Item -LiteralPath $stateDir -Recurse -Force
+```
+
+This removes config, state, workspace, and all stored data. Also inspect each configured
+profile's exact state directory (for example `~/.openclaw-<profile>`) and repeat the same
+platform-specific removal only after showing the resolved paths.
 
 ### 2c. Uninstall CLI
 

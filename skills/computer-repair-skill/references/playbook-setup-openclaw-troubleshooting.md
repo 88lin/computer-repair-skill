@@ -41,7 +41,7 @@ openclaw logs --follow
   - Fix: stop the other process or change port in config
 - **Auth required**: non-loopback bind without auth configured
   - Error: `"refusing to bind gateway ... without auth"`
-  - Fix: generate a token and store it via `write_secret` into `~/.openclaw/.env` as `OPENCLAW_GATEWAY_TOKEN={{value}}` (`chmod 600`), then `openclaw config set gateway.auth.token '${OPENCLAW_GATEWAY_TOKEN}'`. Single quotes — do not let the shell expand it, and do not type the token as a literal argument.
+  - Fix: generate a token and store it via `write_secret` into `~/.openclaw/.env` as `OPENCLAW_GATEWAY_TOKEN={{value}}`. On macOS/Linux use `chmod 600`; on Windows apply the ACL equivalent shown in the Telegram playbook. Then run `openclaw config set gateway.auth.token '${OPENCLAW_GATEWAY_TOKEN}'`. Single quotes — do not let the shell expand it, and do not type the token as a literal argument.
 - **Config error**: invalid JSON5
   - Fix: `openclaw doctor --fix` or manually fix `~/.openclaw/openclaw.json`
 

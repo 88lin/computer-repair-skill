@@ -65,11 +65,13 @@ Use `write_secret` with:
 - file_path: expansion of `~/.openclaw/.env`
 - format: `FEISHU_APP_SECRET={{value}}` (append, keep the trailing newline)
 
-Then:
+Then, on macOS/Linux:
 ```bash
 chmod 600 ~/.openclaw/.env
 openclaw config set channels.feishu.accounts.main.appSecret '${FEISHU_APP_SECRET}'
 ```
+On Windows, apply the ACL equivalent shown in the Telegram playbook instead of running
+`chmod`.
 Single quotes matter — double quotes would let the shell expand the value and write the
 plaintext secret into `openclaw.json`.
 
