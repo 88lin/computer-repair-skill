@@ -2,7 +2,7 @@
 name: vpn-troubleshooting
 description: Diagnose VPN connection failures, drops, and split-tunnel DNS issues
 platform: macos
-last_reviewed: 2026-03-04
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🔒
@@ -15,7 +15,7 @@ User reports: VPN won't connect, VPN keeps disconnecting, can't access work reso
 
 ## Quick check
 **First: check knowledge for VPN context.**
-Use `search_knowledge` for "VPN" — look for saved VPN client name, server address, auth method.
+Use `knowledge_search` for "VPN" — look for saved VPN client name, server address, auth method.
 If no knowledge found, ask the user: "Which VPN app do you use?" (GlobalProtect, Cisco AnyConnect, WireGuard, built-in macOS VPN, etc.) and save the answer with `write_knowledge` to category `network` for next time.
 
 Then run `mac_network_info` — look for a `utun` or `ipsec` interface.
@@ -101,7 +101,7 @@ This makes future VPN issues much faster to resolve.
 - `mac_dns_check` — test internal vs external DNS resolution
 - `mac_flush_dns` — clear DNS cache
 - `mac_process_list` — check if VPN client is running
-- `search_knowledge` — check for saved VPN configuration
+- `knowledge_search` — check for saved VPN configuration
 - `write_knowledge` — save VPN config for future sessions
 
 ## Escalation

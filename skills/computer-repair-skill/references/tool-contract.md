@@ -14,7 +14,7 @@ Playbook 中的工具名是能力别名。宿主 Agent 无需提供同名工具�
 | `secure_input` | 使用宿主的遮罩输入或秘密管理功能。缺少此能力时，让用户在本机设置变量或文件，不接收秘密正文。 |
 | `write_secret` | 让用户或受信任的本机命令从环境变量/秘密存储写入目标文件；验证文件和键存在，但不读取或打印值。 |
 | `activate_playbook` | 从 `playbook-index.md` 找到对应 `references/playbook-*.md` 并读取。 |
-| `knowledge_search` / `search_knowledge` | 使用 `rg`、宿主搜索或结构化文件搜索定位本地知识。 |
+| `knowledge_search` | 规范名称。使用 `rg`、宿主搜索或结构化文件搜索定位本地知识。别名 `search_knowledge` 语义完全相同，仅为兼容早期 Playbook 保留；新写的 Playbook 一律使用 `knowledge_search`。 |
 | `knowledge_read` | 使用宿主文件读取工具读取已选知识文件。 |
 | `write_knowledge` | 经用户确认后写入指定 Markdown 知识目录。 |
 | `web_fetch` | 使用宿主联网工具读取明确 URL，记录最终 URL、状态和获取日期。 |
