@@ -2,7 +2,7 @@
 name: setup-openclaw/config-reference
 description: Comprehensive OpenClaw configuration field reference
 platform: all
-last_reviewed: 2026-03-08
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🦞
@@ -63,6 +63,11 @@ All channels share the same field patterns:
       groupAllowFrom: [],          // falls back to allowFrom if unset
       sendReadReceipts: true,
       mediaMaxMb: 50,
+      typingIndicator: true,      // show "typing…" while the agent works
+      resolveSenderNames: true,   // look up display names for incoming senders
+      groups: {
+        "<group-id>": { requireMention: true }   // per-group override
+      },
       accounts: { /* multi-account overrides */ }
     },
     telegram: {
@@ -84,11 +89,19 @@ All channels share the same field patterns:
 - `open` — anyone can message
 - `disabled` — channel off
 
+**Group behaviour:**
+- `requireMention` — in group chats, only respond when the bot is @mentioned. Defaults to `true`. Set it to `false` under `channels.<channel>.groups.<group-id>` to let one group talk to the bot without @mentions.
+
+**Per-channel cost/quota controls:**
+- `typingIndicator` — send a typing indicator while the agent is working. Costs one extra API call per turn; set `false` on high-traffic bots.
+- `resolveSenderNames` — resolve sender user IDs to display names. Costs an extra lookup per unique sender; set `false` to reduce quota usage (messages then show raw IDs).
+
 ## Gateway Settings
 
 ```json5
 {
   gateway: {
+    mode: "local",                 // how the CLI reaches the gateway
     port: 18789,                   // default port
     reload: {
       mode: "hybrid",              // "hybrid" | "hot" | "restart" | "off"
@@ -100,6 +113,10 @@ All channels share the same field patterns:
   }
 }
 ```
+
+**`gateway.mode`** selects how the CLI talks to the gateway. Read the live value with
+`openclaw config get gateway.mode` — after an upgrade this is the first thing to check,
+because a stale value makes every CLI command look like a connection failure.
 
 **Port/bind changes require restart.** All other settings hot-reload.
 
@@ -165,6 +182,18 @@ All channels share the same field patterns:
 
 Variable substitution: `"${VAR_NAME}"` in any string value.
 Only uppercase `[A-Z_][A-Z0-9_]*`. Missing vars cause load errors.
+
+**Where a value actually comes from** (highest priority first — an existing value is never overridden):
+1. Process environment of the gateway (shell, launchd/systemd unit, container or CI secret)
+2. `.env` in the current working directory — *lower trust*: provider credentials are deliberately ignored from here
+3. Global `.env` at `~/.openclaw/.env` (or `$OPENCLAW_STATE_DIR/.env`) — **the recommended place for API keys and app secrets**
+4. The `env` block in `openclaw.json` — applied only if the variable is still missing
+5. Optional login-shell import (`env.shellEnv.enabled`) — only fills in expected keys that are still missing
+
+Because of rule 3, put secrets in `~/.openclaw/.env` with `chmod 600`, not in the `env`
+block of `openclaw.json`. For structured secret storage use a SecretRef instead of a
+literal, e.g. `{ source: "env", provider: "default", id: "FEISHU_APP_SECRET" }`, or a
+file-backed provider declared under `secrets.providers`.
 
 ## Custom Model Providers
 

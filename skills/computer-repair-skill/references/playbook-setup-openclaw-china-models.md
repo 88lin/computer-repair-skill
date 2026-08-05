@@ -2,7 +2,7 @@
 name: setup-openclaw/china-models
 description: Set up Chinese AI model providers for OpenClaw (Volcano Engine, Moonshot, DeepSeek, Qwen, GLM)
 platform: all
-last_reviewed: 2026-03-08
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🦞
@@ -20,7 +20,7 @@ Ask the user which provider they want to use:
 
 ### Volcano Engine (火山引擎 / 豆包)
 - Provider ID: `volcengine`
-- Models: Doubao Seed 1.8, Kimi K2.5, GLM 4.7, DeepSeek V3.2
+- Models (use the dated ids verbatim): `doubao-seed-1-8-251228`, `kimi-k2-5-260127`, `glm-4-7-251222`, `deepseek-v3-2-251201`
 - Has separate coding-optimized models under `volcengine-plan`
 - API key env var: `VOLCANO_ENGINE_API_KEY`
 - Sign up: https://www.volcengine.com/
@@ -31,15 +31,16 @@ Ask the user which provider they want to use:
 - API key env var: `BYTEPLUS_API_KEY`
 
 ### Moonshot AI (月之暗面 / Kimi)
-- Uses OpenAI-compatible endpoint
-- Models: Kimi K2.5, K2 Turbo Preview, thinking variants
+- Ships as an external plugin — install it before onboarding: `openclaw plugins install @openclaw/moonshot-provider` then `openclaw gateway restart`
+- Model refs: `moonshot/kimi-k3` (onboarding default), `moonshot/kimi-k2.7-code`, `moonshot/kimi-k2.7-code-highspeed`
 - API key env var: `MOONSHOT_API_KEY`
-- Base URL: `https://api.moonshot.ai/v1`
+- Base URL: `https://api.moonshot.ai/v1` (international) or `https://api.moonshot.cn/v1` (China)
+- Kimi Coding is a **separate** provider with its own key and a `kimi/` prefix (`kimi/kimi-for-coding`, `kimi/k3`). Keys are not interchangeable — do not mix the prefixes.
 - Sign up: https://platform.moonshot.cn/
 
 ### Z.AI / GLM (智谱 AI)
 - Provider ID: `zai`
-- Models: GLM-5 and variants
+- Models: the GLM-5 line (GLM-5 shipped 2026-02; 5.1/5.2 followed). Read the current id off the console rather than hardcoding it — this vendor renames on every minor release.
 - API key env var: `ZAI_API_KEY`
 - Sign up: https://open.bigmodel.cn/
 
@@ -50,7 +51,7 @@ Ask the user which provider they want to use:
 
 ### DeepSeek (深度求索)
 - Uses OpenAI-compatible endpoint
-- Models: DeepSeek V3, DeepSeek Coder
+- Models: `deepseek-chat` and `deepseek-reasoner` on DeepSeek's own endpoint. "DeepSeek Coder" no longer exists as a separate model — it was folded into the mainline chat model. Newer V4 generations are reachable through Volcengine (`deepseek-v4-pro-260425`, `deepseek-v4-flash-260425`); confirm current ids on the provider console before pinning one.
 - API key env var: `DEEPSEEK_API_KEY`
 - Base URL: `https://api.deepseek.com/v1`
 - Sign up: https://platform.deepseek.com/
@@ -73,7 +74,7 @@ openclaw config set env.VOLCANO_ENGINE_API_KEY "<key>"
 
 **For built-in providers** (volcengine, byteplus, zai):
 ```
-openclaw config set agents.defaults.model.primary "volcengine/doubao-seed-1.8"
+openclaw config set agents.defaults.model.primary "volcengine/doubao-seed-1-8-251228"
 ```
 
 **For Qwen Portal** (free, OAuth):
@@ -91,10 +92,10 @@ These need a custom provider entry in `~/.openclaw/openclaw.json`:
       moonshot: {
         baseUrl: "https://api.moonshot.ai/v1",
         apiKey: "${MOONSHOT_API_KEY}",
-        api: "openai",
+        api: "openai-completions",
         models: [
-          { id: "kimi-k2.5" },
-          { id: "kimi-k2-turbo-preview" }
+          { id: "kimi-k3" },
+          { id: "kimi-k2.7-code" }
         ]
       }
     }
@@ -102,7 +103,7 @@ These need a custom provider entry in `~/.openclaw/openclaw.json`:
   agents: {
     defaults: {
       model: {
-        primary: "moonshot/kimi-k2.5"
+        primary: "moonshot/kimi-k3"
       }
     }
   }
@@ -117,10 +118,10 @@ For DeepSeek:
       deepseek: {
         baseUrl: "https://api.deepseek.com/v1",
         apiKey: "${DEEPSEEK_API_KEY}",
-        api: "openai",
+        api: "openai-completions",
         models: [
           { id: "deepseek-chat" },
-          { id: "deepseek-coder" }
+          { id: "deepseek-reasoner" }
         ]
       }
     }
@@ -155,8 +156,8 @@ For reliability, configure fallback models from a different provider:
   agents: {
     defaults: {
       model: {
-        primary: "volcengine/doubao-seed-1.8",
-        fallbacks: ["moonshot/kimi-k2.5", "deepseek/deepseek-chat"]
+        primary: "volcengine/doubao-seed-1-8-251228",
+        fallbacks: ["moonshot/kimi-k3", "deepseek/deepseek-chat"]
       }
     }
   }
