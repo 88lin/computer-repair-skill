@@ -10,7 +10,7 @@ en: {
   /* meta ------------------------------------------------------------------ */
   "meta.title":   "Computer Repair Skill — make your agent behave like a careful repair engineer",
   "meta.ogtitle": "Computer Repair Skill — make your agent behave like a careful repair engineer",
-  "meta.desc":    "A red C: drive, a slowing machine, stubborn software that won't go away, a broken network, apps to move — describe the symptom once and your agent gathers evidence, proposes a plan, and waits for your confirmation. 62 on-demand playbooks, cross-platform, open source under AGPL-3.0.",
+  "meta.desc":    "A C: drive running out of space, a slowing machine, stubborn software, network trouble, apps to migrate — describe the problem once; the agent gathers evidence, proposes a plan, and waits for your confirmation. 62 on-demand playbooks, cross-platform, open source under AGPL-3.0.",
 
   /* a11y ------------------------------------------------------------------ */
   "a11y.skip":     "Skip to main content",
@@ -39,14 +39,14 @@ en: {
   /* hero ------------------------------------------------------------------ */
   "hero.h1":      "<span class=\"hero-title-line\">Make your agent a <span class=\"hl\">careful</span></span><br><span class=\"hero-title-line\">computer repair engineer</span>",
   "hero.lead":    "Evidence before conclusions; a plan before any change.",
-  "hero.sub":     "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. A C: drive in the red, a machine turning sluggish, stubborn software that won't uninstall, pop-ups that keep coming back, Wi-Fi that connects but loads nothing, programs that must move off the system disk — one plain sentence is all it takes. The agent gathers evidence, lays out a plan, and touches nothing until you confirm.",
+  "hero.sub":     "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. A C: drive running out of space, a machine turning sluggish, stubborn software that won't uninstall, pop-ups that keep coming back, Wi-Fi that connects but loads nothing, applications that need to move off the system disk — one sentence is all it takes. The agent gathers evidence, lays out a plan, and touches nothing until you confirm.",
   "hero.cta1":    "Four ways to install",
   "hero.cta2":    "Browse 62 playbooks",
   "hero.pill1":   "focused playbooks",
   "hero.pill2":   "supported platforms",
   "hero.pill3":   "3.0 open source",
   "hero.termTitle": "A typical troubleshooting session",
-  "hero.type":    "My C: drive has only 4 GB left — take a read-only inventory of what is taking up the space first; do not delete anything.",
+  "hero.type":    "My C: drive is nearly full — take a read-only inventory of what is taking up the space first; do not delete anything.",
   "hero.t1":      "Clarify the goal",
   "hero.t2":      "Route to a playbook",
   "hero.t3":      "Read-only diagnosis",
@@ -150,11 +150,11 @@ en: {
   "install.c1":          "# Interactive install",
   "install.c2":          "# Global install",
   "install.c3":          "# Codex only / Claude Code only",
-  "say.q1":              "My C: drive is in the red with only a few GB left. Take a read-only inventory of which categories take up the most space first, then give me a risk-tiered cleanup plan — do not delete anything directly.",
-  "say.q2":              "The computer keeps getting slower and booting takes ages. Find the processes hogging CPU, memory and disk first, and list the causes for me — don't touch anything before that.",
-  "say.q3":              "I uninstalled some programs but leftovers remain, and some still auto-start or show ads. List the residue evidence read-only first, let me confirm item by item before cleanup, and tell me how to restore.",
-  "say.q4":              "My C: drive is full and I want to move installed apps to D:. Check space, running processes and the rollback plan first; verify the copy and keep the original path so it can be undone.",
-  "say.q5":              "Wi-Fi is connected but no page will load. Track it down layer by layer from DNS and proxy to routing — don't reset the network or clear browser settings.",
+  "say.q1":              "My C: drive is nearly full. Take a read-only inventory of which categories take up the most space first, then give me a risk-tiered cleanup plan — do not delete anything without my confirmation.",
+  "say.q2":              "The computer keeps getting slower and booting takes ages. Find the processes hogging CPU, memory and disk first and list the possible causes — don't make any changes before proposing a fix.",
+  "say.q3":              "Some programs left residue after uninstalling, and a few still auto-start or show ads. List the residue evidence read-only first, let me confirm item by item before cleanup, and explain how to restore each item.",
+  "say.q4":              "The system disk is running out of space and I want to move some apps to D:. Check the target disk space, running processes and the rollback plan first; verify the copy before keeping the original path, so it can be undone.",
+  "say.q5":              "Wi-Fi is connected but no page will load. Track it down layer by layer from DNS and proxy to routing — don't reset the network or change browser settings without my confirmation.",
   "say.q6":              "I am about to boot into PE — check BitLocker status from the running Windows first; do not print the recovery key.",
   "safety.logNote":  "Secrets are stripped when the command template is recorded; where a path contains a username or company information, only the part needed for diagnosis is kept.",
 
@@ -180,7 +180,7 @@ en: {
 
   /* 05 · playbooks -------------------------------------------------------- */
   "pb.title":       "62 focused playbooks",
-  "pb.desc":        "From a red C: drive, a slowing machine, stubborn software and mysterious network drops to app migration, boot repair and OpenClaw setup. Search for your symptom, or open any row to see when it applies and what you can ask.",
+  "pb.desc":        "From a nearly full C: drive, a slowing machine, stubborn software and network trouble to app migration, boot repair and OpenClaw setup. Search for your symptom, or open any row to see when it applies and what you can ask.",
   "pb.byCat":       "By category",
   "pb.colCat":      "Category",
   "pb.colCount":    "Count",
@@ -228,7 +228,7 @@ en: {
 
   /* cta ------------------------------------------------------------------- */
   "cta.title": "Next time something breaks,<br>let the agent gather evidence first.",
-  "cta.desc":  "One command to install. After that, when the computer misbehaves, hand the symptom to your agent — evidence first, action second.",
+  "cta.desc":  "One command to install. After that, when the computer misbehaves, hand the symptom to your agent: evidence first, action second.",
   "cta.gh":    "GitHub repository",
   "cta.sh":    "skills.sh page",
 
