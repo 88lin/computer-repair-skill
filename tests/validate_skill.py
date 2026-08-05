@@ -577,9 +577,33 @@ def validate_review_regressions(validation: Validation) -> None:
         "国产模型 Playbook 仍包含已过时的 doubao-seed-1-8-251228。",
     )
     validation.check(
-        "@openclaw/volcengine-provider" in china_models,
-        "Volcengine Playbook 必须说明官方 provider 插件安装步骤。",
+        "openclaw models status" in china_models and "dated model ID" in china_models,
+        "国产模型 Playbook 必须要求从当前 catalog 确认模型 ID。",
     )
+    validation.check(
+        "deepseek-v4-pro-260425" not in china_models and "deepseek-v4-flash-260425" not in china_models,
+        "国产模型 Playbook 不能残留带日期的过期 DeepSeek 模型 ID。",
+    )
+
+    uninstall = read_text(REFERENCES_DIR / "playbook-setup-openclaw-uninstall.md", validation)
+    validation.check("always run 2c and 2d" in uninstall, "OpenClaw --all 成功后仍必须执行 CLI 和桌面应用清理。")
+    validation.check("OPENCLAW_CONFIG_PATH" in uninstall and "Refusing to delete" in uninstall, "OpenClaw 自定义路径必须单独处理并做路径安全保护。")
+    validation.check("openclaw*.service" in uninstall and "OpenClaw Gateway" in uninstall, "OpenClaw 卸载必须覆盖多 profile 服务和计划任务。")
+    validation.check("where.exe openclaw" in uninstall and "which openclaw" not in uninstall, "Windows OpenClaw 验证不能使用 Unix which/redirection。")
+
+    config_reference = read_text(REFERENCES_DIR / "playbook-setup-openclaw-config-reference.md", validation)
+    validation.check("typingIndicator" not in config_reference and "resolveSenderNames" not in config_reference, "OpenClaw 配置参考不能包含未注册字段。")
+
+    homebrew = read_text(REFERENCES_DIR / "playbook-setup-homebrew.md", validation)
+    validation.check("if [ -z \"$BREW\" ]" in homebrew and "stop before editing" in homebrew, "Homebrew 找不到 brew 时必须停止写 profile。")
+
+    updates = read_text(REFERENCES_DIR / "playbook-windows-update-troubleshooting.md", validation)
+    validation.check("net stop bits && net start bits" not in updates and "net start wuauserv" in updates, "Windows Update 服务重启不能用失败即短路的 &&。")
+
+    validation.check("profileImported" in wifi and "wlan delete profile" in wifi and "connectivity verification fails" in wifi, "Wi-Fi 连接失败后必须删除已导入的临时 profile。")
+
+    network = read_text(REFERENCES_DIR / "playbook-windows-network-diagnostics.md", validation)
+    validation.check("A mismatch is not itself" in network and "a fault" in network, "WinHTTP/WinINET 不一致不能无条件判定为故障。")
 
 
 def validate_release_files(validation: Validation) -> None:

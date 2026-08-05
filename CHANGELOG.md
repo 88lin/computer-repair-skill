@@ -21,9 +21,8 @@
 - `playbook-index.md` 新增「存储与迁移：先选对入口」决策清单，把六个都会被
   「C 盘满了」命中的流程按真实诉求分流。
 - 六个存储/迁移 Playbook 新增统一的「相邻流程」互链区块。
-- `playbook-setup-openclaw-config-reference.md` 补齐 `typingIndicator`、
-  `resolveSenderNames`、`groups.<group-id>.requireMention`、`gateway.mode`
-  四个字段，并写清环境变量解析优先级。
+- `playbook-setup-openclaw-config-reference.md` 补齐当前支持的
+  `groups.<group-id>.requireMention`、`gateway.mode` 字段，并写清环境变量解析优先级。
 - `playbook-windows-printer-repair.md` 在安装厂商驱动前要求校验 SHA256 与
   Authenticode 签名。
 - `playbook-setup-wifi-profile.md` 补上可执行的 Windows WLAN 配置文件分支，
@@ -34,9 +33,9 @@
 
 ### Changed
 
-- `playbook-setup-openclaw-china-models.md` 更新为当前在售的模型 id，并把
-  Moonshot 说明改为外部插件安装流程，区分 Moonshot 与 Kimi Coding 两个
-  独立 Provider；配置示例的 `api` 值改为 `openai-completions`。
+- `playbook-setup-openclaw-china-models.md` 不再硬编码易过期的模型 id，要求从
+  当前 OpenClaw/provider catalog 确认 provider 和模型；配置示例的 `api` 值改为
+  `openai-completions`。
 - `playbook-setup-openclaw-uninstall.md` 以官方 `openclaw uninstall` 为主路径，
   补上 Windows 计划任务与桌面端清理，手工删除降级为兜底。
 - `playbook-setup-openclaw-add-feishu.md` 的批量导入权限收敛到最小租户权限，
@@ -72,14 +71,14 @@
   `credential-cleanup` 中遗留的文件大小误判。
 - Windows WLAN 配置现在对 SSID 和密码做 XML 转义，临时路径不再使用用户输入，
   且导入失败时也会清理秘密文件。
-- Volcengine 流程补上官方插件安装步骤和当前模型目录；健康基线同时接受 macOS
-  防火墙 `State = 1` 与 `State = 2`。
-- OpenClaw 的密钥文件权限说明增加 Windows ACL 分支，手工卸载也尊重
-  `OPENCLAW_STATE_DIR`，避免留下自定义状态目录。
+- Volcengine 流程改为先确认当前 provider/model catalog，避免引用不存在的插件或
+  过期模型；健康基线同时接受 macOS 防火墙 `State = 1` 与 `State = 2`。
+- OpenClaw 的密钥文件权限说明增加 Windows ACL 分支；卸载覆盖 `OPENCLAW_HOME`、
+  `OPENCLAW_STATE_DIR`、`OPENCLAW_CONFIG_PATH`、多 profile 服务，并保留路径安全检查。
 - `playbook-windows-partition-resize-audit.md` 把已停止支持的 Windows To Go
   改为 WinRE/WinPE/厂商启动介质。
 - `playbook-windows-network-diagnostics.md` 补上 WinHTTP 与 WinINET 的区别，
-  说明两者不一致本身就是结论。
+  只有在受影响层复现故障时才把不一致判定为问题。
 - `playbook-windows-application-lifecycle-audit.md` 区分 Windows 精简工具
   Sparkle 与 macOS 更新框架 Sparkle。
 - `playbook-setup-backup.md` 补上 Time Machine 网络目标的钥匙串挂载前置条件

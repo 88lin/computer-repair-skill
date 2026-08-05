@@ -63,8 +63,6 @@ All channels share the same field patterns:
       groupAllowFrom: [],          // falls back to allowFrom if unset
       sendReadReceipts: true,
       mediaMaxMb: 50,
-      typingIndicator: true,      // show "typing…" while the agent works
-      resolveSenderNames: true,   // look up display names for incoming senders
       groups: {
         "<group-id>": { requireMention: true }   // per-group override
       },
@@ -91,10 +89,6 @@ All channels share the same field patterns:
 
 **Group behaviour:**
 - `requireMention` — in group chats, only respond when the bot is @mentioned. Defaults to `true`. Set it to `false` under `channels.<channel>.groups.<group-id>` to let one group talk to the bot without @mentions.
-
-**Per-channel cost/quota controls:**
-- `typingIndicator` — send a typing indicator while the agent is working. Costs one extra API call per turn; set `false` on high-traffic bots.
-- `resolveSenderNames` — resolve sender user IDs to display names. Costs an extra lookup per unique sender; set `false` to reduce quota usage (messages then show raw IDs).
 
 ## Gateway Settings
 

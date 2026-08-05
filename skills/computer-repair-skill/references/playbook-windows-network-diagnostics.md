@@ -78,7 +78,10 @@ Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Setti
 # VPN / virtual adapters
 Get-NetAdapter | Where-Object InterfaceDescription -Match 'VPN|Virtual|Tunnel'
 ```
-Report which of the two is set and which is empty; that mismatch is the finding.
+Report which of the two is set and which is empty as context. A mismatch is not itself
+a fault: call it a finding only when the failed layer (for example Windows Update or a
+browser) actually uses the affected proxy and the behavior reproduces. Do not copy one
+proxy configuration into the other or clear either one without evidence and approval.
 
 Do not disable a managed proxy or security client. Compare behavior with the user's approved VPN state and check organization policy.
 

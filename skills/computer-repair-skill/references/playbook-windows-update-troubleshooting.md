@@ -50,11 +50,14 @@ Run `shell_run` with `powershell -Command "Test-Path 'HKLM:\SOFTWARE\Microsoft\W
 
 ### 2. Restart Windows Update services
 Run `win_restart_service` for `wuauserv` (Windows Update).
-Also restart these related services via `shell_run`. This block is **cmd.exe**, where `&&`
-is a valid operator — run it with `cmd /c`, not PowerShell:
+Also restart these related services via `shell_run`. Run this block in **cmd.exe** with
+`cmd /c`, not PowerShell. Keep stop and start on separate lines so a failed stop or
+cache operation cannot skip the start commands and leave a service stopped:
 ```cmd
-net stop bits && net start bits
-net stop cryptSvc && net start cryptSvc
+net stop bits
+net start bits
+net stop cryptSvc
+net start cryptSvc
 ```
 - `wuauserv` — the update engine
 - `bits` — Background Intelligent Transfer Service (downloads updates)
@@ -64,13 +67,16 @@ Restarting these three services fixes most transient update failures.
 
 ### 3. Clear the update cache
 If restarting services didn't help, clear the cached update files:
-Run `shell_run` with this **cmd.exe** block (`ren` is a cmd internal command and `&&` is a
-cmd operator, so run it with `cmd /c` — not PowerShell):
+Run `shell_run` with this **cmd.exe** block (`ren` is a cmd internal command; run it with
+`cmd /c`, not PowerShell). The final `net start` commands are unconditional lines, so
+they still run when a rename fails:
 ```cmd
-net stop wuauserv && net stop bits
+net stop wuauserv
+net stop bits
 ren C:\Windows\SoftwareDistribution SoftwareDistribution.old
 ren C:\Windows\System32\catroot2 catroot2.old
-net start wuauserv && net start bits
+net start bits
+net start wuauserv
 ```
 This forces Windows to re-download updates from scratch. The old folders can be deleted after updates succeed.
 

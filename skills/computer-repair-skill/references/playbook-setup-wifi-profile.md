@@ -79,17 +79,24 @@ metacharacters.
 4. Import and connect with argument-safe PowerShell invocation. `user=current` needs no
    elevation; use `user=all` only when every account needs the profile (admin required):
    ```powershell
+   $profileImported = $false
    try {
      & netsh.exe wlan add profile "filename=$profilePath" user=current
      if ($LASTEXITCODE -ne 0) { throw "netsh wlan add profile failed: $LASTEXITCODE" }
+     $profileImported = $true
      & netsh.exe wlan connect "name=$profileName"
      if ($LASTEXITCODE -ne 0) { throw "netsh wlan connect failed: $LASTEXITCODE" }
+   } catch {
+     if ($profileImported) {
+       & netsh.exe wlan delete profile "name=$profileName" | Out-Null
+     }
+     throw
    } finally {
      Remove-Item -LiteralPath $profilePath, $secretPath -Force -ErrorAction SilentlyContinue
    }
 
-   # Run Step 5 after this block. If verification fails, regenerate the profile rather
-   # than reusing a secret file that should already have been deleted.
+   # Run Step 5 after this block. A failed connection removes the imported profile.
+   # If later verification fails, delete the profile explicitly and regenerate it.
    ```
 
 The `finally` block deletes both temporary files even when import or connection fails.
@@ -103,6 +110,9 @@ If the connection fails:
 - Wrong password → ask user to re-enter
 - Enterprise auth failed → check username format (may need domain\user or user@domain)
 - Captive portal → tell user to open a browser
+- If the imported profile is no longer wanted or connectivity verification fails, remove
+  this run's profile explicitly: `& netsh.exe wlan delete profile "name=$profileName"`.
+  Do not delete other profiles by SSID or by wildcard.
 
 If the target device is already in an offline setup or recovery environment, do not assume the host Agent can connect it. Give the user a manual GUI or technician checklist and verify the result when a usable host is available again.
 
