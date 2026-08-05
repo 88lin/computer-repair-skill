@@ -8,9 +8,9 @@ window.CRS_I18N = {
 en: {
 
   /* meta ------------------------------------------------------------------ */
-  "meta.title":   "Computer Repair Skill — make your agent behave like a careful repair engineer",
-  "meta.ogtitle": "Computer Repair Skill — make your agent behave like a careful repair engineer",
-  "meta.desc":    "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. 62 on-demand playbooks, read-only first, evidence first, auditable and reversible. Open source under AGPL-3.0.",
+  "meta.title":   "Computer Repair Skill — turn your agent into a careful computer repair engineer",
+  "meta.ogtitle": "Computer Repair Skill — turn your agent into a careful computer repair engineer",
+  "meta.desc":    "A C: drive turning red, a sluggish PC, unwanted software that will not stay gone, relentless pop-ups, network trouble or an app to move — describe the symptom in plain language. The agent gathers evidence, lays out a plan and waits for your approval before making changes. 62 on-demand playbooks cover Windows, macOS, Linux and focused repair scenarios. Open source under AGPL-3.0.",
 
   /* a11y ------------------------------------------------------------------ */
   "a11y.skip":     "Skip to main content",
@@ -37,16 +37,16 @@ en: {
   "ui.viewSource": "View this playbook on GitHub&nbsp;↗",
 
   /* hero ------------------------------------------------------------------ */
-  "hero.h1":      "<span class=\"hero-title-line\">Make your agent a <span class=\"hl\">careful</span></span><br><span class=\"hero-title-line\">computer repair engineer</span>",
+  "hero.h1":      "<span class=\"hero-title-line\">Turn your agent into a <span class=\"hl\">careful</span></span><br><span class=\"hero-title-line\">computer repair engineer</span>",
   "hero.lead":    "Evidence before conclusions; a plan before any change.",
-  "hero.sub":     "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. Slow machine, dropped network, failed updates, printer offline, a full C: drive, driver trouble, Windows that will not boot, OpenClaw configuration problems — describe it in plain language and the agent picks a troubleshooting procedure that matches your platform and the risk involved.",
+  "hero.sub":     "A cross-platform computer diagnosis and repair Skill for Codex, Claude Code, OpenClaw and other agents. Application and data migration, a C: drive turning red, a sluggish PC, unwanted software, recurring pop-up ads, network trouble or OpenClaw configuration issues — describe the symptom in one sentence. The agent gathers evidence, proposes a plan and changes nothing until you confirm; updates, printers, boot repair, recovery, BitLocker/PE checks and other workflows remain covered too.",
   "hero.cta1":    "Four ways to install",
   "hero.cta2":    "Browse 62 playbooks",
   "hero.pill1":   "focused playbooks",
   "hero.pill2":   "supported platforms",
   "hero.pill3":   "3.0 open source",
   "hero.termTitle": "A typical troubleshooting session",
-  "hero.type":    "My Windows 11 keeps dropping the network. Do a read-only check of the adapter, DHCP, DNS, proxy and VPN first — do not reset the network.",
+  "hero.type":    "My C: drive is turning red. First take a read-only inventory of what is using the space; do not delete anything.",
   "hero.t1":      "Clarify the goal",
   "hero.t2":      "Route to a playbook",
   "hero.t3":      "Read-only diagnosis",
@@ -145,17 +145,17 @@ en: {
   "safety.n6":    "Pirated activation, unknown downloaders, force-removing Edge, unaudited one-click tuning bundles.",
   "safety.logTitle": "Every high-impact action leaves a record",
   "safety.logFields":    "time | target | action | risk level | user confirmation | exit status | verification | rollback",
-  "hero.t1d":            "Platform Windows · constraint: do not reset the network",
+  "hero.t1d":            "Platform: Windows · constraint: do not delete anything",
   "install.prompt":      "Please install this Agent Skill: https://github.com/88lin/computer-repair-skill\nReview the repository contents and SKILL.md first, then install it into my current Agent's Skills directory; if an older version is already installed, back it up before updating.\nWhen you are done, tell me the actual install path, the target Agent and the verification result.",
   "install.c1":          "# Interactive install",
   "install.c2":          "# Global install",
   "install.c3":          "# Codex only / Claude Code only",
-  "say.q1":              "Windows 11 keeps dropping the network lately — check the adapter, DHCP, DNS, proxy and VPN read-only first, and do not reset the network.",
-  "say.q2":              "This Linux server's disk is full — find the cause by mount point and inode first, and do not delete logs or container data.",
-  "say.q3":              "My Mac is getting slower — run a health baseline and performance forensics first, and list the findings and the expected impact before fixing anything.",
-  "say.q4":              "The printer shows offline — check the queue, the Spooler and the connection method first, and ask me before clearing stuck jobs.",
-  "say.q5":              "Run a pre-repair health check on this Windows machine — check C: drive space, startup items and backup status at the same time, all read-only first.",
-  "say.q6":              "I am about to boot into PE — check BitLocker status from the running Windows first; do not print the recovery key.",
+  "say.q1":              "My C: drive is turning red. First inventory which categories use the most space, then give me a risk-tiered cleanup plan — do not delete anything without my approval.",
+  "say.q2":              "This Windows PC is getting slower and takes ages to boot. First identify the processes using the most CPU, memory and disk, then list the likely causes; make no changes until you propose a fix.",
+  "say.q3":              "Unwanted software keeps spawning pop-ups and starting with Windows; it may have left residue after uninstalling. First list startup items, scheduled tasks and other evidence read-only. I will confirm each cleanup item; explain how to restore it.",
+  "say.q4":              "My system disk is running out of space, and I want to move some apps to D:. Check available space, file locks and the rollback plan first; verify the copy before switching the original path, and keep it reversible.",
+  "say.q5":              "Wi-Fi is connected, but webpages will not load. Trace the path layer by layer, from DNS and proxy through routing; do not reset the network or change browser settings without my approval.",
+  "say.q6":              "I am about to boot into PE. Check BitLocker status in the running Windows first; never print the recovery key.",
   "safety.logNote":  "Secrets are stripped when the command template is recorded; where a path contains a username or company information, only the part needed for diagnosis is kept.",
 
   /* 04 · install ---------------------------------------------------------- */
@@ -180,14 +180,14 @@ en: {
 
   /* 05 · playbooks -------------------------------------------------------- */
   "pb.title":       "62 focused playbooks",
-  "pb.desc":        "From slow computers, dropped networks and full disks to system updates, boot repair and OpenClaw setup. Search for your symptom, or open any row to see when it applies and what you can ask.",
+  "pb.desc":        "From a C: drive turning red, a sluggish PC, unwanted software, recurring pop-up ads, network trouble, app migration, uninstall residue and large-folder management to updates, printers, boot repair, recovery, security, developer setup and OpenClaw. Search by symptom, or open any row to see when it applies and what you can ask.",
   "pb.byCat":       "By category",
   "pb.colCat":      "Category",
   "pb.colCount":    "Count",
   "pb.byPlat":      "By platform",
   "pb.statNote":    "\u201cCross-platform\u201d means the procedure does not depend on a single operating system — DNS, mail, identity services, SSH, Wi-Fi, Outlook, OpenClaw, credential and local-data audits.",
   "pb.searchLabel": "Search playbooks",
-  "pb.searchPh":    "Search: bitlocker, DNS, disk space, printer\u2026",
+  "pb.searchPh":    "Search: C: drive, slow PC, unwanted software, pop-up ads, migration, leftovers, BitLocker\u2026",
   "pb.nojs":        "JavaScript is disabled, so search, filtering and detail dialogs are unavailable. You can still browse all 62 playbooks in the table below.",
   "pb.tableCap":    "Complete routing index for all 62 playbooks",
   "pb.colTitle":    "Playbook",
@@ -199,7 +199,6 @@ en: {
   "say.title": "Things you can just say",
   "say.desc":  "After installing, describe the problem directly — there is no playbook name to memorise. Include the <b>platform + symptom + constraint + expected action</b> so the agent can choose the right troubleshooting process.",
   "say.rel":   "Related playbook",
-  "say.multi": "Multiple goals",
   "say.order": "Standard order of work: confirm platform and constraints <i>\u2192</i> gather evidence <i>\u2192</i> explain candidate causes <i>\u2192</i> propose the minimal change <i>\u2192</i> wait for confirmation <i>\u2192</i> execute <i>\u2192</i> verify and record the result.",
 
   /* 07 · faq -------------------------------------------------------------- */
@@ -228,8 +227,8 @@ en: {
   "faq.a7":    "The project is open source under GNU AGPL-3.0. You can inspect, review and modify the source; when distributing a modified version, follow the same licence's source-disclosure and attribution requirements.",
 
   /* cta ------------------------------------------------------------------- */
-  "cta.title": "Next time something breaks,<br>let the agent gather evidence first.",
-  "cta.desc":  "One command to install, then describe the symptom in plain language.",
+  "cta.title": "When your computer acts up,<br>let your agent find the cause first.",
+  "cta.desc":  "Install it with one command. When something goes wrong, tell your agent the platform, the symptom and your constraints; it will gather evidence first, then propose the next step.",
   "cta.gh":    "GitHub repository",
   "cta.sh":    "skills.sh page",
 

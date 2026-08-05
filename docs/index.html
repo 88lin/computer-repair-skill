@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
 <title data-i18n="meta.title">Computer Repair Skill — 让 Agent 像一名谨慎的电脑维修工程师</title>
-<meta name="description" data-i18n-attr="content|meta.desc" content="一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。62 个按需加载的专项 Playbook，只读优先、证据优先、可审计可回滚。AGPL-3.0 开源。">
+<meta name="description" data-i18n-attr="content|meta.desc" content="C 盘变红、电脑卡顿、流氓软件删不掉、弹窗广告反复、网络异常、应用迁移——用一句话描述症状，Agent 先取证、再给出计划，经你确认后执行。62 个按需加载的专项 Playbook，覆盖 Windows、macOS、Linux 与维修专项，AGPL-3.0 开源。">
 <meta name="author" content="88lin">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 <link rel="canonical" href="https://repair.88lin.eu.org/">
@@ -17,14 +17,14 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:url" content="https://repair.88lin.eu.org/">
 <meta property="og:title" data-i18n-attr="content|meta.ogtitle" content="Computer Repair Skill — 让 Agent 像一名谨慎的电脑维修工程师">
-<meta property="og:description" data-i18n-attr="content|meta.desc" content="一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。62 个按需加载的专项 Playbook，只读优先、证据优先、可审计可回滚。AGPL-3.0 开源。">
+<meta property="og:description" data-i18n-attr="content|meta.desc" content="C 盘变红、电脑卡顿、流氓软件删不掉、弹窗广告反复、网络异常、应用迁移——用一句话描述症状，Agent 先取证、再给出计划，经你确认后执行。62 个按需加载的专项 Playbook，覆盖 Windows、macOS、Linux 与维修专项，AGPL-3.0 开源。">
 <meta property="og:image" content="https://repair.88lin.eu.org/assets/img/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Computer Repair Skill — 跨平台电脑诊断与维修 Agent Skill">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" data-i18n-attr="content|meta.ogtitle" content="Computer Repair Skill — 让 Agent 像一名谨慎的电脑维修工程师">
-<meta name="twitter:description" data-i18n-attr="content|meta.desc" content="一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。62 个按需加载的专项 Playbook，只读优先、证据优先、可审计可回滚。AGPL-3.0 开源。">
+<meta name="twitter:description" data-i18n-attr="content|meta.desc" content="C 盘变红、电脑卡顿、流氓软件删不掉、弹窗广告反复、网络异常、应用迁移——用一句话描述症状，Agent 先取证、再给出计划，经你确认后执行。62 个按需加载的专项 Playbook，覆盖 Windows、macOS、Linux 与维修专项，AGPL-3.0 开源。">
 <meta name="twitter:image" content="https://repair.88lin.eu.org/assets/img/og-image.png">
 <meta name="twitter:image:alt" content="Computer Repair Skill — 跨平台电脑诊断与维修 Agent Skill">
 
@@ -46,7 +46,7 @@
   "url": "https://repair.88lin.eu.org/",
   "image": "https://repair.88lin.eu.org/assets/img/og-image.png",
   "codeRepository": "https://github.com/88lin/computer-repair-skill",
-  "description": "Cross-platform computer diagnosis and repair Agent Skill with 62 on-demand playbooks. Read-only first, evidence first, auditable and reversible.",
+  "description": "Cross-platform computer diagnosis and repair Agent Skill for a C: drive turning red, a sluggish PC, unwanted software, recurring pop-up ads, network trouble, app migration and OpenClaw configuration. 62 on-demand playbooks cover Windows, macOS, Linux and focused repair scenarios. The agent gathers evidence first, proposes a plan and waits for approval before making changes.",
   "programmingLanguage": ["Markdown", "YAML"],
   "keywords": "computer repair, Agent Skill, Windows diagnostics, macOS diagnostics, Linux diagnostics",
   "inLanguage": "zh-CN",
@@ -98,7 +98,7 @@
 
       <p class="hero-lead rv rv-d2" data-i18n="hero.lead">先取证，再判断；先计划，再修改。</p>
 
-      <p class="hero-sub rv rv-d2" data-i18n="hero.sub">一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。电脑变慢、断网、更新失败、打印机离线、C 盘爆满、驱动异常、Windows 启动失败、OpenClaw 配置问题——直接用自然语言描述，Agent 会按平台和风险选择合适的排障流程。</p>
+      <p class="hero-sub rv rv-d2" data-i18n="hero.sub">一个可安装到 Codex、Claude Code、OpenClaw 等 Agent 的跨平台电脑诊断与维修 Skill。应用与数据迁移、C 盘变红、电脑卡顿、流氓软件、弹窗广告、网路问题、OpenClaw 配置问题——直接用自然语言描述，Agent 会按平台和风险选择合适的修复流程。</p>
 
       <div class="hero-cmd rv rv-d3">
         <code class="hero-cmd-code" id="heroCmd">npx skills add 88lin/computer-repair-skill</code>
@@ -127,11 +127,11 @@
         <div class="term-body">
           <p class="tl"><span class="tl-p">$</span> npx skills add 88lin/computer-repair-skill</p>
           <p class="tl tl-ok"><span class="tl-mark" aria-hidden="true">✓</span> computer-repair-skill → ~/.codex/skills/</p>
-          <p class="tl tl-you" id="typeLine"><span class="tl-p">&gt;</span> <span id="typeText" data-i18n="hero.type" data-i18n-attr="data-typewriter|hero.type" data-typewriter="Windows 11 最近经常断网，先只读检查网卡、DHCP、DNS、代理和 VPN，不要重置网络。">Windows 11 最近经常断网，先只读检查网卡、DHCP、DNS、代理和 VPN，不要重置网络。</span><i class="caret" aria-hidden="true"></i></p>
+          <p class="tl tl-you" id="typeLine"><span class="tl-p">&gt;</span> <span id="typeText" data-i18n="hero.type" data-i18n-attr="data-typewriter|hero.type" data-typewriter="C 盘快满了，先只读盘点空间去向，不要删除任何文件。">C 盘快满了，先只读盘点空间去向，不要删除任何文件。</span><i class="caret" aria-hidden="true"></i></p>
           <div class="term-steps" id="termSteps">
-            <p class="tl tl-s"><span class="tl-k">1/7</span> <span data-i18n="hero.t1">明确目标</span><span class="tl-d" data-i18n="hero.t1d">平台 Windows · 约束：不重置网络</span></p>
-            <p class="tl tl-s"><span class="tl-k">2/7</span> <span data-i18n="hero.t2">路由 Playbook</span><span class="tl-d tl-mono">windows-network-diagnostics</span></p>
-            <p class="tl tl-s"><span class="tl-k">3/7</span> <span data-i18n="hero.t3">只读诊断</span><span class="tl-d tl-mono">Get-NetAdapter · Get-DnsClientServerAddress · Test-NetConnection · netsh winhttp show proxy</span></p>
+            <p class="tl tl-s"><span class="tl-k">1/7</span> <span data-i18n="hero.t1">明确目标</span><span class="tl-d" data-i18n="hero.t1d">平台 Windows · 约束：不删除任何文件</span></p>
+            <p class="tl tl-s"><span class="tl-k">2/7</span> <span data-i18n="hero.t2">路由 Playbook</span><span class="tl-d tl-mono">windows-disk-space-recovery</span></p>
+            <p class="tl tl-s"><span class="tl-k">3/7</span> <span data-i18n="hero.t3">只读诊断</span><span class="tl-d tl-mono">Win32_LogicalDisk · Get-ChildItem -LiteralPath · DISM /AnalyzeComponentStore</span></p>
             <p class="tl tl-s tl-stop"><span class="tl-k tl-k-r">4/7</span> <span data-i18n="hero.t4">提出修复计划</span><span class="tl-d tl-d-r" data-i18n="hero.t4d">等待你明确确认后才动手</span></p>
           </div>
         </div>
@@ -497,7 +497,7 @@ cd computer-repair-skill
   <div class="wrap-wide">
     <div class="pb-head">
       <h2 class="sectitle" id="pbTitle" data-i18n="pb.title">62 个专项 Playbook</h2>
-      <p class="secdesc secdesc-wide" data-i18n="pb.desc">从电脑变慢、断网和磁盘爆满，到系统更新、启动修复与 OpenClaw 配置。搜索你的症状，或点开任意一行查看适用场景和示例提问。</p>
+      <p class="secdesc secdesc-wide" data-i18n="pb.desc">从 C 盘变红、电脑卡顿、流氓软件/弹窗广告、网络异常、应用迁移、卸载残留和大文件夹管理，到更新、打印机、启动、恢复、安全、开发与 OpenClaw。搜索你的症状，或点开任意一行查看适用场景和示例提问。</p>
     </div>
 
     <div class="pb-stats rv">
@@ -518,7 +518,7 @@ cd computer-repair-skill
     <div class="pb-tools js-only rv">
       <div class="searchbox">
         <label class="sr-only" for="pbSearch" data-i18n="pb.searchLabel">搜索 Playbook</label>
-        <input type="search" id="pbSearch" class="searchinput" placeholder="搜索：bitlocker、DNS、C 盘、打印机…" autocomplete="off"
+        <input type="search" id="pbSearch" class="searchinput" placeholder="搜索：C 盘、卡顿、流氓软件、残留、迁移、BitLocker…" autocomplete="off"
                data-i18n-attr="placeholder|pb.searchPh">
         <svg class="searchbox-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="8.6" cy="8.6" r="5.6"/><line x1="12.9" y1="12.9" x2="17.4" y2="17.4"/></svg>
       </div>
@@ -626,32 +626,32 @@ cd computer-repair-skill
     <ul class="say-track">
       <li class="say-card">
         <span class="say-n" aria-hidden="true">01</span>
-        <p class="say-q" id="say1" data-i18n="say.q1">Windows 11 最近经常断网，先只读检查网卡、DHCP、DNS、代理和 VPN，不要重置网络。</p>
-        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-network-diagnostics</code></p>
+        <p class="say-q" id="say1" data-i18n="say.q1">C 盘快满了，先只读盘点哪几类内容占用最多，再按风险分级给出清理计划；未经我确认，不要删除任何文件。</p>
+        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-disk-space-recovery</code></p>
         <button class="copybtn copybtn-say" type="button" data-copy-from="#say1" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
       </li>
       <li class="say-card">
         <span class="say-n" aria-hidden="true">02</span>
-        <p class="say-q" id="say2" data-i18n="say.q2">这台 Linux 服务器磁盘满了，先按挂载点和 inode 找原因，不要删除日志或容器数据。</p>
-        <p class="say-meta"><span class="tagp tagp-lin">Linux</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">linux-disk-space-recovery</code></p>
+        <p class="say-q" id="say2" data-i18n="say.q2">这台 Windows 电脑越用越卡，开机也很慢。先找出最占 CPU、内存和磁盘的进程，列出可能原因；给出修复方案前不要做任何改动。</p>
+        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-performance-forensics</code></p>
         <button class="copybtn copybtn-say" type="button" data-copy-from="#say2" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
       </li>
       <li class="say-card">
         <span class="say-n" aria-hidden="true">03</span>
-        <p class="say-q" id="say3" data-i18n="say.q3">Mac 越来越慢，先做健康基线和性能取证，修复前把发现的问题和预计影响列出来。</p>
-        <p class="say-meta"><span class="tagp tagp-mac">macOS</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">performance-forensics</code></p>
+        <p class="say-q" id="say3" data-i18n="say.q3">流氓软件反复弹窗、还会自启动，卸载后似乎仍有残留。先只读列出启动项、计划任务和相关证据，逐项经我确认后再清理，并说明每项的恢复方式。</p>
+        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-persistence-audit</code></p>
         <button class="copybtn copybtn-say" type="button" data-copy-from="#say3" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
       </li>
       <li class="say-card">
         <span class="say-n" aria-hidden="true">04</span>
-        <p class="say-q" id="say4" data-i18n="say.q4">打印机显示离线，先检查队列、Spooler 和连接方式，清空卡住的作业前先让我确认。</p>
-        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-printer-repair</code></p>
+        <p class="say-q" id="say4" data-i18n="say.q4">系统盘空间不足，想把部分应用迁移到 D 盘。先检查目标盘空间、进程占用和回滚方案，复制校验完成后再保留原路径，确保可以还原。</p>
+        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-application-migration</code></p>
         <button class="copybtn copybtn-say" type="button" data-copy-from="#say4" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
       </li>
       <li class="say-card">
         <span class="say-n" aria-hidden="true">05</span>
-        <p class="say-q" id="say5" data-i18n="say.q5">帮我做一次 Windows 维修前体检，同时检查 C 盘空间、启动项和备份状态；全部先只读。</p>
-        <p class="say-meta"><span class="tagp tagp-all" data-i18n="say.multi">多目标</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">health-baseline-check</code></p>
+        <p class="say-q" id="say5" data-i18n="say.q5">Wi-Fi 已连接但网页打不开。先从 DNS、代理查到路由逐层定位，未经确认不要重置网络，也不要修改浏览器配置。</p>
+        <p class="say-meta"><span class="tagp tagp-win">Windows</span><span class="say-pb" data-i18n="say.rel">相关 Playbook</span><code class="say-route">windows-network-diagnostics</code></p>
         <button class="copybtn copybtn-say" type="button" data-copy-from="#say5" data-i18n-attr="aria-label|a11y.copy" aria-label="复制"><span data-i18n="ui.copy">复制</span></button>
       </li>
       <li class="say-card say-card-stop">
