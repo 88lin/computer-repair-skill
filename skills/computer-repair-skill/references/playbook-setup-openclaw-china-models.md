@@ -60,15 +60,15 @@ Ask the user which provider they want to use:
 
 For most providers, the user needs an API key. Collect it via `secure_input`.
 
-Then set it in the OpenClaw config:
-```
-openclaw config set env.<ENV_VAR_NAME> "<api_key>"
-```
+Store it with `write_secret`, **not** as a shell argument — `openclaw config set env.X "<key>"`
+would put the key in shell history and in the process table, and leave it in plaintext
+inside `openclaw.json`:
+- secret_name: the provider name, e.g. `volcengine_api_key`
+- file_path: expansion of `~/.openclaw/.env`
+- format: `<ENV_VAR_NAME>={{value}}` (append, keep the trailing newline)
 
-For example, for Volcano Engine:
-```
-openclaw config set env.VOLCANO_ENGINE_API_KEY "<key>"
-```
+For example, for Volcano Engine the line becomes `VOLCANO_ENGINE_API_KEY={{value}}`.
+Then `chmod 600 ~/.openclaw/.env`. Config fields reference it as `"${VOLCANO_ENGINE_API_KEY}"`.
 
 ## Step 3: Configure the Model
 
@@ -168,4 +168,5 @@ For reliability, configure fallback models from a different provider:
 - `shell_run` — openclaw CLI commands, config edits
 - `ui_user_question` with options — provider selection
 - `ui_user_question` with `secure_input` — API keys
+- `write_secret` — 把 API key 写入 `~/.openclaw/.env`，不经命令行参数
 - `ui_spa` with WAIT_FOR_USER — OAuth flows (Qwen Portal)

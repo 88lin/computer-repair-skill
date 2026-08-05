@@ -2,7 +2,7 @@
 name: setup-openclaw/add-feishu-official
 description: Add Feishu official plugin (user-identity OAuth — documents, calendar, tasks)
 platform: all
-last_reviewed: 2026-03-09
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🦞
@@ -57,9 +57,24 @@ Run `shell_run` with:
 openclaw config set channels.feishu.accounts.main.appId "<app_id>"
 ```
 
-Use `write_secret` to set the App Secret:
-Run `shell_run` with `openclaw config set channels.feishu.accounts.main.appSecret "{{value}}"`,
-substituting secret_name "feishu_app_secret".
+Set the App Secret **without passing it as a shell argument** — a value substituted into
+`openclaw config set ...` ends up in the process table and in shell history.
+
+Use `write_secret` with:
+- secret_name: `feishu_app_secret`
+- file_path: expansion of `~/.openclaw/.env`
+- format: `FEISHU_APP_SECRET={{value}}` (append, keep the trailing newline)
+
+Then:
+```bash
+chmod 600 ~/.openclaw/.env
+openclaw config set channels.feishu.accounts.main.appSecret '${FEISHU_APP_SECRET}'
+```
+Single quotes matter — double quotes would let the shell expand the value and write the
+plaintext secret into `openclaw.json`.
+
+`openclaw channels login --channel feishu` is an equivalent interactive alternative that
+prompts for both values.
 
 Restart gateway:
 Run `shell_run` with `openclaw gateway restart`.

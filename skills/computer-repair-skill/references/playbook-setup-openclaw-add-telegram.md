@@ -2,7 +2,7 @@
 name: setup-openclaw/add-telegram
 description: Add Telegram as a messaging channel for OpenClaw
 platform: all
-last_reviewed: 2026-03-08
+last_reviewed: 2026-08-05
 author: upstream-maintainers
 source: bundled
 emoji: 🦞
@@ -31,11 +31,14 @@ Use WAIT_FOR_USER — the user does this in Telegram.
 
 Collect the bot token via `secure_input` (secret_name: "telegram_bot_token").
 
-Set it in config:
-```
-openclaw config set channels.telegram.botToken "<token>"
+Enable the channel, then store the token via the env reference (see below) so the token
+never appears in a shell argument:
+```bash
 openclaw config set channels.telegram.enabled true
+openclaw config set channels.telegram.botToken '${TELEGRAM_BOT_TOKEN}'
 ```
+Single quotes are required — double quotes would let the shell expand the variable and
+write the plaintext token into `openclaw.json`.
 
 Or write directly to `~/.openclaw/openclaw.json`:
 ```json5
@@ -50,10 +53,16 @@ Or write directly to `~/.openclaw/openclaw.json`:
 }
 ```
 
-And set the env var:
-```
-openclaw config set env.TELEGRAM_BOT_TOKEN "<token>"
-```
+And store the token. Do **not** run `openclaw config set env.TELEGRAM_BOT_TOKEN "<token>"` —
+that puts the token in shell history and in the process table, and leaves it in plaintext
+inside `openclaw.json`. Use `write_secret` instead:
+- secret_name: `telegram_bot_token`
+- file_path: expansion of `~/.openclaw/.env`
+- format: `TELEGRAM_BOT_TOKEN={{value}}` (append, keep the trailing newline)
+
+Then `chmod 600 ~/.openclaw/.env`. The `"${TELEGRAM_BOT_TOKEN}"` reference above resolves
+from that file — see `playbook-setup-openclaw-config-reference.md` for the resolution
+order. If the token leaks, revoke it with `/revoke` in BotFather and repeat this step.
 
 ## Step 3: Set Access Policy
 
@@ -99,5 +108,6 @@ By default, the bot requires an @mention in groups.
 ## Tools referenced
 - `shell_run` — openclaw CLI commands
 - `ui_user_question` with `secure_input` — bot token
+- `write_secret` — 把 bot token 写入 `~/.openclaw/.env`，不经命令行参数
 - `ui_user_question` with options — access policy
 - `ui_spa` with WAIT_FOR_USER — BotFather setup
