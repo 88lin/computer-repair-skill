@@ -10,7 +10,7 @@ en: {
   /* meta ------------------------------------------------------------------ */
   "meta.title":   "Computer Repair Skill — make your agent behave like a careful repair engineer",
   "meta.ogtitle": "Computer Repair Skill — make your agent behave like a careful repair engineer",
-  "meta.desc":    "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. 62 on-demand playbooks, read-only first, evidence first, auditable and reversible. Open source under AGPL-3.0.",
+  "meta.desc":    "A red C: drive, a slowing machine, stubborn software that won't go away, a broken network, apps to move — describe the symptom once and your agent gathers evidence, proposes a plan, and waits for your confirmation. 62 on-demand playbooks, cross-platform, open source under AGPL-3.0.",
 
   /* a11y ------------------------------------------------------------------ */
   "a11y.skip":     "Skip to main content",
@@ -39,14 +39,14 @@ en: {
   /* hero ------------------------------------------------------------------ */
   "hero.h1":      "<span class=\"hero-title-line\">Make your agent a <span class=\"hl\">careful</span></span><br><span class=\"hero-title-line\">computer repair engineer</span>",
   "hero.lead":    "Evidence before conclusions; a plan before any change.",
-  "hero.sub":     "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. Slow machine, dropped network, failed updates, printer offline, a full C: drive, driver trouble, Windows that will not boot, OpenClaw configuration problems — describe it in plain language and the agent picks a troubleshooting procedure that matches your platform and the risk involved.",
+  "hero.sub":     "A cross-platform computer diagnosis and repair Skill you can install into Codex, Claude Code, OpenClaw and other agents. A C: drive in the red, a machine turning sluggish, stubborn software that won't uninstall, pop-ups that keep coming back, Wi-Fi that connects but loads nothing, programs that must move off the system disk — one plain sentence is all it takes. The agent gathers evidence, lays out a plan, and touches nothing until you confirm.",
   "hero.cta1":    "Four ways to install",
   "hero.cta2":    "Browse 62 playbooks",
   "hero.pill1":   "focused playbooks",
   "hero.pill2":   "supported platforms",
   "hero.pill3":   "3.0 open source",
   "hero.termTitle": "A typical troubleshooting session",
-  "hero.type":    "My Windows 11 keeps dropping the network. Do a read-only check of the adapter, DHCP, DNS, proxy and VPN first — do not reset the network.",
+  "hero.type":    "My C: drive has only 4 GB left — take a read-only inventory of what is taking up the space first; do not delete anything.",
   "hero.t1":      "Clarify the goal",
   "hero.t2":      "Route to a playbook",
   "hero.t3":      "Read-only diagnosis",
@@ -145,16 +145,16 @@ en: {
   "safety.n6":    "Pirated activation, unknown downloaders, force-removing Edge, unaudited one-click tuning bundles.",
   "safety.logTitle": "Every high-impact action leaves a record",
   "safety.logFields":    "time | target | action | risk level | user confirmation | exit status | verification | rollback",
-  "hero.t1d":            "Platform Windows · constraint: do not reset the network",
+  "hero.t1d":            "Platform Windows · constraint: do not delete anything",
   "install.prompt":      "Please install this Agent Skill: https://github.com/88lin/computer-repair-skill\nReview the repository contents and SKILL.md first, then install it into my current Agent's Skills directory; if an older version is already installed, back it up before updating.\nWhen you are done, tell me the actual install path, the target Agent and the verification result.",
   "install.c1":          "# Interactive install",
   "install.c2":          "# Global install",
   "install.c3":          "# Codex only / Claude Code only",
-  "say.q1":              "Windows 11 keeps dropping the network lately — check the adapter, DHCP, DNS, proxy and VPN read-only first, and do not reset the network.",
-  "say.q2":              "This Linux server's disk is full — find the cause by mount point and inode first, and do not delete logs or container data.",
-  "say.q3":              "My Mac is getting slower — run a health baseline and performance forensics first, and list the findings and the expected impact before fixing anything.",
-  "say.q4":              "The printer shows offline — check the queue, the Spooler and the connection method first, and ask me before clearing stuck jobs.",
-  "say.q5":              "Run a pre-repair health check on this Windows machine — check C: drive space, startup items and backup status at the same time, all read-only first.",
+  "say.q1":              "My C: drive is in the red with only a few GB left. Take a read-only inventory of which categories take up the most space first, then give me a risk-tiered cleanup plan — do not delete anything directly.",
+  "say.q2":              "The computer keeps getting slower and booting takes ages. Find the processes hogging CPU, memory and disk first, and list the causes for me — don't touch anything before that.",
+  "say.q3":              "I uninstalled some programs but leftovers remain, and some still auto-start or show ads. List the residue evidence read-only first, let me confirm item by item before cleanup, and tell me how to restore.",
+  "say.q4":              "My C: drive is full and I want to move installed apps to D:. Check space, running processes and the rollback plan first; verify the copy and keep the original path so it can be undone.",
+  "say.q5":              "Wi-Fi is connected but no page will load. Track it down layer by layer from DNS and proxy to routing — don't reset the network or clear browser settings.",
   "say.q6":              "I am about to boot into PE — check BitLocker status from the running Windows first; do not print the recovery key.",
   "safety.logNote":  "Secrets are stripped when the command template is recorded; where a path contains a username or company information, only the part needed for diagnosis is kept.",
 
@@ -180,14 +180,14 @@ en: {
 
   /* 05 · playbooks -------------------------------------------------------- */
   "pb.title":       "62 focused playbooks",
-  "pb.desc":        "From slow computers, dropped networks and full disks to system updates, boot repair and OpenClaw setup. Search for your symptom, or open any row to see when it applies and what you can ask.",
+  "pb.desc":        "From a red C: drive, a slowing machine, stubborn software and mysterious network drops to app migration, boot repair and OpenClaw setup. Search for your symptom, or open any row to see when it applies and what you can ask.",
   "pb.byCat":       "By category",
   "pb.colCat":      "Category",
   "pb.colCount":    "Count",
   "pb.byPlat":      "By platform",
   "pb.statNote":    "\u201cCross-platform\u201d means the procedure does not depend on a single operating system — DNS, mail, identity services, SSH, Wi-Fi, Outlook, OpenClaw, credential and local-data audits.",
   "pb.searchLabel": "Search playbooks",
-  "pb.searchPh":    "Search: bitlocker, DNS, disk space, printer\u2026",
+  "pb.searchPh":    "Search: C drive, slow PC, leftovers, migration, BitLocker\u2026",
   "pb.nojs":        "JavaScript is disabled, so search, filtering and detail dialogs are unavailable. You can still browse all 62 playbooks in the table below.",
   "pb.tableCap":    "Complete routing index for all 62 playbooks",
   "pb.colTitle":    "Playbook",
@@ -199,7 +199,6 @@ en: {
   "say.title": "Things you can just say",
   "say.desc":  "After installing, describe the problem directly — there is no playbook name to memorise. Include the <b>platform + symptom + constraint + expected action</b> so the agent can choose the right troubleshooting process.",
   "say.rel":   "Related playbook",
-  "say.multi": "Multiple goals",
   "say.order": "Standard order of work: confirm platform and constraints <i>\u2192</i> gather evidence <i>\u2192</i> explain candidate causes <i>\u2192</i> propose the minimal change <i>\u2192</i> wait for confirmation <i>\u2192</i> execute <i>\u2192</i> verify and record the result.",
 
   /* 07 · faq -------------------------------------------------------------- */
@@ -229,7 +228,7 @@ en: {
 
   /* cta ------------------------------------------------------------------- */
   "cta.title": "Next time something breaks,<br>let the agent gather evidence first.",
-  "cta.desc":  "One command to install, then describe the symptom in plain language.",
+  "cta.desc":  "One command to install. After that, when the computer misbehaves, hand the symptom to your agent — evidence first, action second.",
   "cta.gh":    "GitHub repository",
   "cta.sh":    "skills.sh page",
 
