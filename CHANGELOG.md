@@ -8,6 +8,52 @@
 `skills/computer-repair-skill/agents/openai.yaml` 里，`tests/validate_skill.py`
 会校验两者一致并要求本文件存在对应条目。1.1.0 之前的变更请查阅 Git 历史。
 
+## [1.2.0] - 2026-09-09
+
+本次发布补齐 macOS 与 Linux 的应用清理能力，复核并同步了 `NOTICE` 记录的全部上游项目，
+并修掉一轮整体审计发现的缺陷。
+
+### Added
+
+- 新增 `macos-application-cleanup`：区分沙盒与非沙盒数据根，TCC 拒读判定为
+  `unknown` 而非「目录为空」，偏好由 `cfprefsd` 拥有需先退出应用，覆盖 APFS 本地快照
+  与克隆对可回收空间的影响，并给出「可删缓存与同级登录态」的相邻目录对照表。
+- 新增 `linux-application-cleanup`：先确认打包方式（原生包 XDG / Flatpak `~/.var/app` /
+  Snap `~/snap` / Wine prefix）再定位数据根，回收站按 XDG 规范分级降级；明确 Linux 上
+  微信没有跨发行版标准路径，必须从运行进程、包文件清单和用户配置实地发现。
+- `tools-macos.md` 与 `tools-linux.md` 新增清理与操作记录工具别名（路径元数据、
+  有界清单、SHA-256、废纸篓/回收站、隔离 JSON 操作日志）。
+- `playbook-windows-configuration-review.md` 新增 Windows AI（Recall/Copilot）审查路径，
+  要求只写回记录下来的具体策略值，不删除整棵 `WindowsAI` 策略键，也不按包名子串批量删 Appx。
+- `playbook-windows-browser-policy-audit.md` 新增 AI、分享与扩展可用性策略维度，
+  并说明 Manifest v2 开关只是过渡桥而非修复。
+- `tests/validate_skill.py` 新增四类断言：表格单元格竖线转义、`platform` 与工具别名
+  归属一致、`last_reviewed` 不得为未来日期（容忍一天时区差）、官网触发词跟随路由索引、
+  无 JS 回退表格与站点数据逐行一致、官网 `data-i18n` 键的英文文案覆盖。
+- 新增 `scripts/sync_docs_table.py`，由站点数据幂等重建 `docs/index.html` 的无 JS 回退表格。
+- 官网新增 macOS 与 Linux 示例提问，安全红线新增「用脚本运行时绕过宿主删除护栏」一条。
+
+### Changed
+
+- `cleanup-protocol.md`、`rule-source-contract.md` 与 `safety-policy.md` 同步上游清理器
+  的最新行为与安全边界：动作分级不得升级、本机白名单只排除批量执行、单点拒绝访问不终止
+  整次盘点、行为标签不构成厂商身份、卸载器打开前三重校验、清空回收站与回收站回滚互斥、
+  提权后必须重新确认、Winapp2 字段真实作用域（`RECURSE`/`REMOVESELF`/`ExcludeKey` 的
+  `FILE` 与 `PATH` 差异）、规则库更新前本地对比两版。
+- 三个平台的应用清理统一要求先按设备号与 inode 去重再报可回收字节，硬链接、
+  reflink/CoW 克隆与稀疏文件会共享块。
+- `NOTICE` 记录全部上游项目的本轮复核提交与版本；上游基线在 `d5e3a81` 复核后确认
+  playbooks 与编写指南自基线未变。
+- `playbook-setup-openclaw-install-node.md` 不再固定 nvm 的旧版本号，改为先解析当前发布 tag。
+
+### Fixed
+
+- `tools-windows.md` 转义 `win_cancel_print_jobs` 单元格内的裸竖线，原本会把表格行拆散。
+- `playbook-setup-wifi-profile.md` 的 `platform` 为 `all` 却声明 macOS 专属工具，
+  改为按当前平台映射。
+- `playbook-windows-migration-history-recovery.md` 的跨卷恢复改为「复制 → 校验 → 回收源」：
+  `Move-Item` 跨卷会退化成复制后删源且非原子，中断会留下半份副本而源已删。
+
 ## [1.1.0] - 2026-08-05
 
 本次发布集中修复第三方审阅报告中确认成立的问题，并补上审阅遗漏的同类缺陷。
