@@ -376,6 +376,10 @@ scripts/
 ├── install.ps1              # Windows 安装器
 ├── install.sh               # macOS/Linux 安装器
 └── sync_docs_table.py       # 由官网数据重建无 JS 回退表格
+tools/
+├── extract_data.py          # 由 frontmatter 与文案目录生成官网数据
+├── site_catalog.json        # 官网双语文案目录
+└── release_notes.py         # 由 CHANGELOG 摘录发布说明
 tests/validate_skill.py      # 无第三方依赖的仓库验证器
 ```
 

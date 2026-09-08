@@ -1,0 +1,87 @@
+name: Release
+
+# SKILL.md 的 version 变化后自动打 tag 并发布，说明正文从 CHANGELOG 摘录。
+# 只在版本或变更记录改动时触发；tag 已存在就跳过，所以重复触发是安全的。
+on:
+  push:
+    branches: [main]
+    paths:
+      - "skills/computer-repair-skill/SKILL.md"
+      - "CHANGELOG.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Tag and publish
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUTF8: "1"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          # 需要完整历史与已有 tag，才能判断该版本是否已发布。
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          version="$(python tools/release_notes.py --print-version)"
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "v$version 已发布，跳过。"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "准备发布 v$version。"
+          fi
+
+      - name: Validate before releasing
+        if: steps.version.outputs.exists == 'false'
+        shell: bash
+        run: |
+          python tools/extract_data.py --check
+          python tests/validate_skill.py
+
+      - name: Build release notes
+        if: steps.version.outputs.exists == 'false'
+        shell: bash
+        run: python tools/release_notes.py --output "$RUNNER_TEMP/release-notes.md"
+
+      - name: Create annotated tag
+        if: steps.version.outputs.exists == 'false'
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$VERSION" -m "$VERSION"
+          git push origin "refs/tags/v$VERSION"
+
+      - name: Publish GitHub Release
+        if: steps.version.outputs.exists == 'false'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          gh release create "v$VERSION" \
+            --title "v$VERSION" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" \
+            --verify-tag \
+            --latest
