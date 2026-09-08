@@ -14,7 +14,7 @@
 [![skills.sh](https://skills.sh/b/88lin/computer-repair-skill)](https://skills.sh/88lin/computer-repair-skill)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
 
-[官方网站](https://repair.88lin.eu.org/) · [在线浏览 62 个 Playbook](https://repair.88lin.eu.org/#playbooks)
+[官方网站](https://repair.88lin.eu.org/) · [在线浏览 64 个 Playbook](https://repair.88lin.eu.org/#playbooks)
 
 </div>
 
@@ -62,7 +62,7 @@
 
 - **证据优先**：先读取系统状态、日志、配置和硬件事实，再建立候选原因，不凭症状猜结论。
 - **只读优先**：诊断和盘点可以先做；删除、安装、提权、重启、分区和服务修改会先给出影响、回滚与验证方案。
-- **按需加载**：62 个专项 Playbook 通过路由索引按问题加载，减少无关上下文，也方便维护和扩展。
+- **按需加载**：64 个专项 Playbook 通过路由索引按问题加载，减少无关上下文，也方便维护和扩展。
 - **跨平台**：覆盖 Windows、macOS、Linux，并提供 DNS、邮件、身份、SSH、Wi-Fi 和 OpenClaw 等跨平台流程。
 - **适合真实维修**：包含新机验收、BitLocker/PE 前置分诊、WinRE、数据恢复、拆机安全和设备回收等维修现场边界。
 - **不绑定桌面应用**：Skill 本身是 Markdown/YAML 资源，不需要安装配套桌面程序、额外模型或专用云端 API。
@@ -73,8 +73,8 @@
 | 平台 | 主要覆盖 |
 |---|---|
 | Windows | 网络、性能、存储盘点、应用安装/卸载与清理、驱动与音视频、启动/WinRE、BitLocker/分区、硬件维护、新机验收、浏览器策略、Windows Update、配置审查、打印机、安全与数据恢复 |
-| macOS | 网络、VPN、性能、磁盘、应用、系统更新、打印机、Homebrew、Time Machine、邮箱配置 |
-| Linux | 网络、性能、磁盘与 inode、CUDA、通用安全与备份检查 |
+| macOS | 网络、VPN、性能、磁盘、应用清理与修复、系统更新、打印机、Homebrew、Time Machine、邮箱配置 |
+| Linux | 网络、性能、磁盘与 inode、XDG/Flatpak/Snap 应用清理、CUDA、通用安全与备份检查 |
 | 跨平台 | DNS、邮件、身份服务、SSH、Wi-Fi、Outlook、OpenClaw、凭据与本地数据审计 |
 
 ## 🚀 安装
@@ -228,11 +228,11 @@ Windows 进不了桌面，先做无损启动修复分诊，不要重装系统或
 
 ## 🧰 功能总览
 
-本 Skill 内置 62 个可按需加载的专项 Playbook。下面的分类数量与[完整路由索引](skills/computer-repair-skill/references/playbook-index.md)一致。
+本 Skill 内置 64 个可按需加载的专项 Playbook。下面的分类数量与[完整路由索引](skills/computer-repair-skill/references/playbook-index.md)一致。
 
 | 分类 | 数量 | 主要内容 |
 |---|---|---|
-| 健康、性能、存储与备份 | 18 | 体检、性能、磁盘/目录盘点、应用缓存、文件夹迁移、备份和新机验收 |
+| 健康、性能、存储与备份 | 20 | 体检、性能、磁盘/目录盘点、三平台应用清理、文件夹迁移、备份和新机验收 |
 | 网络、DNS、VPN、身份与邮件 | 9 | Wi-Fi、路由、DNS、VPN、邮件连通性、SSO 和邮箱配置 |
 | 应用、系统更新与打印 | 8 | 应用崩溃、卸载残留、Outlook、macOS/Windows 更新、打印机和 Windows 配置审查 |
 | Windows 维修、启动与硬件 | 7 | 驱动、摄像头/音频、启动失败、WinRE、BitLocker、分区和拆机安全 |
@@ -243,7 +243,7 @@ Windows 进不了桌面，先做无损启动修复分诊，不要重装系统或
 
 ## 💬 能做什么｜你可以这样问
 
-### 🩺 健康、性能、存储与备份（18）
+### 🩺 健康、性能、存储与备份（20）
 
 | 能力 | 你可以这样问 |
 |---|---|
@@ -259,6 +259,8 @@ Windows 进不了桌面，先做无损启动修复分诊，不要重装系统或
 | Windows 应用迁移 — 复制校验后用 Junction 保留原路径，支持回滚 | “把这个应用迁移到 D 盘，先检查 NTFS、空间、进程占用和恢复方案。” |
 | Windows 迁移历史恢复 — 检查 Junction、幽灵记录并安全还原 | “这个软件迁移后打不开，先检查链接状态，不要覆盖原目录。” |
 | Windows 应用清理 — 微信重复文件、浏览器缓存和包缓存 | “帮我清理微信重复文件，聊天记录和原文件不能动。” |
+| macOS 应用清理 — 容器与缓存边界、微信重复文件和开发者缓存 | “Mac 上微信占了几十 G，先只读列出可以清的重复文件，聊天记录别动。” |
+| Linux 应用清理 — XDG/Flatpak/Snap 数据根、重复文件和包缓存 | “这个 Flatpak 应用缓存太大了，先分清哪些是缓存哪些是我的数据。” |
 | Windows 应用生命周期审计 — WinGet、Chocolatey、Appx、来源、发布者和残留 | “审计这台电脑装了什么应用，先不要卸载。” |
 | Windows 新机验收 — 本地硬件、序列号、配置、开箱证据和首次设置 | “先做新机本地验收，不联网激活；查保修前先问我。” |
 | Linux 磁盘恢复 — 文件系统、inode、日志和容器存储增长 | “Linux 根分区满了，先判断是 inode、日志还是容器占用。” |
@@ -291,7 +293,7 @@ Windows 进不了桌面，先做无损启动修复分诊，不要重装系统或
 | Windows Update 排障 — 错误码、服务、待重启和更新缓存 | “Windows 更新卡住，先修复更新链路，不要关闭更新。” |
 | macOS 打印机修复 — 队列、CUPS 和设备发现 | “Mac 打印队列卡住了，先保留作业内容再处理。” |
 | Windows 打印机修复 — 离线状态、打印队列和 Spooler | “Windows 打印机离线，清除卡住作业前先告诉我影响。” |
-| Windows 配置审查 — 隐私、电源、去臃肿设置的差异、风险和回滚 | “审查这份 Windows 优化配置，不要直接套用，给我 diff。” |
+| Windows 配置审查 — 隐私、电源、去臃肿与 Windows AI 设置的差异、风险和回滚 | “帮我关掉 Recall 和 Copilot，先告诉我当前状态、影响和怎么恢复。” |
 
 ### 🪟 Windows 维修、启动与硬件（7）
 
@@ -319,7 +321,7 @@ Windows 进不了桌面，先做无损启动修复分诊，不要重装系统或
 |---|---|
 | 终端安全检查 — 防病毒、防火墙、更新和可疑活动 | “检查系统安全状态，但不要关闭 Defender、防火墙或 UAC。” |
 | 浏览器安全审计 — 扩展、密码存储、版本和安全设置 | “审计浏览器安全性，不要读取或输出已保存密码。” |
-| Windows 浏览器策略审计 — Chrome、Edge、Firefox、Brave 策略和遥测 | “检查浏览器策略，不能影响密码、自动更新和企业策略。” |
+| Windows 浏览器策略审计 — Chrome、Edge、Firefox、Brave 策略、AI 开关与遥测 | “检查浏览器策略和 AI 相关开关，不能影响密码、自动更新和企业策略。” |
 | Windows 持久化审计 — 启动项、服务、计划任务、右键菜单和文件关联 | “查找可疑后台和启动残留，先只读列证据。” |
 | 凭据清理 — SSH key、token、云凭据和事件后残留 | “我要离职了，先列出需要轮换的凭据，不要把 secret 打印出来。” |
 
@@ -362,14 +364,18 @@ Windows 进不了桌面，先做无损启动修复分诊，不要重装系统或
 skills/computer-repair-skill/
 ├── SKILL.md                 # 核心路由与强制安全工作流
 ├── agents/openai.yaml       # Codex 展示元数据
-├── references/              # 平台工具映射与 62 个专项 Playbook
+├── references/              # 平台工具映射与 64 个专项 Playbook
 ├── LICENSE                  # 随 Skill 分发的 AGPL-3.0 许可证
 └── NOTICE                   # 来源与归属记录
 assets/
 └── computer-repair-cover.svg  # README 封面图
+docs/                        # GitHub Pages 官网（中英双语）
+├── index.html               # 单页站点
+└── assets/js/               # playbooks.js 站点数据、i18n.js 英文文案、site.js 交互
 scripts/
 ├── install.ps1              # Windows 安装器
-└── install.sh               # macOS/Linux 安装器
+├── install.sh               # macOS/Linux 安装器
+└── sync_docs_table.py       # 由官网数据重建无 JS 回退表格
 tests/validate_skill.py      # 无第三方依赖的仓库验证器
 ```
 
@@ -390,7 +396,13 @@ macOS / Linux：
 PYTHONUTF8=1 python tests/validate_skill.py
 ```
 
-验证器会检查 Skill frontmatter、Agent 元数据、62 个 Playbook 的描述唯一性、工具契约、路由索引、README 分类数量、本地 Markdown 链接、许可证一致性、占位符和疑似凭据。GitHub Actions 会在 Windows 和 Ubuntu 上重复验证，并测试安装器的首次安装、拒绝覆盖、备份和强制更新路径。
+验证器会检查 Skill frontmatter、Agent 元数据、64 个 Playbook 的描述唯一性与复核日期、工具契约与 platform 一致性、路由索引、README 与官网的分类数量、官网条目与 frontmatter/触发词的一致性、无 JS 回退表格、官网英文文案覆盖、Markdown 表格转义、本地 Markdown 链接、许可证一致性、占位符和疑似凭据。GitHub Actions 会在 Windows 和 Ubuntu 上重复验证，并测试安装器的首次安装、拒绝覆盖、备份和强制更新路径。
+
+改动 `docs/assets/js/playbooks.js` 后，先重建官网的无 JavaScript 回退表格再验证：
+
+```bash
+python scripts/sync_docs_table.py
+```
 
 新增或修改 Playbook 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。
 

@@ -2,7 +2,7 @@
 name: windows-storage-inventory
 description: Build a privacy-preserving Windows storage inventory that explains large paths before any cleanup
 platform: windows
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-09
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -42,6 +42,8 @@ For each candidate record:
 
 ### 2. Classify before explaining
 Classify each path as `protected-user-data`, `application-state`, `regenerable-cache`, `system-managed`, or `unknown`. Keep Documents, Downloads, mail, browser profiles, credentials, chat databases, media, cloud roots, VM disks and game libraries in the protected or unknown class until the user identifies them.
+
+Cloud-storage clients, backup products and some security tools publish a virtual drive letter or mount point that is not local storage. Report the drive letter, provider and mount evidence read-only; do not include it in a volume free-space calculation, do not scan it for large files, and never target it for cleanup, migration or drive-letter changes. Removing the client's device or letter is the vendor's operation, not a storage fix.
 
 If the user asks for an AI explanation, send only de-identified metadata: path labels, byte totals, counts, extension percentages and at most 20 relative path samples. Never send file contents, secrets, database rows, cookies or private keys.
 

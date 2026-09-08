@@ -2,7 +2,7 @@
 name: windows-application-cleanup
 description: Audit and clean regenerable Windows app caches or duplicates while preserving profiles, chat data, and credentials
 platform: windows
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-09
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -39,6 +39,8 @@ If the application is not running, still check for helper processes and backgrou
 
 ### 2. Detect duplicate files conservatively
 When the request is duplicate cleanup, group candidates by size, then compare a bounded prefix hash, then a full SHA-256 hash with `win_file_hash`. Only equal size and full hash make a duplicate candidate. Show every path, timestamp, owner and hash; never choose “shortest path” or “oldest file” as an irreversible rule without user approval.
+
+Apparent size is an upper bound on reclaimable space. NTFS hard links, volume Data Deduplication and sparse files let several paths share the same blocks, so deleting one path may free far less than its reported size. Check the link count before promising a recovery figure, and state the uncertainty when it cannot be determined.
 
 ### 3. Use explicit scopes
 Prefer the owning application's documented cleanup or a reviewed, version-specific scope. Do not recursively match `*.tmp`, `*.cache`, `node_modules`, or an entire application root. A scope must state its positive targets and redlines, and must be safe when a directory is absent or a junction is present.

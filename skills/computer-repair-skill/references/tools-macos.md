@@ -108,6 +108,29 @@ find "$HOME/Library/Logs/DiagnosticReports" -type f \
 
 读取崩溃报告时优先提取时间、进程、异常类型、终止原因、崩溃线程和二进制映像，不需要把完整报告全部带入上下文。
 
+## 清理与操作记录
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `mac_path_metadata` | `stat -f` 输出类型、大小、inode、链接数、所有者和时间；符号链接用 `-L` 区分本体与目标 | 只读 |
+| `mac_path_inventory` | 对已确认的字面目录使用 `find <PATH> -xdev -maxdepth <N>`，限制深度且不跨卷 | 只读但可能较慢 |
+| `mac_file_hash` | `shasum -a 256 '<PATH>'`；先按大小分组再算前缀/全量哈希 | 只读 |
+| `mac_trash_path` | 使用宿主的废纸篓能力，或把字面路径移入同卷的 `~/.Trash`（其他卷用该卷 `.Trashes`）；不使用 `rm -rf` | 高影响，先确认 |
+| `mac_operation_log` | 向已确认的隔离 JSON 日志追加操作、路径、字节、结果和恢复位置，原子替换 | 可逆变更，先确认目标 |
+
+```bash
+stat -f 'type=%HT size=%z inode=%i links=%l owner=%Su modified=%Sm path=%N' '<PATH>'
+
+find '<PATH>' -xdev -maxdepth 2 -mindepth 1 -print0 |
+  xargs -0 stat -f '%z %i %l %N'
+
+shasum -a 256 '<PATH>'
+```
+
+`~/Library` 下的敏感子路径受 TCC 保护，例如 Mail、Messages、Safari、Cookies、照片库和部分 `Application Support/com.apple.*`；普通进程读取它们会被拒绝或静默返回空结果。读取被拒绝时结论是 `unknown`，不是“目录为空”；需要完整枚举时说明所需的完全磁盘访问权限，由用户在系统设置中授予。
+
+APFS 的可用空间受本地快照影响：删除文件后 `df` 可能不立即下降，因为空间仍被快照持有并显示为可清除空间。用 `tmutil listlocalsnapshots /` 记录快照证据即可，删除快照是单独的高影响动作，不作为清理步骤自动执行。
+
 ## 系统诊断
 
 | Playbook 工具 | 推荐实现 | 风险 |

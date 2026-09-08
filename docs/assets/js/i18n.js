@@ -10,7 +10,7 @@ en: {
   /* meta ------------------------------------------------------------------ */
   "meta.title":   "Computer Repair Skill — turn your agent into a careful computer repair engineer",
   "meta.ogtitle": "Computer Repair Skill — turn your agent into a careful computer repair engineer",
-  "meta.desc":    "A C: drive turning red, a sluggish PC, unwanted software that will not stay gone, relentless pop-ups, network trouble or an app to move — describe the symptom in plain language. The agent gathers evidence, lays out a plan and waits for your approval before making changes. 62 on-demand playbooks cover Windows, macOS, Linux and focused repair scenarios. Open source under AGPL-3.0.",
+  "meta.desc":    "A C: drive turning red, a sluggish PC, unwanted software that will not stay gone, relentless pop-ups, network trouble or an app to move — describe the symptom in plain language. The agent gathers evidence, lays out a plan and waits for your approval before making changes. 64 on-demand playbooks cover Windows, macOS, Linux and focused repair scenarios. Open source under AGPL-3.0.",
 
   /* a11y ------------------------------------------------------------------ */
   "a11y.skip":     "Skip to main content",
@@ -41,7 +41,7 @@ en: {
   "hero.lead":    "Evidence before conclusions; a plan before any change.",
   "hero.sub":     "A cross-platform computer diagnosis and repair Skill for Codex, Claude Code, OpenClaw and other agents. Application and data migration, a C: drive turning red, a sluggish PC, unwanted software, recurring pop-up ads, network trouble or OpenClaw configuration issues — describe the symptom in one sentence. The agent gathers evidence, proposes a plan and changes nothing until you confirm; updates, printers, boot repair, recovery, BitLocker/PE checks and other workflows remain covered too.",
   "hero.cta1":    "Four ways to install",
-  "hero.cta2":    "Browse 62 playbooks",
+  "hero.cta2":    "Browse 64 playbooks",
   "hero.pill1":   "focused playbooks",
   "hero.pill2":   "supported platforms",
   "hero.pill3":   "3.0 open source",
@@ -73,7 +73,7 @@ en: {
   "what.r3yd":    "Only after you confirm does it apply the smallest change that fixes the problem.",
   "what.r3n":     "\u201cOne-click Windows optimization\u201d",
   "what.r3nd":    "Tuning presets can affect updates, privacy, drivers, enterprise policy and your ability to roll back.",
-  "what.r4y":     "62 on-demand playbooks",
+  "what.r4y":     "64 on-demand playbooks",
   "what.r4yd":    "Loaded through a routing index according to the problem, so irrelevant context stays out.",
   "what.r4n":     "One giant prompt that fills the context window",
   "what.r4nd":    "It loads only the process relevant to the problem, keeping unrelated steps out.",
@@ -140,6 +140,7 @@ en: {
   "safety.n1":    "Pipelines that hand a remote response straight to a shell: <code>irm&nbsp;|&nbsp;iex</code>, <code>iwr&nbsp;|&nbsp;iex</code>, <code>curl&nbsp;|&nbsp;powershell</code>, <code>curl&nbsp;|&nbsp;bash</code>, <code>wget&nbsp;|&nbsp;sh</code>, <code>bash&nbsp;-c&nbsp;\"$(curl&nbsp;\u2026)\"</code>.",
   "safety.n2":    "Using <code>*</code>, recursing from a root, or sweeping an ancestor directory across user data, application data or credential directories.",
   "safety.n3":    "Hiding deletion targets behind a pipe, <code>xargs</code>, <code>eval</code>, command substitution, an encoded payload or a dynamic variable.",
+  "safety.n7":    "Re-running the same deletion through a scripting runtime such as Python or Node to get around the host's guardrail on <code>rm&nbsp;-rf</code> or <code>Remove-Item</code>.",
   "safety.n4":    "Printing passwords, recovery keys, private keys, tokens or full sensitive paths into the chat.",
   "safety.n5":    "Actively disabling Defender, SmartScreen, UAC, the firewall, Windows Update or Core Isolation — these are audited for state only.",
   "safety.n6":    "Pirated activation, unknown downloaders, force-removing Edge, unaudited one-click tuning bundles.",
@@ -156,6 +157,8 @@ en: {
   "say.q4":              "My system disk is running out of space, and I want to move some apps to D:. Check available space, file locks and the rollback plan first; verify the copy before switching the original path, and keep it reversible.",
   "say.q5":              "Wi-Fi is connected, but webpages will not load. Trace the path layer by layer, from DNS and proxy through routing; do not reset the network or change browser settings without my approval.",
   "say.q6":              "I am about to boot into PE. Check BitLocker status in the running Windows first; never print the recovery key.",
+  "say.q7":              "WeChat and Chrome are using tens of GB on my Mac. First separate the regenerable caches from session state and chat history, read-only; once I confirm, clean only the caches.",
+  "say.q8":              "A Flatpak app's data directory on this Linux box is huge. Confirm its packaging format and data root first, separate cache from my own data, then give me a reversible cleanup plan.",
   "safety.logNote":  "Secrets are stripped when the command template is recorded; where a path contains a username or company information, only the part needed for diagnosis is kept.",
 
   /* 04 · install ---------------------------------------------------------- */
@@ -179,7 +182,7 @@ en: {
   "install.p4n":   "The directory must keep <code>SKILL.md</code>, <code>agents/</code> and <code>references/</code> — <b>do not copy just one playbook</b>.",
 
   /* 05 · playbooks -------------------------------------------------------- */
-  "pb.title":       "62 focused playbooks",
+  "pb.title":       "64 focused playbooks",
   "pb.desc":        "From a C: drive turning red, a sluggish PC, unwanted software, recurring pop-up ads, network trouble, app migration, uninstall residue and large-folder management to updates, printers, boot repair, recovery, security, developer setup and OpenClaw. Search by symptom, or open any row to see when it applies and what you can ask.",
   "pb.byCat":       "By category",
   "pb.colCat":      "Category",
@@ -188,8 +191,8 @@ en: {
   "pb.statNote":    "\u201cCross-platform\u201d means the procedure does not depend on a single operating system — DNS, mail, identity services, SSH, Wi-Fi, Outlook, OpenClaw, credential and local-data audits.",
   "pb.searchLabel": "Search playbooks",
   "pb.searchPh":    "Search: C: drive, slow PC, unwanted software, pop-up ads, migration, leftovers, BitLocker\u2026",
-  "pb.nojs":        "JavaScript is disabled, so search, filtering and detail dialogs are unavailable. You can still browse all 62 playbooks in the table below.",
-  "pb.tableCap":    "Complete routing index for all 62 playbooks",
+  "pb.nojs":        "JavaScript is disabled, so search, filtering and detail dialogs are unavailable. You can still browse all 64 playbooks in the table below.",
+  "pb.tableCap":    "Complete routing index for all 64 playbooks",
   "pb.colTitle":    "Playbook",
   "pb.colPlat":     "Platform",
   "pb.colRoute":    "Route ID",
@@ -236,7 +239,7 @@ en: {
   "foot.tagline": "Evidence before conclusions; a plan before any change.",
   "foot.h1":      "Quick start",
   "foot.quick1":  "Choose an installation method",
-  "foot.quick2":  "Browse 62 playbooks",
+  "foot.quick2":  "Browse 64 playbooks",
   "foot.quick3":  "See sample prompts",
   "foot.quick4":  "Understand the safety boundaries",
   "foot.h2":      "Project",

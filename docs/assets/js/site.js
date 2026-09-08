@@ -576,7 +576,7 @@ function chip(kind, val, label, count, on, aria) {
        + "<span>" + esc(label) + '</span><span class="chip-n">' + count + "</span></button>";
 }
 
-/* --- the 58-row index table -------------------------------------------- */
+/* --- the routing index table -------------------------------------------- */
 function tokens() {
   return filter.q.toLowerCase().split(/\s+/).filter(function (t) { return t.length > 0; });
 }
