@@ -79,4 +79,21 @@ python scripts/sync_docs_table.py
 ./scripts/install.sh --target custom --destination "$(mktemp -d)/skills"
 ```
 
+## 发布版本
+
+版本号写在 `skills/computer-repair-skill/SKILL.md` 与 `skills/computer-repair-skill/agents/openai.yaml`，
+两处必须一致，且 `CHANGELOG.md` 要有对应的 `## [x.y.z] - YYYY-MM-DD` 条目——校验器会检查这三点。
+
+具备这些之后不需要手工打 tag：改动合入 `main` 后，`Release` 工作流会自动创建
+`v<version>` annotated tag 并发布 GitHub Release，说明正文取自 `CHANGELOG.md` 的该版本条目。
+工作流会先运行 `tools/extract_data.py --check` 与 `tests/validate_skill.py`，任一失败就不发布；
+tag 已存在时跳过，可以安全地重复触发（Actions 页面手动 `Run workflow` 即可重试）。
+
+本地预览某个版本的发布说明：
+
+```bash
+python tools/release_notes.py                 # 当前版本
+python tools/release_notes.py --version 1.1.0
+```
+
 提交前检查 `git diff`，确保没有打包文件、缓存、凭据或无关改动。安全漏洞不要创建公开 Issue，请按 [SECURITY.md](SECURITY.md) 报告。

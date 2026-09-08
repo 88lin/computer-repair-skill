@@ -8,6 +8,15 @@
 `skills/computer-repair-skill/agents/openai.yaml` 里，`tests/validate_skill.py`
 会校验两者一致并要求本文件存在对应条目。1.1.0 之前的变更请查阅 Git 历史。
 
+## [Unreleased]
+
+### Added
+
+- 新增 `Release` 工作流与 `tools/release_notes.py`：`SKILL.md` 的 `version` 变化并合入
+  `main` 后自动打 annotated tag 并发布 GitHub Release，说明正文从本文件对应版本条目摘录。
+  发布前会先跑 `tools/extract_data.py --check` 与 `tests/validate_skill.py`，任一失败就不发布；
+  对应 tag 已存在时跳过，因此重复触发是安全的。
+
 ## [1.2.0] - 2026-09-09
 
 本次发布补齐 macOS 与 Linux 的应用清理能力，复核并同步了 `NOTICE` 记录的全部上游项目，
