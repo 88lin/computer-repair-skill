@@ -142,7 +142,7 @@
       "title_en": "Windows Storage Inventory",
       "detail_zh": "按路径和大小解释空间分配",
       "detail_en": "Build a privacy-preserving Windows storage inventory that explains large paths before any cleanup",
-      "triggers_zh": "大目录盘点、陌生路径、清理前空间分布",
+      "triggers_zh": "大目录盘点、陌生路径、网盘虚拟盘、清理前空间分布",
       "prompt_zh": "帮我找出 C 盘最大的目录，但不要删除任何东西。",
       "prompt_en": "Find the largest directories on C:, but do not delete anything.",
       "when_en": "Use when a Windows volume is unexpectedly full, an unfamiliar directory is large, or the user wants a map of storage before deciding what to remove."
@@ -190,6 +190,28 @@
       "prompt_zh": "帮我清理微信重复文件，聊天记录和原文件不能动。",
       "prompt_en": "Clean up duplicate WeChat files; chat history and the originals must stay untouched.",
       "when_en": "Use for a named application's cache growth, WeChat received-file duplication, browser cache growth, package caches, or a request to reclaim application storage safely."
+    },
+    "playbook-macos-application-cleanup.md": {
+      "emoji": "🩺",
+      "title_zh": "macOS 应用清理",
+      "title_en": "macOS Application Cleanup",
+      "detail_zh": "容器与缓存边界、微信重复文件和开发者缓存",
+      "detail_en": "Audit and clean regenerable macOS app caches or duplicates while preserving containers, chat data, and keychains",
+      "triggers_zh": "容器/缓存膨胀、微信重复文件、开发者缓存",
+      "prompt_zh": "Mac 上微信占了几十 G，先只读列出可以清的重复文件，聊天记录别动。",
+      "prompt_en": "WeChat is using tens of GB on my Mac — list the duplicate files you could clean, read-only, and leave the chat history alone.",
+      "when_en": "Use for one macOS application's data growth: container or cache bloat, WeChat received-file duplication, browser cache growth, or developer tool caches. For a general maintenance sweep use Mac Tune-Up; for volume-level space triage use macOS Disk Space Recovery."
+    },
+    "playbook-linux-application-cleanup.md": {
+      "emoji": "🩺",
+      "title_zh": "Linux 应用清理",
+      "title_en": "Linux Application Cleanup",
+      "detail_zh": "XDG/Flatpak/Snap 数据根、重复文件和包缓存",
+      "detail_en": "Audit and clean regenerable Linux app caches or duplicates across XDG, Flatpak, and Snap data roots",
+      "triggers_zh": "XDG/Flatpak/Snap 应用缓存、重复文件、包缓存",
+      "prompt_zh": "这个 Flatpak 应用缓存太大了，先分清哪些是缓存哪些是我的数据。",
+      "prompt_en": "This Flatpak app's cache is huge — separate what is cache from what is my data before removing anything.",
+      "when_en": "Use for one Linux application's data growth: XDG cache bloat, a Flatpak or Snap data directory, chat-client received-file duplication, or developer tool caches. For filesystem, inode, journal or container space triage use Linux Disk Space Recovery."
     },
     "playbook-windows-application-lifecycle-audit.md": {
       "emoji": "🩺",
@@ -426,11 +448,11 @@
       "emoji": "🧩",
       "title_zh": "Windows 配置审查",
       "title_en": "Windows Configuration Review",
-      "detail_zh": "隐私、电源、去臃肿设置的差异、风险和回滚",
-      "detail_en": "Review reversible Windows privacy, performance, and usability settings with version gates, diff, and rollback",
-      "triggers_zh": "Windows 优化、隐私、电源、去臃肿或配置导入",
-      "prompt_zh": "审查这份 Windows 优化配置，不要直接套用，给我 diff。",
-      "prompt_en": "Review this Windows tweaking config — do not apply it, show me the diff.",
+      "detail_zh": "隐私、电源、去臃肿与 Windows AI 设置的差异、风险和回滚",
+      "detail_en": "Review reversible Windows privacy, AI, performance, and usability settings with version gates, diff, and rollback",
+      "triggers_zh": "Windows 优化、隐私、电源、去臃肿、Recall/Copilot 开关或配置导入",
+      "prompt_zh": "帮我关掉 Recall 和 Copilot，先告诉我当前状态、影响和怎么恢复。",
+      "prompt_en": "Turn off Recall and Copilot for me — first tell me the current state, the impact and how to restore it.",
       "when_en": "Use for “optimize Windows”, debloat, privacy, power-plan, taskbar, update or gaming-tweak requests, and when importing a configuration from another machine."
     },
     "playbook-windows-uninstall-residue-cleanup.md": {
@@ -547,11 +569,11 @@
       "emoji": "🔐",
       "title_zh": "Windows 浏览器策略审计",
       "title_en": "Windows Browser Policy Audit",
-      "detail_zh": "Chrome、Edge、Firefox、Brave 策略和遥测",
-      "detail_en": "Audit Chrome, Edge, Firefox, and Brave policies without touching profiles or disabling security updates",
-      "triggers_zh": "Chrome/Edge/Firefox/Brave 策略、遥测和最小化配置",
-      "prompt_zh": "检查浏览器策略，不能影响密码、自动更新和企业策略。",
-      "prompt_en": "Review browser policies without affecting passwords, auto-update or enterprise policy.",
+      "detail_zh": "Chrome、Edge、Firefox、Brave 策略、AI 开关与遥测",
+      "detail_en": "Audit Chrome, Edge, Firefox, and Brave policies, including AI and extension controls, without weakening security",
+      "triggers_zh": "Chrome/Edge/Firefox/Brave 策略、AI 与扩展开关、遥测和最小化配置",
+      "prompt_zh": "检查浏览器策略和 AI 相关开关，不能影响密码、自动更新和企业策略。",
+      "prompt_en": "Review browser policies and the AI-related switches without affecting passwords, auto-update or enterprise policy.",
       "when_en": "Use when the user wants a minimal browser, less telemetry or sponsored content, suspects policy tampering, or needs to understand a browser configuration file."
     },
     "playbook-windows-persistence-audit.md": {

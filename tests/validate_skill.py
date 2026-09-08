@@ -7,7 +7,7 @@ import json
 import re
 import subprocess
 import sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -16,7 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 EXTRACT_DATA = REPO_ROOT / "tools" / "extract_data.py"
 SKILL_DIR = REPO_ROOT / "skills" / "computer-repair-skill"
 REFERENCES_DIR = SKILL_DIR / "references"
-EXPECTED_PLAYBOOK_COUNT = 62
+EXPECTED_PLAYBOOK_COUNT = 64
 EXPECTED_BUNDLED_COUNT = 37
 REQUIRED_SKILL_FIELDS = {"name", "description", "version"}
 OPTIONAL_SKILL_FIELDS = {"when_to_use"}
@@ -30,6 +30,8 @@ MAX_PLAYBOOK_DESCRIPTION_CHARS = 120
 OPTIONAL_PLAYBOOK_FIELDS = {"emoji"}
 EXPECTED_LOCAL_PLAYBOOKS = {
     "playbook-windows-application-cleanup.md",
+    "playbook-macos-application-cleanup.md",
+    "playbook-linux-application-cleanup.md",
     "playbook-windows-application-migration.md",
     "playbook-windows-application-lifecycle-audit.md",
     "playbook-windows-large-folder-management.md",
@@ -72,6 +74,22 @@ INDEX_TABLE_HEADER = re.compile(r"^\|\s*Playbook\s*\|")
 TOOL_SECTION = re.compile(r"(?ms)^## Tools referenced\s*(.*?)(?=^## |\Z)")
 TOOL_BULLET = re.compile(r"(?m)^\s*-\s+`([a-z][a-z0-9_]*)`")
 TOOL_ALIAS = re.compile(r"`([a-z][a-z0-9_]*)`")
+TOOL_TABLE_ROW = re.compile(r"(?m)^\|\s*(`[a-z][a-z0-9_]*`(?:\s*/\s*`[a-z][a-z0-9_]*`)*)\s*\|")
+INLINE_CODE = re.compile(r"`[^`]*`")
+PLATFORM_TOOL_FILES = {
+    "windows": "tools-windows.md",
+    "macos": "tools-macos.md",
+    "linux": "tools-linux.md",
+}
+SITE_PAGE = REPO_ROOT / "docs" / "index.html"
+SITE_I18N = REPO_ROOT / "docs" / "assets" / "js" / "i18n.js"
+SITE_FALLBACK_ROW = re.compile(r'<tr class="pb-row" data-id="([^"]+)"><td class="pb-i">(\d+)</td>')
+INDEX_TRIGGER_ROW = re.compile(
+    r"(?m)^\|\s*`([^`]+)`\s*\|(.+)\|\s*\[[^\]]*\]\(([^)\s]+)\)\s*\|\s*$"
+)
+I18N_ATTRIBUTE = re.compile(r'data-i18n(?:-html)?="([^"]+)"')
+I18N_ATTRIBUTE_MAPPING = re.compile(r'data-i18n-attr="([^"]+)"')
+I18N_DEFINITION = re.compile(r'(?m)^\s*"([^"]+)"\s*:')
 REMOTE_SHELL_EXECUTION = re.compile(
     r"(?im)^\s*(?:curl|wget|irm|iwr|Invoke-WebRequest)\b[^\r\n]*\|\s*(?:bash|sh|pwsh|powershell|iex)\b"
 )
@@ -305,9 +323,18 @@ def validate_playbooks(validation: Validation) -> None:
 
         reviewed = metadata.get("last_reviewed", "")
         try:
-            date.fromisoformat(reviewed)
+            reviewed_date = date.fromisoformat(reviewed)
         except ValueError:
             validation.errors.append(f"{path.name} 的 last_reviewed 不是 YYYY-MM-DD：{reviewed}。")
+        else:
+            # CI 跑在 UTC，贡献者可能在 UTC+14；容忍一天的时区差，
+            # 仍能拦住明显写错的未来日期。
+            latest_allowed = date.today() + timedelta(days=1)
+            validation.check(
+                reviewed_date <= latest_allowed,
+                f"{path.name} 的 last_reviewed 晚于今天：{reviewed}；复核日期不能填未来"
+                f"（已容忍一天时区差，最晚 {latest_allowed.isoformat()}）。",
+            )
 
         source = metadata.get("source")
         if source == "bundled":
@@ -401,27 +428,67 @@ def validate_links(validation: Validation) -> None:
             )
 
 
+def collect_table_aliases(path: Path, validation: Validation) -> set[str]:
+    """收集一份工具映射表中登记为表格行的语义工具别名。"""
+    aliases: set[str] = set()
+    for cell in TOOL_TABLE_ROW.findall(read_text(path, validation)):
+        aliases.update(TOOL_ALIAS.findall(cell))
+    return aliases
+
+
 def validate_tool_references(validation: Validation) -> None:
-    """确保 Playbook 声明的语义工具在契约或平台映射中有定义。"""
-    mapping_files = [
-        REFERENCES_DIR / "tool-contract.md",
-        REFERENCES_DIR / "tools-windows.md",
-        REFERENCES_DIR / "tools-macos.md",
-        REFERENCES_DIR / "tools-linux.md",
-    ]
-    mapping_text = "\n".join(read_text(path, validation) for path in mapping_files)
-    mapped = set(TOOL_ALIAS.findall(mapping_text))
+    """确保 Playbook 声明的语义工具已登记，且与自身 platform 不冲突。"""
+    contract_path = REFERENCES_DIR / "tool-contract.md"
+    # 只认表格行登记的别名；代码块或散文里出现的原生命令不算登记。
+    universal = collect_table_aliases(contract_path, validation)
+    contract_text = read_text(contract_path, validation)
+
+    platform_owners: dict[str, set[str]] = {}
+    for platform, filename in PLATFORM_TOOL_FILES.items():
+        for alias in collect_table_aliases(REFERENCES_DIR / filename, validation):
+            platform_owners.setdefault(alias, set()).add(platform)
+
+    # tool-contract.md 也用正文登记别名（例如迁移与恢复流程新增的工具）。
+    prose_aliases = {
+        alias
+        for alias in TOOL_ALIAS.findall(contract_text)
+        if alias.startswith(("win_", "mac_", "linux_"))
+    }
+    registered = universal | set(platform_owners) | prose_aliases
 
     for path in find_playbooks():
         text = read_text(path, validation)
+        platform = parse_frontmatter(path, validation).get("platform", "")
         section = TOOL_SECTION.search(text)
         if not section:
             continue
         for tool in sorted(set(TOOL_BULLET.findall(section.group(1)))):
             validation.check(
-                tool in mapped,
+                tool in registered,
                 f"{path.name} 引用了未登记的工具别名：{tool}。",
             )
+            owners = platform_owners.get(tool)
+            if tool in universal or not owners:
+                continue
+            validation.check(
+                platform in owners,
+                f"{path.name} 的 platform 是 {platform}，但声明了仅 {'/'.join(sorted(owners))} 可用的 {tool}；"
+                "请改用通用工具或按平台拆分。",
+            )
+
+
+def validate_table_cells(validation: Validation) -> None:
+    """Markdown 表格里的行内代码不能带裸竖线，否则整行会被拆成额外单元格。"""
+    for path in sorted(SKILL_DIR.rglob("*.md")):
+        for number, line in enumerate(read_text(path, validation).splitlines(), start=1):
+            if not line.lstrip().startswith("|"):
+                continue
+            for code in INLINE_CODE.findall(line):
+                validation.check(
+                    "|" not in code.replace("\\|", ""),
+                    f"表格单元格中的行内代码含未转义竖线，会破坏表格："
+                    f"{path.relative_to(REPO_ROOT)}:{number}（请写成 \\|）",
+                )
 
 
 def validate_readme_summary(validation: Validation) -> None:
@@ -559,6 +626,90 @@ def validate_site_data(validation: Validation) -> None:
     validation.check(
         site_counts == index_counts,
         "站点分类计数与路由索引不一致。",
+    )
+
+
+def validate_site_triggers(validation: Validation) -> None:
+    """官网触发词取自路由索引的“触发症状”列，改了索引就必须同步文案目录。"""
+    data = load_site_data(validation)
+    if not data:
+        return
+
+    index_text = read_text(REFERENCES_DIR / "playbook-index.md", validation)
+    index_triggers: dict[str, str] = {}
+    for match in INDEX_TRIGGER_ROW.finditer(index_text):
+        columns = [column.strip() for column in match.group(2).split("|")]
+        filename = Path(normalize_link_target(match.group(3))).name
+        index_triggers[filename] = columns[-1] if columns else ""
+
+    for entry in data.get("playbooks", []):
+        filename = entry.get("file", "")
+        expected = index_triggers.get(filename)
+        if expected is None:
+            continue
+        validation.check(
+            entry.get("triggers_zh") == expected,
+            f"官网触发词与路由索引不一致：{filename} 为“{entry.get('triggers_zh')}”"
+            f"（应为“{expected}”）；请更新 tools/site_catalog.json 后重新生成。",
+        )
+
+
+def validate_site_fallback_table(validation: Validation) -> None:
+    """无 JavaScript 回退表格是站点数据的派生产物，必须逐行对齐。"""
+    data = load_site_data(validation)
+    if not data:
+        return
+
+    playbooks = data.get("playbooks", [])
+    page = read_text(SITE_PAGE, validation)
+    rows = SITE_FALLBACK_ROW.findall(page)
+    expected = [(entry.get("id", ""), f"{number:02d}") for number, entry in enumerate(playbooks, start=1)]
+    validation.check(
+        rows == expected,
+        f"docs/index.html 的无 JS 回退表格与站点数据不一致（{len(rows)} 行 vs {len(expected)} 条）；"
+        "运行 python scripts/sync_docs_table.py 重建。",
+    )
+
+    for entry in playbooks:
+        for field in ("title_zh", "detail_zh"):
+            value = entry.get(field, "")
+            if not value:
+                continue
+            escaped = (
+                value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace('"', "&quot;")
+                .replace("'", "&#39;")
+            )
+            validation.check(
+                escaped in page,
+                f"回退表格缺少 {entry.get('id')} 的最新 {field}；"
+                "运行 python scripts/sync_docs_table.py 重建。",
+            )
+
+
+def validate_site_i18n(validation: Validation) -> None:
+    """页面上每个 data-i18n key 都要有英文文案，否则英文视图会退回中文。"""
+    page = read_text(SITE_PAGE, validation)
+    translations = read_text(SITE_I18N, validation)
+
+    keys = set(I18N_ATTRIBUTE.findall(page))
+    for mapping in I18N_ATTRIBUTE_MAPPING.findall(page):
+        for pair in mapping.split(","):
+            if "|" in pair:
+                keys.add(pair.split("|", 1)[1].strip())
+
+    defined = set(I18N_DEFINITION.findall(translations))
+    missing = sorted(keys - defined)
+    validation.check(
+        not missing,
+        "docs/assets/js/i18n.js 缺少英文文案：" + ", ".join(missing),
+    )
+    unused = sorted(defined - keys - {"en", "ui", "zh"})
+    validation.check(
+        not unused,
+        "docs/assets/js/i18n.js 存在页面未引用的文案键：" + ", ".join(unused),
     )
 
 
@@ -755,6 +906,7 @@ def validate_release_files(validation: Validation) -> None:
         REPO_ROOT / ".github" / "workflows" / "validate.yml",
         REPO_ROOT / "scripts" / "install.ps1",
         REPO_ROOT / "scripts" / "install.sh",
+        REPO_ROOT / "scripts" / "sync_docs_table.py",
         REPO_ROOT / "tools" / "extract_data.py",
         REPO_ROOT / "tools" / "site_catalog.json",
     ]
@@ -820,9 +972,13 @@ def main() -> int:
     validate_playbooks(validation)
     validate_links(validation)
     validate_tool_references(validation)
+    validate_table_cells(validation)
     validate_readme_summary(validation)
     validate_index_table_shape(validation)
     validate_site_data(validation)
+    validate_site_triggers(validation)
+    validate_site_fallback_table(validation)
+    validate_site_i18n(validation)
     validate_generated_site_data(validation)
     validate_review_regressions(validation)
     validate_release_files(validation)

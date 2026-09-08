@@ -132,7 +132,7 @@ those profiles are usually supplied by the organization, so ask for the official
 rather than hand-writing it.
 
 ## Step 5: Verify connectivity
-Run a connectivity test (ping, curl, or DNS lookup) to confirm the connection works.
+Run a connectivity test with the current platform's network tool (`mac_check_network`, `win_network_info` or `linux_network_info`), then confirm name resolution and one HTTP request. Fall back to `shell_run` with a platform-native ping/DNS command when no structured tool is available.
 If the connection fails:
 - Wrong password → ask user to re-enter
 - Enterprise auth failed → check username format (may need domain\user or user@domain)
@@ -154,4 +154,5 @@ If the target device is already in an offline setup or recovery environment, do 
 - `ui_user_question` with `text_input` — SSID, username
 - `ui_user_question` with `secure_input` — Wi-Fi password
 - `write_secret` — write password to config file if needed
-- `mac_check_network` — verify connectivity
+
+This playbook is `platform: all`. Map the verification step to the current platform's network tool (`mac_check_network`, `win_network_info` or `linux_network_info`) per `tool-contract.md`; do not assume a macOS host.

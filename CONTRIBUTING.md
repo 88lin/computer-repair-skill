@@ -40,7 +40,12 @@ source: local
 - 让 frontmatter 的 `description` 不超过 120 个字符且只描述一个明确入口；不要把多个能力堆在同一行。
 - `emoji` 是可选字段；需要使用时只填一个合适的 emoji，没有合适图标就省略。
 - emoji 的来源约定：`source: bundled` 的 Playbook 保留上游已有图标，用于在支持图标的 Skill 浏览器中快速识别；`source: local` 的新 Playbook 默认省略，只有确实有分类价值时才按需添加。emoji 只服务于展示，不参与路由或执行逻辑；校验器会要求它是单个 emoji。
-- 数量统计只包含可执行 Playbook；`playbook-authoring.md` 和 `playbook-index.md` 是参考文档，不计入 62 个 Playbook。
+- 数量统计只包含可执行 Playbook；`playbook-authoring.md` 和 `playbook-index.md` 是参考文档，不计入 64 个 Playbook。
+- `Tools referenced` 中声明的语义工具必须已在 `tool-contract.md` 或对应平台映射的表格中登记，并与自身 `platform` 一致：`platform: all` 的 Playbook 只声明通用工具，不声明 `win_*`/`mac_*`/`linux_*` 专属别名。
+- `last_reviewed` 填实际复核日期，不能填未来日期。
+- 新增、重命名或重新复核 Playbook 后，结构与复核元数据由 `tools/extract_data.py` 从 frontmatter 和路由索引重新生成；只需把双语标题、描述和示例提问写进 `tools/site_catalog.json`，不要手工编辑 `docs/assets/js/playbooks.js`。随后运行 `python scripts/sync_docs_table.py` 重建官网的无 JS 回退表格。
+- 官网新增带 `data-i18n` 的文案时，必须在 `docs/assets/js/i18n.js` 补上对应英文；缺失或多余的键都会导致验证失败。
+- Markdown 表格单元格里的行内代码遇到竖线要写成 `\|`，否则会被解析成额外单元格。
 - 给出激活条件、快速只读检查、标准诊断路径、修复前确认、验证、限制和升级信息。
 - 对平台命令提供明确失败处理，不使用宽泛删除或不可审计的命令拼接。
 - 需要凭据时使用宿主安全输入能力，不在上下文或命令历史中回显秘密。
@@ -57,6 +62,12 @@ python tests/validate_skill.py
 官网的 `docs/assets/js/playbooks.js` 是生成文件。修改 Playbook 的 frontmatter、
 路由索引或 `tools/site_catalog.json` 后，先运行 `python tools/extract_data.py` 更新
 它，再运行上面的 `--check`；不要直接手工编辑压缩后的 JavaScript。
+
+`docs/index.html` 里的无 JavaScript 回退表格同样是派生产物。站点数据变化后重建它：
+
+```bash
+python scripts/sync_docs_table.py
+```
 
 还应在对应平台测试安装器：
 

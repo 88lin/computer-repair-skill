@@ -36,7 +36,7 @@ HTTP 检查需要记录状态码、最终 URL 和耗时。目标不支持 `HEAD`
 |---|---|---|
 | `win_printer_list` | `Get-Printer` | 只读 |
 | `win_print_queue` | `Get-PrintJob -PrinterName '<PRINTER>'` | 只读 |
-| `win_cancel_print_jobs` | `Get-PrintJob -PrinterName '<PRINTER>' | Remove-PrintJob` | 高影响，先列出作业并确认 |
+| `win_cancel_print_jobs` | `Get-PrintJob -PrinterName '<PRINTER>' \| Remove-PrintJob` | 高影响，先列出作业并确认 |
 | `win_restart_spooler` | `Restart-Service -Name Spooler` | 会中断打印，先确认 |
 
 ```powershell
@@ -94,13 +94,15 @@ CPU 字段通常是进程累计 CPU 时间，不等同于瞬时百分比。需�
 | `win_app_logs` | `Get-WinEvent` 查询 Application 日志 | 只读 |
 | `win_app_data_ls` | 对 `%APPDATA%`、`%LOCALAPPDATA%` 的具体应用目录使用 `Get-ChildItem` | 只读 |
 | `win_clear_app_cache` | 检查并关闭应用后清理具体缓存子目录 | 高影响，读取安全策略 |
-| `win_move_file` | `Move-Item -LiteralPath '<SOURCE>' -Destination '<DESTINATION>'` | 状态变更，先确认并检查目标冲突 |
+| `win_move_file` | `Move-Item -LiteralPath '<SOURCE>' -Destination '<DESTINATION>'` | 状态变更，先确认并检查目标冲突；跨卷时不是原子操作 |
 | `win_path_metadata` | `Get-Item -LiteralPath '<PATH>'`，输出类型、大小、属性、reparse/link target 和时间 | 只读 |
 | `win_path_lock_check` | 对已确认目录的文件做非破坏性占用检查，并与进程快照交叉验证；无法确认时返回 unknown | 只读但可能较慢 |
 | `win_copy_verify` | `robocopy.exe '<SOURCE>' '<TARGET>' /E /COPY:DAT /DCOPY:DAT /XJ /R:1 /W:1`，再比较文件数、字节和抽样/全量哈希 | 状态变更，先确认 |
 | `win_junction_create` | `New-Item -ItemType Junction -Path '<LINK>' -Target '<TARGET>'`，随后读取并核对目标 | 状态变更，先确认 |
 | `win_junction_inspect` | 读取 `Attributes`/`LinkType`/`Target`，必要时对字面路径执行 `fsutil reparsepoint query` | 只读 |
 | `win_junction_remove` | 仅在确认目标是 Junction/reparse point 后使用 `Remove-Item -LiteralPath '<LINK>' -Force` | 状态变更，先确认 |
+
+`Move-Item` 只有在同一卷内才是重命名。跨卷时它退化为“复制后删除源”，中断或断电会留下部分副本；跨卷搬迁一律按 `win_copy_verify` → 校验字节/哈希 → 再回收源目录的顺序执行，不要用单条 `win_move_file` 承担跨卷数据搬迁。
 
 ```powershell
 $uninstallRoots = @(
@@ -181,6 +183,8 @@ Get-CimInstance Win32_Service |
 
 读取文件前使用 `Get-Item -LiteralPath '<PATH>'` 获取类型和大小。二进制、超大文件或凭据文件只读取诊断所需的元数据。
 
+计划任务的启用/禁用/导入优先使用任务计划程序的原生接口（`ScheduledTasks` 模块或任务计划 COM），保留原始 XML；服务的查询与启动类型变更使用 `Get-Service`/`Set-Service`/`sc.exe`。不要通过 WMI 创建或修改服务，也不要用注册表直写替代服务 API——它会绕过依赖校验和 SCM 状态，且难以回滚。
+
 ## 管理员权限
 
 - 先用普通权限完成诊断。
@@ -188,3 +192,4 @@ Get-CimInstance Win32_Service |
 - 使用宿主的提升机制或由用户在管理员终端执行，不打开长期高权限会话。
 - 重启 Windows Update、BITS、打印和网络服务前记录原始状态。
 - 不用 `Remove-Item`、`rmdir` 或扩展名通配符替代 `win_recycle_path`；不对 `C:\`、用户根目录、浏览器 profile 或应用数据根目录做递归删除。
+- 清空回收站使用 `Clear-RecycleBin` 或系统界面，并先确认没有仍需回滚的清理批次依赖它；不要直接删除 `C:\$Recycle.Bin` 内容，那会绕过每用户回收元数据并摧毁恢复入口。

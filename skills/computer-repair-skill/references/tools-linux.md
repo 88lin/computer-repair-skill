@@ -70,6 +70,29 @@ journalctl --unit '<SERVICE>' --since '-2 hours' --no-pager
 
 日志查询先限定 unit、时间、priority、boot 或 PID。读取 `/var/log` 中的认证和安全日志时只提取故障所需字段。
 
+## 应用数据、清理与操作记录
+
+| Playbook 工具 | 推荐实现 | 风险 |
+|---|---|---|
+| `linux_app_data_ls` | 按 XDG 变量枚举具体应用目录：`${XDG_CONFIG_HOME:-$HOME/.config}`、`${XDG_DATA_HOME:-$HOME/.local/share}`、`${XDG_CACHE_HOME:-$HOME/.cache}`、`${XDG_STATE_HOME:-$HOME/.local/state}`，以及 Flatpak 的 `~/.var/app/<APP_ID>` 和 Snap 的 `~/snap/<NAME>` | 只读 |
+| `linux_path_metadata` | `stat` 输出类型、大小、inode、链接数、所有者和时间；符号链接用 `stat -L` 区分本体与目标 | 只读 |
+| `linux_path_inventory` | 对已确认的字面目录使用 `find <PATH> -xdev -maxdepth <N>`，限制深度且不跨文件系统 | 只读但可能较慢 |
+| `linux_file_hash` | `sha256sum '<PATH>'`；先按大小分组再算前缀/全量哈希 | 只读 |
+| `linux_trash_path` | 优先 `gio trash '<PATH>'`（写入 XDG 回收站 `~/.local/share/Trash`）；目标在其他文件系统时使用该挂载点的 `.Trash-$UID`，都不可用时移入同文件系统的隔离目录。不使用 `rm -rf` | 高影响，先确认 |
+| `linux_operation_log` | 向已确认的隔离 JSON 日志追加操作、路径、字节、结果和恢复位置，写临时文件后原子替换 | 可逆变更，先确认目标 |
+
+```bash
+stat --printf='type=%F size=%s inode=%i links=%h owner=%U modified=%y path=%n\n' '<PATH>'
+
+find '<PATH>' -xdev -maxdepth 2 -mindepth 1 -printf '%s %i %n %p\n'
+
+sha256sum '<PATH>'
+```
+
+`find`/`du` 报告的是文件表观大小。硬链接（`links` 大于 1）、reflink/CoW 共享块和稀疏文件都会让“删除后可回收的字节”小于表观大小；统计可回收空间前先按 `inode` 去重，并说明共享块无法通过删除单个路径回收。
+
+发行版与打包方式决定数据根目录：原生包用 XDG 目录，Flatpak 用 `~/.var/app/<APP_ID>`，Snap 用 `~/snap/<NAME>/{current,common}`，Wine/Bottles 用各自 prefix 下的 `drive_c`。先确认打包方式再定位路径，不要用一个发行版的路径推断另一个。
+
 ## 常见状态变更
 
 Linux Playbook 语义工具集较小，流程常通过 `shell_run` 完成动作。以下全部先展示计划并确认：

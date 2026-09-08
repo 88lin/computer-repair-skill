@@ -2,7 +2,7 @@
 name: windows-migration-history-recovery
 description: Audit Windows Junction migration history, detect ghost links, and restore data with conflict-safe rollback
 platform: windows
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-09
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -49,9 +49,9 @@ Export the before-state and a per-record preview. An import must validate JSON s
 ### 3. Restore one record
 After explicit confirmation, stop the owning application normally and acquire the restore lock. Verify the record is active, the target exists and is non-empty, the original path is a Reparse Point, and the destination volume has at least `1.1 × recorded_bytes` free using `win_disk_usage`.
 
-Remove only the original Junction with `win_junction_remove`; never use recursive deletion on a link. Move the target directory back to the original path with `win_move_file`, then compare byte totals and selected/full hashes. Update the manifest atomically to `restored` only after the data and original workflow are verified.
+Remove only the original Junction with `win_junction_remove`; never use recursive deletion on a link. Then bring the data back with a copy-first sequence: `win_copy_verify` from the target into the original path, compare byte totals and selected/full hashes with `win_file_hash`, and only then recycle the now-redundant target with `win_recycle_path`. Do not use a single `win_move_file` across volumes — `Move-Item` degrades to copy-then-delete there, so an interruption can leave a partial copy with the source already gone. `win_move_file` is acceptable only when the manifest shows the target is on the same volume as the original path. Update the manifest atomically to `restored` only after the data and original workflow are verified.
 
-If the move or verification fails, stop and recreate the Junction to the still-intact target when possible. If both paths contain data, do not merge automatically; preserve both and request a file-level comparison or backup restore.
+If the copy or verification fails, stop with the target still intact and recreate the Junction to it when possible. If both paths contain data, do not merge automatically; preserve both and request a file-level comparison or backup restore.
 
 ### 4. Reconcile interrupted operations
 A sibling backup, temporary target, or `.tmp` manifest is evidence of an interrupted operation, not a cleanup target. Compare paths, sizes, timestamps, and hashes; keep the newest verified copy only after an explicit user decision. Record the outcome and any retained artifacts in the operation log.
@@ -73,6 +73,9 @@ Escalate filesystem errors, conflicting ordinary directories, encrypted or synch
 - `win_junction_remove`
 - `win_disk_usage`
 - `win_process_list`
+- `win_read_file`
+- `win_copy_verify`
+- `win_recycle_path`
 - `win_move_file`
 - `win_directory_size`
 - `win_file_hash`

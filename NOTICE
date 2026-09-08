@@ -6,11 +6,14 @@ baseline. The baseline commit and original attribution are preserved in the
 project history; current files use generic host-Agent wording and
 "author: upstream-maintainers". This project adds a portable Agent Skill
 workflow, host-tool mappings, safety guidance, installers, validation, and
-25 Windows/Linux playbooks marked "source: local".
+27 Windows/macOS/Linux playbooks marked "source: local".
 
 Upstream baseline repository:
 https://github.com/noahapp/noah-for-tinkerers
 Baseline commit: e5e5536bcb925358d65d8dc6812ee6c49722373b
+Re-reviewed 2026-09-09 at d5e3a818a2a15afa96ece458f90e21ebed6c47ad: the upstream
+playbooks and the playbook authoring guide are unchanged since the baseline
+commit, so the 37 bundled playbooks remain current.
 
 The following repositories were reviewed on the listed commit or supplied
 working tree. Only behavioral observations and safety boundaries were used; no
@@ -22,27 +25,32 @@ observation and safety-boundary review; neither repository is treated as a
 code, asset, binary, or installer source for this project.
 
 - darkmatter2048/WindowsCleaner v2 @ 37b4dfacdec71393990f1a2eae9807bfec0daf48
-  CC BY-NC-SA 4.0
+  CC BY-NC-SA 4.0; re-reviewed 2026-09-09 at
+  e953870f554665841ef2c94aeddc4742ea320415 (6.3.3)
 - aakk007/RogueCleaner main @ e498db393a1ceabad85a5750315d9a9e072cf6fa
-  MIT; current supplied working tree reviewed 2026-08-04 (no Git metadata)
+  MIT; current supplied working tree reviewed 2026-08-04 (no Git metadata);
+  re-reviewed 2026-09-09 at 683fe9c7b025099951acb655f9b1181a4bd0c01e (v2.0.16)
 - builtbybel/FluentCleaner supplied working tree reviewed 2026-08-04
   (no Git metadata available)
-  MIT
+  MIT; re-reviewed 2026-09-09 at 9df539ca504ab0ec38f550fa53b07148bc93ce75
+  (26.08.03, Classic 1.16.206)
 - Chunyu33/viap supplied working tree reviewed 2026-08-05 (no Git metadata available)
   MIT; only migration, recovery, folder-management, and residue-cleanup
   behavior and safety boundaries were used; no source code or assets copied
 - cccyd2003-qwq/pinkbin main @ dc5585560f4e87a016853097573baa43699d4e3f
   MIT
 - yqxie1991/WxCleaner main @ 359013fb2da473f2a7ef123f420acf699eb4ec30
-  MIT
+  MIT; re-reviewed 2026-09-09 at 414dd2ed24492b90b017aff5611c6843f42d8059; only
+  the size/prefix/full-hash duplicate-detection order, cross-platform trash
+  deletion, and the deliberate absence of a default Linux data path were used
 - itsfatduck/optimizerDuck master @ 01e79f6c79072acda06f741e326893251efaadfa
-  GPL-3.0
+  GPL-3.0; re-reviewed 2026-09-09 at 5aea6522248e71ef30765a3f8a9693adb8a95224
 - memstechtips/Winhance main @ f23d554eb2d6400b1827bcc46b91294ffa53fbc9
   PolyForm Shield 1.0.0
 - ZyperWave/ZyperWinOptimize main @ d20e78bbd906fa179e4cc9f5107b502da5967aa9
   No license file found in the reviewed tree
 - corbindavenport/just-the-browser main @ 182c93fa777a9cdf46b4d66f399147810580c28e
-  MIT
+  MIT; re-reviewed 2026-09-09 at ec96b1b4b6d387e32ad23341fb086ee57ccd338c
 - Atlas-OS/Atlas main @ 1ed9630616b29f0c7974e8bd76a94fc06f60388c
   GPL-3.0
 - tsgrgo/windows-update-disabler main @ bd98afcfcbd6ed50480bc70d32e5a5ca8265a34d
@@ -50,9 +58,13 @@ code, asset, binary, or installer source for this project.
 - the1812/Malware-Patch master @ d7018e5c2d404ccef294ef4f61a5bc6bffa1510e
   MIT
 - ostafen/digler main @ 11fdfe6640f914e260128e3c3cf5d63466cec2a2
-  MIT
+  MIT; re-reviewed 2026-09-09 at 2f62fc7e90f5c4123e0f0fa9a31c0128bfffc32c
+- orange2ai/disk-raccoon main @ c44ef19042ad7a734154fe2b2ce9fcda1c38adcc
+  MIT; reviewed 2026-09-09; only observed macOS cache-boundary facts (which
+  sibling directories are regenerable versus session/message state) and the
+  in-app-cleanup-first rule were used, plus two behaviors recorded as rejected
 - thedogecraft/sparkle v2 @ 966d3fb52bb6cd705402989bb4bfd3aa1efc6d41
-  GPL-3.0
+  GPL-3.0; re-reviewed 2026-09-09 at cce02cd5517ee0f01e83d41a3c2fb7547e506352
 
 Computer Repair Skill and the derivative playbooks are distributed under the GNU
 Affero General Public License, version 3. See LICENSE for the full license

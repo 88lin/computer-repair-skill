@@ -24,6 +24,12 @@ precedence over the generic upstream DSL below:
   unique, and register the file in `references/playbook-index.md`.
 - Include a read-only activation/check path, verification, escalation, and a
   `Tools referenced` section when the Playbook calls semantic tools.
+- Declare only tools registered in `tool-contract.md` or the matching platform
+  map, and keep them consistent with `platform`: a `platform: all` Playbook lists
+  generic tools only, never `win_*` / `mac_*` / `linux_*` aliases. Both rules are
+  enforced by the validator.
+- Keep `last_reviewed` at the real review date; a future date fails validation.
+- Escape pipes inside table-cell inline code as `\|`.
 - Run `python tests/validate_skill.py` before submitting changes.
 
 ## Quick navigation
