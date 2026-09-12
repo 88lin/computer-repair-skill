@@ -20,6 +20,8 @@
 
 > [!NOTE]
 > C 盘爆满、电脑卡顿、应用与数据迁移、流氓软件、弹窗广告、网路问题、OpenClaw 配置问题……直接用自然语言描述，Agent 会按平台和风险选择合适的修复流程。
+> 
+> 🧑🏻‍💻 作者：[88lin](https://github.com/88lin) · 📦 仓库：[github.com/88lin/computer-repair-skill](https://github.com/88lin/computer-repair-skill)
 
 ## 💖 赞助商
 
@@ -434,6 +436,14 @@ python scripts/sync_docs_table.py
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/88lin/computer-repair-skill/star-history/assets/my-star-history/star-history-dark.svg">
   <img alt="Star History" src="https://raw.githubusercontent.com/88lin/computer-repair-skill/star-history/assets/my-star-history/star-history-light.svg">
 </picture>
+
+<div align="center">
+
+**看到这儿了，说明这脚本大概率对你有用 —— 那就[点个 ⭐ Star](https://github.com/88lin/computer-repair-skill) 吧**
+
+右上角点一下Star，就能第一时间收到 Skill 的更新。
+
+</div>
 
 ## 📄 来源与许可证
 
