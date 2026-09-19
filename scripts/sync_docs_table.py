@@ -63,7 +63,7 @@ def build_row(entry: dict, number: int) -> str:
 
 
 def main() -> int:
-    """重建回退表格并同步页面上的 Playbook 总数徽标。"""
+    """重建回退表格。首屏徽标和文案里的总数由 tools/build_site.py 同步。"""
     data = load_site_data()
     rows = [build_row(entry, number) for number, entry in enumerate(data["playbooks"], start=1)]
 
@@ -71,18 +71,12 @@ def main() -> int:
     start = page.index(TBODY_OPEN) + len(TBODY_OPEN)
     end = page.index(TBODY_CLOSE, start)
     rebuilt = page[:start] + "\n" + "\n".join(rows) + "\n" + page[end:]
-    rebuilt = re.sub(
-        r'(<b class="pill-n">)\d+(</b>)',
-        lambda m: f"{m.group(1)}{data['total']}{m.group(2)}",
-        rebuilt,
-        count=1,
-    )
 
     if rebuilt == page:
         print(f"回退表格已是最新：{len(rows)} 行")
         return 0
 
-    SITE_PAGE.write_text(rebuilt, encoding="utf-8")
+    SITE_PAGE.write_text(rebuilt, encoding="utf-8", newline="\n")
     print(f"回退表格已重建：{len(rows)} 行")
     return 0
 

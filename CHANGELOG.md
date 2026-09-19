@@ -14,8 +14,39 @@
 
 - 新增 `Release` 工作流与 `tools/release_notes.py`：`SKILL.md` 的 `version` 变化并合入
   `main` 后自动打 annotated tag 并发布 GitHub Release，说明正文从本文件对应版本条目摘录。
-  发布前会先跑 `tools/extract_data.py --check` 与 `tests/validate_skill.py`，任一失败就不发布；
+  发布前会先跑 `tools/extract_data.py --check`、`tools/build_site.py --check` 与
+  `tests/validate_skill.py`，任一失败就不发布；
   对应 tag 已存在时跳过，因此重复触发是安全的。
+- 新增 `tools/build_site.py`：由中文页 `docs/index.html` 和 `tools/i18n_en.json` 的译文
+  生成静态英文页 `docs/en/index.html`，以及两个页面的 JSON-LD、`docs/sitemap.xml` 和
+  `docs/llms.txt`；`--check` 已接入 `Validate` 与 `Release` 工作流。
+- 官网新增 `docs/llms.txt`，给 AI 检索爬虫提供纯文本索引：能力说明、安装方式、
+  四级风险模型、七步流程和 64 条 Playbook 的路由 ID 与中英标题。
+- 官网结构化数据由单个 `SoftwareSourceCode` 扩成 `@graph`，中英各一份：`WebSite`、
+  `Person`、`WebPage`+`FAQPage`（页面上的七条问答）、`SoftwareApplication`+
+  `SoftwareSourceCode`、`HowTo`（七步排障流程）和 `ImageObject`。
+- `docs/robots.txt` 显式放行 GPTBot、OAI-SearchBot、ClaudeBot、PerplexityBot、
+  Google-Extended 等会抓取并引用来源的 AI 爬虫；`docs/sitemap.xml` 补上两种语言的
+  `xhtml:link` 备用链接，页脚新增「最后更新」日期。
+
+### Changed
+
+- 官网中英文改为 `/` 与 `/en/` 两个静态页面并互相声明 hreflang。此前语言在同一 URL 上
+  由 JavaScript 按 `navigator.language` 切换：Googlebot 渲染器默认 `en-US`，会把中文
+  首页索引成英文页；而不执行 JavaScript 的 AI 爬虫根本读不到英文内容。旧的 `?lang=`
+  链接会跳转到对应页面，不会失效。
+- 英文正文移到只在构建期使用的 `tools/i18n_en.json`（按 `data-i18n` 前缀分组），
+  `docs/assets/js/i18n.js` 只保留运行时界面字符串，浏览器少下载约 8 KB（gzip）。
+- 文案和首屏徽标里的 Playbook 总数改由 `tools/build_site.py` 按站点数据统一改写，
+  不再手工维护；章节标题改写成更接近真实搜索提问的说法。
+
+### Fixed
+
+- 首屏徽标上的 Playbook 总数此前只有 `scripts/sync_docs_table.py` 会同步，而该脚本不在
+  CI 中运行，数字可能静默过期；现在由 `tools/build_site.py --check` 把关。
+- `scripts/sync_docs_table.py` 与新生成器显式以 LF 写文件，不再在 Windows 上产出与
+  `.gitattributes` 的 `eol=lf` 冲突的 CRLF。
+- 英文视图的 `og:image:alt` 与 `twitter:image:alt` 此前始终是中文。
 
 ## [1.2.0] - 2026-09-09
 

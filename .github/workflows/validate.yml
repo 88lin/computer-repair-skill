@@ -35,6 +35,9 @@ jobs:
       - name: Verify generated website data
         run: python tools/extract_data.py --check
 
+      - name: Verify generated website pages
+        run: python tools/build_site.py --check
+
       - name: Test Bash installer
         if: runner.os == 'Linux'
         shell: bash

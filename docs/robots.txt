@@ -1,3 +1,42 @@
+# https://repair.88lin.eu.org/
+# 站点全部内容公开，欢迎搜索引擎和 AI 检索爬虫抓取与引用。
+
 User-agent: *
 Allow: /
+
+# 明确允许会抓取并引用来源的 AI 检索爬虫——被 Disallow 的引擎无法在回答里引用本站。
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# 供 AI 读取的站点摘要：https://repair.88lin.eu.org/llms.txt
 Sitemap: https://repair.88lin.eu.org/sitemap.xml

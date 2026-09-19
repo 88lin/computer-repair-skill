@@ -82,14 +82,13 @@ PLATFORM_TOOL_FILES = {
     "linux": "tools-linux.md",
 }
 SITE_PAGE = REPO_ROOT / "docs" / "index.html"
-SITE_I18N = REPO_ROOT / "docs" / "assets" / "js" / "i18n.js"
+SITE_I18N = REPO_ROOT / "tools" / "i18n_en.json"
 SITE_FALLBACK_ROW = re.compile(r'<tr class="pb-row" data-id="([^"]+)"><td class="pb-i">(\d+)</td>')
 INDEX_TRIGGER_ROW = re.compile(
     r"(?m)^\|\s*`([^`]+)`\s*\|(.+)\|\s*\[[^\]]*\]\(([^)\s]+)\)\s*\|\s*$"
 )
 I18N_ATTRIBUTE = re.compile(r'data-i18n(?:-html)?="([^"]+)"')
 I18N_ATTRIBUTE_MAPPING = re.compile(r'data-i18n-attr="([^"]+)"')
-I18N_DEFINITION = re.compile(r'(?m)^\s*"([^"]+)"\s*:')
 REMOTE_SHELL_EXECUTION = re.compile(
     r"(?im)^\s*(?:curl|wget|irm|iwr|Invoke-WebRequest)\b[^\r\n]*\|\s*(?:bash|sh|pwsh|powershell|iex)\b"
 )
@@ -690,9 +689,11 @@ def validate_site_fallback_table(validation: Validation) -> None:
 
 
 def validate_site_i18n(validation: Validation) -> None:
-    """页面上每个 data-i18n key 都要有英文文案，否则英文视图会退回中文。"""
+    """页面上每个 data-i18n key 都要有英文文案，否则英文页会构建失败。"""
     page = read_text(SITE_PAGE, validation)
     translations = read_text(SITE_I18N, validation)
+    if not translations:
+        return  # read_text 已经记过读取失败，不必再报一次 JSON 解析错误
 
     keys = set(I18N_ATTRIBUTE.findall(page))
     for mapping in I18N_ATTRIBUTE_MAPPING.findall(page):
@@ -700,16 +701,23 @@ def validate_site_i18n(validation: Validation) -> None:
             if "|" in pair:
                 keys.add(pair.split("|", 1)[1].strip())
 
-    defined = set(I18N_DEFINITION.findall(translations))
+    # 译文按前缀分组存放，摊平成页面上用的 `前缀.键`。
+    try:
+        grouped = json.loads(translations)
+    except json.JSONDecodeError as err:
+        validation.check(False, f"tools/i18n_en.json 不是合法 JSON：{err}")
+        return
+    defined = {f"{prefix}.{name}" for prefix, group in grouped.items() for name in group}
+
     missing = sorted(keys - defined)
     validation.check(
         not missing,
-        "docs/assets/js/i18n.js 缺少英文文案：" + ", ".join(missing),
+        "tools/i18n_en.json 缺少英文文案：" + ", ".join(missing),
     )
-    unused = sorted(defined - keys - {"en", "ui", "zh"})
+    unused = sorted(defined - keys)
     validation.check(
         not unused,
-        "docs/assets/js/i18n.js 存在页面未引用的文案键：" + ", ".join(unused),
+        "tools/i18n_en.json 存在页面未引用的文案键：" + ", ".join(unused),
     )
 
 

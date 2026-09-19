@@ -1,0 +1,155 @@
+# Computer Repair Skill
+
+> A cross-platform computer diagnosis and repair Agent Skill for Codex, Claude Code,
+> OpenClaw, Cursor and other tools that support Agent Skills. Describe a symptom in
+> plain language; the agent gathers read-only evidence, proposes a plan, and changes
+> nothing until you confirm.
+
+- Version: 1.2.0
+- Last updated: 2026-09-09
+- Repository: https://github.com/88lin/computer-repair-skill
+- License: GNU AGPL-3.0 (https://www.gnu.org/licenses/agpl-3.0.html)
+- Website: https://repair.88lin.eu.org/ (Chinese) · https://repair.88lin.eu.org/en/ (English)
+
+## What it is
+
+Computer Repair Skill is a Markdown/YAML Skill package, not a desktop application.
+It ships no installer, no background process and no bundled model. The agent that
+reads it supplies the execution capability. 64 on-demand playbooks are routed by
+symptom, platform and trigger words, so only the relevant procedure enters context.
+
+## Install
+
+```
+npx skills add 88lin/computer-repair-skill            # interactive
+npx skills add 88lin/computer-repair-skill --global   # global scope
+npx skills add 88lin/computer-repair-skill --global --agent codex
+npx skills add 88lin/computer-repair-skill --global --agent claude-code
+```
+
+Alternatives: ask an agent to install from the repository URL; clone the repository and
+run `scripts/install.ps1 -Target codex|claude|agents|custom` on Windows PowerShell or
+`scripts/install.sh --target codex|claude|agents|custom` on macOS/Linux (`custom` takes
+`-Destination` / `--destination`); or copy `skills/computer-repair-skill/` into
+`~/.codex/skills/`, `~/.claude/skills/` or `~/.agents/skills/`. The installer refuses to
+overwrite an existing install unless you pass `-Force` / `--force`, which backs the old
+version up first.
+
+## Safety model
+
+Four risk levels gate every action:
+
+- L1 read-only — observe without changing state; runs directly once scoped.
+- L2 reversible change — show plan, impact and rollback, then get confirmation.
+- L3 high-impact change — delete, kill, elevate, install, uninstall, batch move,
+  startup or security settings; needs exact commands plus separate confirmation.
+- L4 system red line — boot volume, partition table, firmware, keychains, credential
+  stores, whole home directory, or disabling core security; the agent stops and
+  escalates to the vendor or enterprise recovery path instead.
+
+Never executed: piping remote responses into a shell (`irm | iex`, `curl | bash`),
+wildcard or ancestor-directory sweeps over user data, hiding delete targets behind
+`xargs`/`eval`/encoded payloads, routing the same deletion through Python or Node to
+dodge host guardrails, printing secrets into chat, disabling Defender, SmartScreen,
+UAC, the firewall, Windows Update or core isolation, and pirated activation, unknown
+downloaders, force-removing Edge or unaudited one-click tuning bundles.
+
+## Workflow
+
+1. Clarify the goal — Break the request into symptoms, the desired end state and the constraints that must not change. Multiple goals are kept item by item — no deleting instead of migrating, no reinstalling instead of repairing, no skipping an explicit requirement.
+2. Route to a playbook — Read the routing index and pick the single most specific playbook by symptom, platform and trigger phrase. Only the one the current task needs is loaded — never all of them at once.
+3. Read-only diagnosis — Start with narrow checks that change nothing, recording commands, exit codes, measured values, paths, service states and timestamps. Command output is evidence, and a single anomaly is not a root cause.
+4. Propose a repair plan — Before any install, upgrade, long-running task, administrator operation or state change, it first shows: the confirmed symptoms and most likely cause, the specific actions and their blast radius, whether elevation / network / reboot is needed, the rollback point, and the verification commands and success criteria for afterwards.
+5. Apply the minimal change — Only actions already shown get executed; the moment the scope widens, the plan is presented again. Literal paths and structured parameters are used instead of relying on the current directory or broad wildcards. Cleanups record, item by item, the target path, size/hash, original location, time and recovery location.
+6. Verify the result — Re-run the diagnostics tied directly to the fault; a command exiting successfully is not the same as the problem being solved. Compare the data before and after, and check that adjacent functionality has not regressed.
+7. Wrap up — Report concisely in your current language: the root cause or the most credible current conclusion, the commands actually run and what changed, the verification evidence and final state, plus any remaining risk and the rollback command.
+
+## Playbooks (64)
+
+### Health, performance, storage & backup (20)
+
+- `health-baseline-check` — Health Baseline Check / 全面体检 [Cross-platform]: Comprehensive device health check — disk, memory, uptime, updates, firewall, backup, and network
+- `performance-forensics` — Performance Forensics / macOS 性能取证 [macOS]: Diagnose slowness, high CPU, memory pressure, and hangs
+- `windows-performance-forensics` — Windows Performance Forensics / Windows 性能取证 [Windows]: Diagnose Windows slowness, CPU saturation, memory pressure, disk bottlenecks, startup load, and application hangs
+- `linux-performance-forensics` — Linux Performance Forensics / Linux 性能取证 [Linux]: Diagnose Linux load, CPU, memory pressure, swapping, IO waits, disk bottlenecks, cgroup limits, and process hangs
+- `mac-tune-up` — Mac Tune-Up / Mac 调优 [macOS]: Safe maintenance sweep for a generally-sluggish Mac — refresh caches and reclaim memory without risk
+- `disk-space-recovery` — Disk Space Recovery / macOS 磁盘恢复 [macOS]: Reclaim disk space on macOS — measure, audit, clean cache-class data, report freed bytes
+- `windows-disk-space-recovery` — Windows Disk Space Recovery / Windows 磁盘恢复 [Windows]: Reclaim Windows disk space by measuring volumes, preserving user data, and verifying freed space
+- `windows-storage-inventory` — Windows Storage Inventory / Windows 存储盘点 [Windows]: Build a privacy-preserving Windows storage inventory that explains large paths before any cleanup
+- `windows-large-folder-management` — Windows Large Folder Management / Windows 大文件夹管理 [Windows]: Discover, lazily size, and safely offload selected Windows system or application folders
+- `windows-application-migration` — Windows Application Migration / Windows 应用迁移 [Windows]: Migrate an application or selected data folder to local NTFS storage with junction rollback
+- `windows-migration-history-recovery` — Windows Migration History and Recovery / Windows 迁移历史恢复 [Windows]: Audit Windows migration Junctions, detect ghost records, and restore data safely
+- `windows-application-cleanup` — Windows Application Cleanup / Windows 应用清理 [Windows]: Audit and clean regenerable Windows app caches or duplicates while preserving profiles, chat data, and credentials
+- `macos-application-cleanup` — macOS Application Cleanup / macOS 应用清理 [macOS]: Audit and clean regenerable macOS app caches or duplicates while preserving containers, chat data, and keychains
+- `linux-application-cleanup` — Linux Application Cleanup / Linux 应用清理 [Linux]: Audit and clean regenerable Linux app caches or duplicates across XDG, Flatpak, and Snap data roots
+- `windows-application-lifecycle-audit` — Windows Application Lifecycle Audit / Windows 应用生命周期审计 [Windows]: Audit Windows app install/uninstall candidates by exact package ID, publisher, source, and reversible verification
+- `windows-new-device-intake` — Windows New Device Intake / Windows 新机验收 [Windows]: Inspect a new Windows computer, preserve unboxing evidence, verify support/warranty, and establish a safe baseline
+- `linux-disk-space-recovery` — Linux Disk Space Recovery / Linux 磁盘恢复 [Linux]: Reclaim Linux disk space and inodes by measuring filesystems, cleaning native caches, and verifying services
+- `local-data-audit` — Local Data Audit / 本地数据审计 [Cross-platform]: Audit a device for locally stored sensitive or company data — for offboarding or device reassignment
+- `backup-verify-restore` — Backup Verify & Restore Test / 备份验证与抽样恢复 [Cross-platform]: Verify backup integrity by checking status, timestamps, and testing a real file restore
+- `setup-backup` — Set Up Backup / macOS 备份设置 [macOS]: Set up Time Machine backup on macOS or configure basic backup strategy
+
+### Network, DNS, VPN, identity & mail (9)
+
+- `network-diagnostics` — Network Diagnostics / macOS 网络诊断 [macOS]: Systematic connectivity troubleshooting for Wi-Fi, DNS, and internet issues
+- `windows-network-diagnostics` — Windows Network Diagnostics / Windows 网络诊断 [Windows]: Systematic Windows connectivity troubleshooting for adapters, DHCP, routes, DNS, proxy, VPN, and HTTP
+- `linux-network-diagnostics` — Linux Network Diagnostics / Linux 网络诊断 [Linux]: Systematic Linux connectivity troubleshooting for links, addresses, routes, DNS, HTTP, firewall, and namespaces
+- `vpn-troubleshooting` — VPN Troubleshooting / macOS VPN 排障 [macOS]: Diagnose VPN connection failures, drops, and split-tunnel DNS issues
+- `dns-record-check` — DNS Record Check / DNS 记录检查 [Cross-platform]: Check email-related DNS records (MX, SPF, DKIM, DMARC) for a domain
+- `email-connectivity-test` — Email Connectivity Test / 邮件连通性测试 [Cross-platform]: Test network connectivity to email servers — SMTP, IMAP, POP3, and major providers
+- `identity-provider-test` — Identity Provider Test / 身份提供商测试 [Cross-platform]: Test connectivity to identity providers — Microsoft Entra ID, Google Workspace, and SSO endpoints
+- `setup-wifi-profile` — Set Up Wi-Fi Network / Wi-Fi 配置 [Cross-platform]: Connect to a new Wi-Fi network including enterprise/WPA2-Enterprise networks
+- `setup-email-account` — Set Up Email Account / macOS 邮箱配置 [macOS]: Add an email account to Apple Mail or Outlook on macOS
+
+### Apps, updates & printing (8)
+
+- `app-doctor` — App Doctor / macOS 应用修复 [macOS]: Fix app crashes, launch failures, and permission issues
+- `outlook-troubleshooting` — Outlook Troubleshooting / Outlook 排障 [Cross-platform]: Fix Outlook sync failures, crashes, stuck email, and profile corruption
+- `update-troubleshooting` — Update Troubleshooting / macOS 更新排障 [macOS]: Fix stuck macOS updates, failed installations, and software update errors
+- `windows-update-troubleshooting` — Windows Update Troubleshooting / Windows Update 排障 [Windows]: Fix stuck Windows Updates, failed installations, and update service errors
+- `printer-repair` — Printer Repair / macOS 打印机修复 [macOS]: Fix stuck print jobs, missing printers, and CUPS issues
+- `windows-printer-repair` — Windows Printer Repair / Windows 打印机修复 [Windows]: Fix stuck print jobs, offline printers, and spooler issues on Windows
+- `windows-configuration-review` — Windows Configuration Review / Windows 配置审查 [Windows]: Review reversible Windows privacy, AI, performance, and usability settings with version gates, diff, and rollback
+- `windows-uninstall-residue-cleanup` — Windows Uninstall Residue Cleanup / Windows 卸载残留清理 [Windows]: Preview and clean Windows uninstall residue with strict identity matching and recovery
+
+### Windows repair, boot & hardware (7)
+
+- `windows-driver-lifecycle-audit` — Windows Driver Lifecycle Audit / 驱动生命周期审计 [Windows]: Diagnose Windows driver failures with hardware IDs, vendor source, reinstall, rollback, and compatibility checks
+- `windows-av-input-triage` — Windows Audio and Video Input Triage / 摄像头与音视频输入分诊 [Windows]: Troubleshoot Windows camera, microphone, headset, and speaker failures across hardware, permissions, drivers, and apps
+- `windows-boot-failure-triage` — Windows Boot Failure Triage / 启动失败分诊 [Windows]: Triage Windows startup, No Boot Device, UEFI/boot-entry, and pre-login failures without blindly changing firmware
+- `windows-winre-system-repair` — Windows WinRE System Repair / WinRE 系统修复 [Windows]: Diagnose Windows startup/system corruption with WinRE, Safe Mode, SFC, DISM, and restore paths
+- `windows-bitlocker-recovery-triage` — Windows BitLocker Recovery Triage / BitLocker/PE 前置分诊 [Windows]: Audit BitLocker/device encryption before PE, BIOS, hardware, partition, repair, or reinstall operations
+- `windows-partition-resize-audit` — Windows Partition Resize Audit / 分区扩容审计 [Windows]: Audit Windows partition and C-drive expansion requests with backup, BitLocker, adjacency and offline-tool safety checks
+- `windows-hardware-maintenance-safety` — Windows Hardware Maintenance Safety / 硬件维护安全 [Windows]: Plan safe Windows laptop hardware maintenance for parts, battery, dust, and thermal work without automatic execution
+
+### Security & credentials (5)
+
+- `endpoint-security-check` — Endpoint Security Check / 终端安全检查 [Cross-platform]: Quick security posture check — antivirus, firewall, updates, and suspicious activity
+- `browser-security-audit` — Browser Security Audit / 浏览器安全审计 [Cross-platform]: Audit browser extensions, saved passwords, and update status for security risks
+- `windows-browser-policy-audit` — Windows Browser Policy Audit / Windows 浏览器策略审计 [Windows]: Audit Chrome, Edge, Firefox, and Brave policies, including AI and extension controls, without weakening security
+- `windows-persistence-audit` — Windows Persistence Audit / Windows 持久化审计 [Windows]: Audit Windows startup, services, scheduled tasks, shell integrations, file associations, and extensions before removal
+- `credential-cleanup` — Credential Cleanup / 凭据清理 [Cross-platform]: Audit and clean up stored credentials on a device — for offboarding or post-incident response
+
+### Windows data recovery (1)
+
+- `windows-data-recovery-triage` — Windows Data Recovery Triage / Windows 数据恢复分诊 [Windows]: Triage deleted or inaccessible Windows data with image-first read-only recovery to a separate target
+
+### Developer setup (3)
+
+- `setup-homebrew` — Set Up Homebrew / Homebrew [macOS]: Install and configure Homebrew package manager on macOS
+- `setup-cuda` — Set Up NVIDIA CUDA Toolkit / CUDA [Linux]: Install NVIDIA CUDA Toolkit on Linux (Ubuntu/Debian, RHEL/Fedora)
+- `setup-ssh-key` — Set Up SSH Key / SSH Key [Cross-platform]: Generate an SSH key pair and add it to GitHub or another service
+
+### OpenClaw (11)
+
+- `setup-openclaw` — Set Up OpenClaw / OpenClaw 总体安装 [Cross-platform]: Install and configure OpenClaw (龙虾), an AI gateway for Claude, WhatsApp, Telegram, and other channels
+- `setup-openclaw/install-node` — Install Node.js / Node.js 22+ [Cross-platform]: Install Node.js 22+ for OpenClaw (sub-module)
+- `setup-openclaw/configure` — Configure OpenClaw / OpenClaw 配置 [Cross-platform]: Edit OpenClaw configuration — models, channels, sessions, automation
+- `setup-openclaw/config-reference` — OpenClaw Configuration Reference / OpenClaw 配置字段参考 [Cross-platform]: Comprehensive OpenClaw configuration field reference
+- `setup-openclaw/add-feishu` — Add Feishu Channel (Built-in Plugin) / 飞书内置插件 [Cross-platform]: Add Feishu (飞书) as a messaging channel for OpenClaw (built-in plugin)
+- `setup-openclaw/add-feishu-official` — Add Feishu Official Plugin / 飞书官方插件 [Cross-platform]: Add Feishu official plugin (user-identity OAuth — documents, calendar, tasks)
+- `setup-openclaw/add-telegram` — Add Telegram Channel / Telegram 渠道 [Cross-platform]: Add Telegram as a messaging channel for OpenClaw
+- `setup-openclaw/add-whatsapp` — Add WhatsApp Channel / WhatsApp 渠道 [Cross-platform]: Add or reconfigure WhatsApp for OpenClaw
+- `setup-openclaw/china-models` — Chinese Model Providers / 国产模型 [Cross-platform]: Set up Chinese AI model providers for OpenClaw (Volcano Engine, Moonshot, DeepSeek, Qwen, GLM)
+- `setup-openclaw/troubleshooting` — OpenClaw Troubleshooting / OpenClaw 排障 [Cross-platform]: Diagnose and fix common OpenClaw issues
+- `setup-openclaw/uninstall` — Uninstall OpenClaw / OpenClaw 卸载 [Cross-platform]: Completely uninstall OpenClaw — stop services, remove config, uninstall CLI

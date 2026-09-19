@@ -44,7 +44,7 @@ source: local
 - `Tools referenced` 中声明的语义工具必须已在 `tool-contract.md` 或对应平台映射的表格中登记，并与自身 `platform` 一致：`platform: all` 的 Playbook 只声明通用工具，不声明 `win_*`/`mac_*`/`linux_*` 专属别名。
 - `last_reviewed` 填实际复核日期，不能填未来日期。
 - 新增、重命名或重新复核 Playbook 后，结构与复核元数据由 `tools/extract_data.py` 从 frontmatter 和路由索引重新生成；只需把双语标题、描述和示例提问写进 `tools/site_catalog.json`，不要手工编辑 `docs/assets/js/playbooks.js`。随后运行 `python scripts/sync_docs_table.py` 重建官网的无 JS 回退表格。
-- 官网新增带 `data-i18n` 的文案时，必须在 `docs/assets/js/i18n.js` 补上对应英文；缺失或多余的键都会导致验证失败。
+- 官网新增带 `data-i18n` 的文案时，必须在 `tools/i18n_en.json` 补上对应英文；缺失或多余的键都会导致验证失败。
 - Markdown 表格单元格里的行内代码遇到竖线要写成 `\|`，否则会被解析成额外单元格。
 - 给出激活条件、快速只读检查、标准诊断路径、修复前确认、验证、限制和升级信息。
 - 对平台命令提供明确失败处理，不使用宽泛删除或不可审计的命令拼接。
@@ -56,6 +56,7 @@ source: local
 
 ```bash
 python tools/extract_data.py --check
+python tools/build_site.py --check
 python tests/validate_skill.py
 ```
 
@@ -68,6 +69,25 @@ python tests/validate_skill.py
 ```bash
 python scripts/sync_docs_table.py
 ```
+
+中文页是唯一需要手工编辑的页面。`docs/en/index.html`、两个页面里的 JSON-LD、
+`docs/sitemap.xml` 和 `docs/llms.txt` 都由中文页加 `tools/i18n_en.json` 的译文生成，
+改完中文页或译文后重建：
+
+```bash
+python tools/build_site.py
+```
+
+英文页是纯静态 HTML，因为不执行 JavaScript 的 AI 爬虫读不到运行时翻译。改中文页时
+保留 `data-i18n`、`data-i18n-html` 和 `data-i18n-attr` 属性——生成器靠它们定位可翻译
+节点，缺少对应英文译文会直接构建失败。
+
+英文正文只在构建期用得上，所以放在 `tools/i18n_en.json`（按 `data-i18n` 的前缀分组）。
+`docs/assets/js/i18n.js` 只留浏览器真正需要的界面字符串——筛选条、计数和详情弹窗的
+字段名，不要把正文译文加回去。
+
+文案里的 Playbook 总数（「64 个专项 Playbook」「64 focused playbooks」）和首屏徽标上的
+数字不用手工改，`build_site.py` 会按站点数据统一改写，`--check` 会拦下过期的数字。
 
 还应在对应平台测试安装器：
 
@@ -83,10 +103,12 @@ python scripts/sync_docs_table.py
 
 版本号写在 `skills/computer-repair-skill/SKILL.md` 与 `skills/computer-repair-skill/agents/openai.yaml`，
 两处必须一致，且 `CHANGELOG.md` 要有对应的 `## [x.y.z] - YYYY-MM-DD` 条目——校验器会检查这三点。
+`docs/llms.txt` 里也带版本号，改完版本记得跑一次 `python tools/build_site.py`。
 
 具备这些之后不需要手工打 tag：改动合入 `main` 后，`Release` 工作流会自动创建
 `v<version>` annotated tag 并发布 GitHub Release，说明正文取自 `CHANGELOG.md` 的该版本条目。
-工作流会先运行 `tools/extract_data.py --check` 与 `tests/validate_skill.py`，任一失败就不发布；
+工作流会先运行 `tools/extract_data.py --check`、`tools/build_site.py --check` 与
+`tests/validate_skill.py`，任一失败就不发布；
 tag 已存在时跳过，可以安全地重复触发（Actions 页面手动 `Run workflow` 即可重试）。
 
 本地预览某个版本的发布说明：
