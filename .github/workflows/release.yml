@@ -55,6 +55,7 @@ jobs:
         shell: bash
         run: |
           python tools/extract_data.py --check
+          python tools/build_site.py --check
           python tests/validate_skill.py
 
       - name: Build release notes

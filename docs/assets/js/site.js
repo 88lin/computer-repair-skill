@@ -10,11 +10,6 @@
 var $  = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-var store = {
-  get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
-  set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-};
-
 var reduceMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 
 function esc(s) {
@@ -24,7 +19,7 @@ function esc(s) {
 }
 
 var DATA  = window.CRS_DATA || { total: 0, categories: [], platform_counts: {}, playbooks: [] };
-var I18N  = window.CRS_I18N || { en: {}, ui: { zh: {}, en: {} } };
+var I18N  = window.CRS_I18N || { ui: { zh: {}, en: {} } };
 var LANG  = "zh";
 var UI    = function () { return I18N.ui[LANG] || I18N.ui.zh || {}; };
 var BLOB  = "https://github.com/88lin/computer-repair-skill/blob/main/skills/computer-repair-skill/references/";
@@ -729,79 +724,29 @@ function initPlaybooks() {
 }
 
 /* ==========================================================================
-   9 · Language toggle
+   9 · Page language
+
+   中文和英文各自是一个静态页面（/ 和 /en/），语言由 <html data-page-lang> 决定，
+   切换靠导航栏里的链接。运行时不再改写 DOM，两个页面对爬虫都是完整的成品。
    ======================================================================= */
-var snap = null;
-var booted = false;
-
-function i18nNodes() { return $$("[data-i18n], [data-i18n-html]"); }
-
-function snapshotZh() {
-  snap = i18nNodes().map(function (el) { return [el, el.innerHTML]; });
-  $$("[data-i18n-attr]").forEach(function (el) {
-    el.getAttribute("data-i18n-attr").split(",").forEach(function (part) {
-      var bits = part.split("|");
-      if (bits.length !== 2) return;
-      var a = bits[0].trim();
-      el.setAttribute("data-i18n-zh-" + a.replace(/[^a-z0-9-]/gi, ""), el.getAttribute(a) || "");
-    });
-  });
-}
-
-function applyLang(lang) {
-  var en = lang === "en";
-  var dict = I18N.en || {};
-  LANG = en ? "en" : "zh";
-
-  if (snap) {
-    snap.forEach(function (pair) {
-      var el = pair[0];
-      if (!en) { el.innerHTML = pair[1]; return; }
-      var key = el.getAttribute("data-i18n") || el.getAttribute("data-i18n-html");
-      if (key && dict[key] != null) el.innerHTML = dict[key];
-    });
-  }
-  $$("[data-i18n-attr]").forEach(function (el) {
-    el.getAttribute("data-i18n-attr").split(",").forEach(function (part) {
-      var bits = part.split("|");
-      if (bits.length !== 2) return;
-      var a = bits[0].trim(), key = bits[1].trim();
-      if (en) { if (dict[key] != null) el.setAttribute(a, dict[key]); }
-      else {
-        var zh = el.getAttribute("data-i18n-zh-" + a.replace(/[^a-z0-9-]/gi, ""));
-        if (zh != null) el.setAttribute(a, zh);
-      }
-    });
-  });
-
-  document.documentElement.setAttribute("lang", en ? "en" : "zh-CN");
-  var btn = $("#langBtn");
-  if (btn) { btn.classList.toggle("is-en", en); }
-  store.set("crs-lang", LANG);
-
-  /* re-render everything JS produced, then restart the one animation */
-  renderCatTable(); renderPlatGrid(); renderChips(); renderTable();
-  refreshSayClones();
-  if (booted) startTyper(true);
-}
-
 function initLang() {
-  snapshotZh();
-  var q = null;
-  try { q = new URLSearchParams(location.search).get("lang"); } catch (e) {}
-  var want = q || store.get("crs-lang");
-  if (!want) want = /^zh\b/i.test(navigator.language || "") ? "zh" : "en";
-  if (want === "en") applyLang("en");
+  LANG = document.documentElement.getAttribute("data-page-lang") === "en" ? "en" : "zh";
 
-  var btn = $("#langBtn");
-  if (btn) btn.addEventListener("click", function () { applyLang(LANG === "en" ? "zh" : "en"); });
+  /* 旧版站点用 ?lang= 在同一 URL 上切换，保留跳转让外部链接不失效 */
+  var want = null;
+  try { want = new URLSearchParams(location.search).get("lang"); } catch (e) {}
+  if (want !== "en" && want !== "zh") return;
+  if (want === LANG) return;
+
+  var other = $("#langBtn");
+  if (other) location.replace(other.href + location.hash);
 }
 
 /* ==========================================================================
    boot
    ======================================================================= */
 function boot() {
-  initLang();          /* snapshot before anything mutates the DOM copy */
+  initLang();          /* 先定语言，后面的渲染都依赖 LANG */
   initPlaybooks();
   initReveal();
   initScrollbar();
@@ -813,7 +758,6 @@ function boot() {
   initTyper();
   initSpy(".nav-links a", ["what", "flow", "safety", "install", "playbooks", "prompts", "faq"]);
   initSpy(".flow-rail .frl", ["step1", "step2", "step3", "step4", "step5", "step6", "step7"]);
-  booted = true;
 }
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

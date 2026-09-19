@@ -939,6 +939,7 @@ h1,h2,h3,h4{margin:0;font-family:var(--f-heading);font-weight:800;line-height:1.
   font-size:.82rem;color:var(--ink-faint);text-align:center;
 }
 .foot-legal a{color:var(--ink-light);border-bottom:1px solid var(--rule)}
+.foot-updated{display:block;margin-top:6px;font-family:var(--f-mono);font-size:.76rem}
 
 /* ============================================================================
    MODAL — components.md #16
