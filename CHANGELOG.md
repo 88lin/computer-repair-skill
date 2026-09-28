@@ -10,6 +10,11 @@
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-28
+
+本次发布集中加固 64 个维修 Playbook 的安全边界、安装器的路径保护和失败恢复，
+并上线中英文静态官网、可重复构建与自动发布流程。
+
 ### Added
 
 - 新增 `Release` 工作流与 `tools/release_notes.py`：`SKILL.md` 的 `version` 变化并合入
@@ -28,6 +33,8 @@
 - `docs/robots.txt` 显式放行 GPTBot、OAI-SearchBot、ClaudeBot、PerplexityBot、
   Google-Extended 等会抓取并引用来源的 AI 爬虫；`docs/sitemap.xml` 补上两种语言的
   `xhtml:link` 备用链接，页脚新增「最后更新」日期。
+- 新增 16 项核心回归测试，覆盖安装异常恢复、失效链接、并发锁、生成器和发布状态判定，
+  并接入 Windows / Ubuntu CI；新增独立的中英文官网浏览器回归脚本和 `AUDIT.md` 审计记录。
 
 ### Changed
 
@@ -39,6 +46,8 @@
   `docs/assets/js/i18n.js` 只保留运行时界面字符串，浏览器少下载约 8 KB（gzip）。
 - 文案和首屏徽标里的 Playbook 总数改由 `tools/build_site.py` 按站点数据统一改写，
   不再手工维护；章节标题改写成更接近真实搜索提问的说法。
+- 安装器现在拒绝包含符号链接或 Junction 的安装路径。由 Skills CLI 等工具维护的链接安装，
+  请通过原工具更新；自定义安装请使用实际目录。
 
 ### Fixed
 
@@ -47,6 +56,8 @@
 - 官网筛选后保留键盘焦点，连续复制后正确恢复按钮文字，剪贴板权限失败时尝试回退，提示卡片在焦点仍停留时保持暂停；数据加载失败时保留静态索引。
 - 数据生成器支持重建缺失产物并拒绝重复索引；英文纯文本译文进行 HTML 转义。
 - 修正 macOS 清理与调优、浏览器凭据审计、CUDA 和 OpenClaw 清理中的破坏性捷径或错误说明；移除缺少证据来源的修复成功率数字。
+- 备份恢复测试使用私有唯一目录，修正 Borg 提取命令并区分 RPO/RTO 目标与实际测量；
+  应用修复先核验来源、签名和数据恢复路径，Windows 更新不再按等待时长建议强制重启。
 - 首屏徽标上的 Playbook 总数此前只有 `scripts/sync_docs_table.py` 会同步，而该脚本不在
   CI 中运行，数字可能静默过期；现在由 `tools/build_site.py --check` 把关。
 - `scripts/sync_docs_table.py` 与新生成器显式以 LF 写文件，不再在 Windows 上产出与
