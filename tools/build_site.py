@@ -301,7 +301,9 @@ class EnglishRewriter(HTMLParser):
             return None
         if key in self.strings:
             self.used.add(key)
-            return self.strings[key]
+            # Plain copy stays text; only data-i18n-html opts into markup.
+            return (self.strings[key] if attrs.get("data-i18n-html")
+                    else html.escape(self.strings[key], quote=False))
         self.missing.add(key)
         return None
 
@@ -612,7 +614,7 @@ def render_llms_txt(data: dict, texts: dict[str, str], updated: str, version: st
         "## What it is",
         "",
         "Computer Repair Skill is a Markdown/YAML Skill package, not a desktop application.",
-        "It ships no installer, no background process and no bundled model. The agent that",
+        "It ships no desktop application, background process or bundled model. The agent that",
         f"reads it supplies the execution capability. {data['total']} on-demand playbooks are routed by",
         "symptom, platform and trigger words, so only the relevant procedure enters context.",
         "",

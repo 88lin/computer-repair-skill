@@ -64,7 +64,7 @@ Report results: which providers are reachable, any issues found (clock skew, pro
 - **Multiple Microsoft endpoints**: Some organizations use custom tenant URLs or ADFS (`sts.company.com`). Ask the user if they have a specific login URL.
 - **Google may challenge from new locations** with extra verification even when connectivity is fine.
 
-> Steps 1-6 isolate ~80% of SSO/authentication failures. Most common cause: clock skew or VPN interference.
+> Most common cause: clock skew or VPN interference.
 
 ## Key signals
 - **"Login page won't load"** → DNS or firewall issue. Start at step 1.

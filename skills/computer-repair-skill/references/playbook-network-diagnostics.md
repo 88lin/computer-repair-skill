@@ -42,7 +42,7 @@ Run `mac_http_check` for `https://www.google.com`.
 - **Works** → full connectivity is fine. Test the specific site/service the user is having trouble with.
 - **Fails** → check for captive portal: `mac_http_check` for `http://captive.apple.com`. If it redirects, user is on hotel/airport Wi-Fi and needs to open a browser to complete login.
 
-> Steps 1-4 resolve ~85% of connectivity issues. Most common fix: power-cycling the router.
+> Most common fix: power-cycling the router.
 
 ## Caveats
 - If a **VPN is active**, DNS often breaks because VPN configures its own DNS servers. Try disconnecting VPN to test. If DNS works without VPN → activate the `vpn-troubleshooting` playbook instead.

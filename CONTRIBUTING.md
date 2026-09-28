@@ -12,7 +12,7 @@
 
 ## 维护 Skill 入口元数据
 
-- 按 [Agent Skills 规范](https://agentskills.io/specification)维护 `SKILL.md` frontmatter。本项目只使用各支持端均可识别的必填字段 `name` 和 `description`；不要添加没有实际用途的可选字段。
+- 按 [Agent Skills 规范](https://agentskills.io/specification)维护 `SKILL.md` frontmatter。`name` 和 `description` 是必填字段；本项目另用 `version` 对齐发布版本、用 `when_to_use` 补充中文症状。后两者是项目约定，不应假设所有客户端都会使用它们；不要添加没有实际用途的字段。
 - 按[触发描述优化指南](https://agentskills.io/skill-creation/optimizing-descriptions)让 `description` 以 `Use this skill when ...` 表达用户意图，覆盖常见自然语言症状，并写明容易误触的相邻场景。本项目将描述限制为 600 个字符、80 个空格分词，严于规范的 1024 字符上限。
 - 宿主能力、权限、网络和交互要求写在 `SKILL.md` 正文的能力检查中，避免可选 frontmatter 字段造成客户端兼容差异。
 - 保持 `SKILL.md` 在 500 行以内。具体平台、工具和专项流程放在 `references/`，并在核心工作流中明确说明何时加载，避免一次读取全部资料。
@@ -52,12 +52,13 @@ source: local
 
 ## 本地验证
 
-仓库只要求 Python 3，无第三方包：
+仓库构建与核心测试要求 Python 3.10+，无第三方包：
 
 ```bash
 python tools/extract_data.py --check
 python tools/build_site.py --check
 python tests/validate_skill.py
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
 官网的 `docs/assets/js/playbooks.js` 是生成文件。修改 Playbook 的 frontmatter、
@@ -68,6 +69,7 @@ python tests/validate_skill.py
 
 ```bash
 python scripts/sync_docs_table.py
+python tools/build_site.py
 ```
 
 中文页是唯一需要手工编辑的页面。`docs/en/index.html`、两个页面里的 JSON-LD、
@@ -91,6 +93,8 @@ python tools/build_site.py
 
 还应在对应平台测试安装器：
 
+`test_installers.py` 会自动使用已安装的 PowerShell/Bash，在临时目录中验证首次安装、拒绝覆盖、备份、失败回滚、路径重叠、链接目标和并发锁；不会安装到真实 Agent 目录。CI 在 Windows 和 Ubuntu 上执行这些测试。
+
 ```powershell
 .\scripts\install.ps1 -Target custom -Destination "$env:TEMP\computer-repair-skills-test"
 ```
@@ -98,6 +102,8 @@ python tools/build_site.py
 ```bash
 ./scripts/install.sh --target custom --destination "$(mktemp -d)/skills"
 ```
+
+官网交互改动可选运行 `python tests/browser_site.py --channel chrome`（需要本机安装 Python Playwright 和 Chrome，或省略 `--channel` 使用 Playwright Chromium）。该测试打开本地文件并屏蔽 HTTP(S)，覆盖中英文筛选、焦点、弹窗、复制、移动端和无 JS 回退；不加入无第三方依赖的核心测试。`--output <目录>` 可保存移动端截图。
 
 ## 发布版本
 
@@ -109,7 +115,7 @@ python tools/build_site.py
 `v<version>` annotated tag 并发布 GitHub Release，说明正文取自 `CHANGELOG.md` 的该版本条目。
 工作流会先运行 `tools/extract_data.py --check`、`tools/build_site.py --check` 与
 `tests/validate_skill.py`，任一失败就不发布；
-tag 已存在时跳过，可以安全地重复触发（Actions 页面手动 `Run workflow` 即可重试）。
+Release 已存在时跳过；只有 tag 而没有 Release 时，检出该 tag、验证后补发，避免把后续提交的内容写进旧版本说明。API 鉴权或网络错误会停止流程。可在 Actions 页面手动 `Run workflow` 重试。
 
 本地预览某个版本的发布说明：
 

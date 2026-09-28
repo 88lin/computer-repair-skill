@@ -1,8 +1,8 @@
 ---
 name: mac-tune-up
-description: Safe maintenance sweep for a generally-sluggish Mac — refresh caches and reclaim memory without risk
+description: Diagnose a sluggish Mac and apply only symptom-matched maintenance with approval and rollback
 platform: macos
-last_reviewed: 2026-06-08
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 🧹
@@ -10,12 +10,9 @@ emoji: 🧹
 
 # Mac Tune-Up
 
-A bounded, **safe** maintenance sweep for a Mac that feels generally sluggish
-but isn't pinned by one runaway process or a full disk. Every step is
-reversible or self-rebuilding — nothing here risks data or system stability.
-For a Mac that's merely "a bit slow," this sweep noticeably helps in the
-**majority (~70%)** of cases; when one specific cause dominates, route there
-instead (see When to activate).
+A symptom-directed maintenance review for a sluggish Mac. Cache resets can discard
+useful state and increase subsequent load times; they are not a general speed fix.
+Establish a performance baseline and select only a step supported by evidence.
 
 ## When to activate
 - User asks to "tune up", "optimize", "speed up", or "clean up" their Mac in
@@ -26,11 +23,10 @@ If there IS a single cause — one app pinning CPU, real memory pressure, a full
 disk — handle that first via `performance-forensics` / `disk-space-recovery`.
 
 ## How to run it
-Tell the user up front what the sweep does and that it's safe, then run the
-steps. **Each step is independent**: check its result, report what it did, and
-continue even if one is skipped. Never abort the whole sweep because one step
-wasn't applicable. Measure memory before (`vm_stat`) so the final `ui_done`
-can show what was reclaimed.
+Read [cleanup-protocol.md](cleanup-protocol.md) before changing app state. Show each
+proposed action, impact and rollback, and obtain approval. Skip irrelevant steps;
+on unexpected effects stop and reassess. Record memory pressure, swap activity and
+the actual symptom before and after, rather than treating freed RAM as success.
 
 ### Step 1 — Flush DNS cache
 Resolves "some sites won't load / load slowly" and stale DNS entries.
@@ -43,19 +39,24 @@ Fixes wrong or slow-to-draw icons and laggy previews.
 `killall Finder` relaunches Finder (a brief flash) — warn the user it'll blink.
 
 ### Step 3 — Clear stale saved-application-state
-Old window-restore data that accumulates and can slow app launches.
-`rm -rf ~/Library/Saved\ Application\ State/*.savedState`
-Apps reopen with fresh windows. If the folder is absent, report "nothing to
-clean" and continue.
+Only consider a reset when one identified app has a reproducible window-restore
+failure. Saved state may contain unsaved work. Ask the user to save work and close
+that app, then inspect its exact state directory. After approval, quarantine only
+that directory with a manifest and restore path; never sweep all `*.savedState`.
+Reopen the app to verify and retain the recovery copy until the user accepts it.
 
 ### Step 4 — Relieve memory pressure (only if elevated)
-If `vm_stat` / `memory_pressure` shows pages under pressure, reclaim inactive
-memory with `sudo purge`. Skip if memory is already healthy (it's a no-op
-there). Re-read `vm_stat` after to show the change.
+Use `vm_stat` and `memory_pressure` to distinguish cache usage from sustained
+pressure and swap. Do not run `sudo purge` as a tune-up: macOS manages reclaimable
+cache, and discarding it can increase I/O and slow the next workload. Identify the
+responsible process and ask the user to save work before closing or restarting it.
 
 ### Step 5 — Rebuild LaunchServices ("Open With" duplicates)
 Fixes duplicate or wrong entries in the "Open With" menu.
-`…/LaunchServices.framework/Versions/A/Support/lsregister -kill -r -domain local -domain user`
+Inspect `/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister`
+and its local help first. Prefer correcting the affected file type in Finder's
+Get Info → Open With. A full registry rebuild can change associations and needs a
+separate plan recording the current defaults before execution.
 If `lsregister` isn't present on this macOS version, skip and report it.
 
 ### Optional — Spotlight reindex (ONLY if user reports search is slow)
@@ -65,16 +66,14 @@ wrong, and only with their OK: `sudo mdutil -E /`. Warn that search is degraded
 for ~30–60 min while it rebuilds.
 
 ## Close with a summary
-End in one `ui_done` listing what each step did and the memory reclaimed, e.g.
-"Flushed DNS, rebuilt Finder + icon caches, cleared 14 saved states, reclaimed
-1.8 GB inactive memory. Your Mac should feel snappier."
+Report each action or skipped step, the before/after symptom and measured evidence,
+and retained recovery copies. Do not promise an improvement without verification.
 
 ## Key signals
 - **"Icons wrong / previews laggy"** → Step 2 (Finder/QuickLook cache rebuild).
 - **"Some websites won't load but others do"** → Step 1 (DNS flush).
 - **"Apps slow to launch / restore weird windows"** → Step 3 (saved state).
-- **"Memory feels tight after long uptime"** → Step 4 (purge), then suggest a
-  restart if uptime > 7 days.
+- **"Memory feels tight after long uptime"** → Step 4 (pressure and swap diagnosis).
 - **"Wrong app opens my files / duplicate Open-With entries"** → Step 5.
 - **"Spotlight search is slow or wrong"** → Optional reindex (opt-in only).
 

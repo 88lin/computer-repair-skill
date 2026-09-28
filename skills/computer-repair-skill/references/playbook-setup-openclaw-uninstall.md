@@ -2,7 +2,7 @@
 name: setup-openclaw/uninstall
 description: Completely uninstall OpenClaw — stop services, remove config, uninstall CLI
 platform: all
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 🦞
@@ -161,63 +161,24 @@ using a bounded listing (for example `~/.openclaw-*` directly under the selected
 show every resolved candidate, and delete each one only after the user confirms that
 profile. Never use `rm -rf ~/.openclaw-*` or an equivalent wildcard deletion.
 
-The deletion blocks below intentionally repeat path resolution and safety checks. Each
-code block is self-contained because an Agent may execute Markdown code blocks in
-separate shell sessions; never rely on variables from the preview block above.
-```bash
-home_dir="${OPENCLAW_HOME:-$HOME}"
-state_dir="${OPENCLAW_STATE_DIR:-$home_dir/.openclaw}"
-config_path="${OPENCLAW_CONFIG_PATH:-$state_dir/openclaw.json}"
-home_root="$(cd -P -- "$home_dir" 2>/dev/null && pwd)" || {
-  echo "Home directory cannot be resolved; stop before deleting." >&2
-  exit 1
-}
-if [ -e "$state_dir" ]; then
-  state_dir="$(cd -P -- "$state_dir" 2>/dev/null && pwd)" || {
-    echo "State directory cannot be resolved; stop before deleting." >&2
-    exit 1
-  }
-  case "$state_dir" in
-    /|"$home_root")
-      echo "Refusing to delete filesystem or home root: $state_dir" >&2
-      exit 1
-      ;;
-  esac
-fi
-if [ -n "$state_dir" ] && [ -d "$state_dir" ]; then
-  rm -rf -- "$state_dir"
-fi
-if [ -f "$config_path" ] && [ "$config_path" != "$state_dir/openclaw.json" ]; then
-  rm -f -- "$config_path"
-fi
-```
-```powershell
-$homeDir = if ([string]::IsNullOrWhiteSpace($env:OPENCLAW_HOME)) {
-  $env:USERPROFILE
-} else { $env:OPENCLAW_HOME }
-$stateDir = if ([string]::IsNullOrWhiteSpace($env:OPENCLAW_STATE_DIR)) {
-  Join-Path $homeDir '.openclaw'
-} else { $env:OPENCLAW_STATE_DIR }
-$configPath = if ([string]::IsNullOrWhiteSpace($env:OPENCLAW_CONFIG_PATH)) {
-  Join-Path $stateDir 'openclaw.json'
-} else { $env:OPENCLAW_CONFIG_PATH }
-$resolvedHome = (Resolve-Path -LiteralPath $homeDir -ErrorAction Stop).Path.TrimEnd('\')
-$resolvedState = $null
-if (Test-Path -LiteralPath $stateDir) {
-  $resolvedState = (Resolve-Path -LiteralPath $stateDir -ErrorAction Stop).Path
-  $stateRoot = [IO.Path]::GetPathRoot($resolvedState).TrimEnd('\')
-  if ($resolvedState.TrimEnd('\') -in @($stateRoot, $resolvedHome)) {
-    throw "Refusing to delete filesystem or home root: $resolvedState"
-  }
-}
-if ($resolvedState -and (Test-Path -LiteralPath $resolvedState -PathType Container)) {
-  Remove-Item -LiteralPath $resolvedState -Recurse -Force
-}
-if ((Test-Path -LiteralPath $configPath -PathType Leaf) -and
-    (-not $resolvedState -or ([IO.Path]::GetFullPath($configPath) -ne [IO.Path]::GetFullPath((Join-Path $resolvedState 'openclaw.json'))))) {
-  Remove-Item -LiteralPath $configPath -Force
-}
-```
+Do not execute a fresh deletion command by re-reading environment variables: they
+may differ from the approved preview. Use the recorded absolute paths in the approved
+manifest and revalidate them immediately before any change:
+
+1. Resolve the physical path and inspect every ancestor for symlinks, junctions or
+   mount boundaries. Stop on an unexpected link or a path that changed since preview.
+2. Refuse filesystem roots, the actual OS user home, the selected OpenClaw home,
+   ancestors of either home, and broad application/system directories. A custom
+   `OPENCLAW_HOME` must not remove protection from the actual user home.
+3. Require positive evidence that the exact directory belongs to this OpenClaw
+   profile; an environment variable or a directory name alone is not ownership proof.
+4. Verify a readable backup or same-volume quarantine outside every deletion target.
+   Use the platform-native literal-path move operation and record source, destination
+   and timestamp. Never recursively delete a resolved link target.
+5. Handle an external `OPENCLAW_CONFIG_PATH` as a separate approved file. Check its
+   ownership and recovery copy rather than treating any file at that path as disposable.
+6. Verify service removal and residual state before offering permanent disposal.
+   Keep recovery copies until the user explicitly approves that irreversible step.
 
 The service cleanup must cover every profile. On macOS, list and inspect matching
 LaunchAgents (`ai.openclaw.gateway*.plist` and legacy `com.openclaw.gateway*.plist`),
@@ -260,7 +221,7 @@ Windows run `where.exe openclaw`; if `$LASTEXITCODE -ne 0`, report `not found`.
 
 On macOS, check for the desktop app:
 Run `shell_run` with `ls /Applications/OpenClaw.app 2>/dev/null || echo "not found"`.
-If it exists: `rm -rf /Applications/OpenClaw.app`.
+If present, verify the exact app bundle, close it normally, and move it to Trash after approval. Preserve its restore location until uninstall verification succeeds.
 
 On Windows there **is** a desktop app — the Windows Hub / OpenClaw Companion
 (WinUI, Windows 10 20H2+). It installs per-user without admin rights, so it does

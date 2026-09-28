@@ -2,7 +2,7 @@
 name: setup-openclaw/add-feishu-official
 description: Add Feishu official plugin (user-identity OAuth — documents, calendar, tasks)
 platform: all
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 🦞
@@ -41,7 +41,13 @@ Verify: run `shell_run` with `openclaw plugins list`.
 Expected: `feishu-openclaw-plugin` shows "loaded", `feishu` shows "disabled".
 
 If you see `duplicate plugin id` error:
-Run `shell_run` with `rm -rf ~/.openclaw/extensions/feishu && openclaw gateway restart`.
+Inspect `openclaw plugins list`, the active profile/state root and both plugin paths.
+Do not infer the active extension directory from `~/.openclaw` when custom roots are
+configured. Back up the current plugin configuration and identify the duplicate by
+package metadata. Show the exact target, restart impact and rollback before approval;
+then disable the conflicting plugin through the supported CLI, or quarantine only
+its verified directory outside the scanned extensions root. Restart separately and
+recheck plugin/channel status. Keep the backup and restore it if verification fails.
 
 ## Step 2: Configure Credentials
 

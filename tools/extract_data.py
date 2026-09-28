@@ -90,10 +90,14 @@ def build_data() -> dict:
 
     ordered: list[dict] = []
     seen: set[str] = set()
+    seen_ids: set[str] = set()
     for route, filename, heading in rows:
         if filename not in metadata:
             raise ValueError(f"index references unknown playbook: {filename}")
         meta = metadata[filename]
+        route_id = route.replace("/", "-")
+        if filename in seen or route_id in seen_ids:
+            raise ValueError(f"duplicate index entry or route id: {route} ({filename})")
         existing_item = by_file[filename]
         if meta.get("name") != route:
             raise ValueError(f"index route does not match frontmatter name for {filename}: {route}")
@@ -104,7 +108,7 @@ def build_data() -> dict:
         if platform not in PLATFORM_LABELS:
             raise ValueError(f"invalid platform for {filename}: {platform}")
         item = {
-            "id": route.replace("/", "-"),
+            "id": route_id,
             "route": route,
             # Local Playbooks may omit the optional frontmatter field; keep the
             # previously published icon from the explicit catalog in that case.
@@ -125,6 +129,7 @@ def build_data() -> dict:
         }
         ordered.append(item)
         seen.add(filename)
+        seen_ids.add(route_id)
     if seen != set(metadata):
         raise ValueError("playbook index does not cover every playbook")
 
@@ -162,6 +167,8 @@ def main() -> int:
         return 1
     try:
         current = OUTPUT.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        current = None
     except OSError as exc:
         print(f"extract_data: cannot read {OUTPUT}: {exc}", file=sys.stderr)
         return 1
@@ -171,7 +178,8 @@ def main() -> int:
             return 1
         print("generated site data is up to date")
         return 0
-    OUTPUT.write_text(generated, encoding="utf-8", newline="")
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT.write_text(generated, encoding="utf-8", newline="\n")
     print(f"wrote {OUTPUT.relative_to(ROOT)}")
     return 0
 

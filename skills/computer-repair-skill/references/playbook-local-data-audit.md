@@ -72,7 +72,7 @@ Ask the user whether to proceed with any cleanup, or just generate the report fo
 - **Cloud-synced folders** may contain stubs (files not fully downloaded). The reported size may differ from what's actually on disk.
 - **Time-sensitive**: Run this audit before disabling the user's account, as some cloud folders may become inaccessible after account deactivation.
 
-> Steps 1-6 cover ~85% of locally stored company data. Most commonly missed: git repositories with embedded credentials and chat application local caches.
+> Most commonly missed: git repositories with embedded credentials and chat application local caches.
 
 ## Key signals
 - **"Employee leaving, need to check for company data"** → run all steps, focus on cloud sync status (step 2) and sensitive files (step 3).

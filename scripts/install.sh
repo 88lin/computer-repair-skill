@@ -60,7 +60,7 @@ esac
 expand_user_path() {
   case "$1" in
     "~") printf '%s\n' "$HOME" ;;
-    "~/"*) printf '%s/%s\n' "$HOME" "${1#~/}" ;;
+    "~/"*) printf '%s/%s\n' "$HOME" "${1:2}" ;;
     *) printf '%s\n' "$1" ;;
   esac
 }
@@ -86,16 +86,29 @@ source_dir="$(CDPATH= cd -- "$script_dir/../skills/$skill_name" && pwd -P)"
 
 requested_root="$(resolve_skills_root)"
 requested_root="$(expand_user_path "$requested_root")"
+# Reject symlinks (including dangling links) before normalizing away their identity.
+assert_no_links() {
+  local cursor="$1"
+  while [[ "$cursor" != / && "$cursor" != . ]]; do
+    [[ ! -L "$cursor" ]] || fail "安装路径包含符号链接：$cursor。请使用实际目录或原管理工具。"
+    cursor="$(dirname -- "$cursor")"
+  done
+}
+[[ "$requested_root" = /* ]] || requested_root="$PWD/$requested_root"
+assert_no_links "$requested_root"
 mkdir -p -- "$requested_root"
 skills_root="$(CDPATH= cd -- "$requested_root" && pwd -P)"
 target_path="$skills_root/$skill_name"
-
-if [[ -e "$target_path" || -L "$target_path" ]]; then
-  ((force == 1)) || fail "目标已存在：$target_path。未做任何覆盖；确认更新时请显式添加 --force。"
-fi
-
-stage_path="$(mktemp -d "$skills_root/.$skill_name.install.XXXXXX")"
+case "$skills_root/" in "$source_dir/"*) fail "安装目录与 Skill 源目录重叠。" ;; esac
+case "$source_dir/" in "$target_path/"*) fail "安装目录与 Skill 源目录重叠。" ;; esac
+for required in SKILL.md LICENSE NOTICE agents/openai.yaml references/playbook-index.md; do
+  [[ -f "$source_dir/$required" ]] || fail "Skill 源目录缺少必需文件：$required"
+done
+lock_path="$skills_root/.computer-repair-skill.install.lock"
+mkdir -- "$lock_path" || fail "已有安装正在进行或上次中断遗留了锁：$lock_path"
+stage_path=""
 backup_path=""
+backup_moved=0
 
 # 异常退出时只清理本次创建的临时目录，并在需要时恢复原版本。
 on_exit() {
@@ -106,14 +119,28 @@ on_exit() {
     rm -rf -- "$stage_path"
   fi
 
-  if ((status != 0)) && [[ -n "$backup_path" && ! -e "$target_path" && -e "$backup_path" ]]; then
-    mv -- "$backup_path" "$target_path"
+  if ((status != 0 && backup_moved == 1)) && [[ ! -e "$target_path" && ! -L "$target_path" ]]; then
+    mv -- "$backup_path" "$target_path" || {
+      printf '自动恢复失败；原版本保留在：%s\n' "$backup_path" >&2
+      rmdir -- "$lock_path"
+      exit 1
+    }
     printf '安装失败，已恢复原版本：%s\n' "$target_path" >&2
   fi
 
+  rmdir -- "$lock_path"
   exit "$status"
 }
 trap on_exit EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+assert_no_links "$target_path"
+if [[ -e "$target_path" ]]; then
+  [[ -d "$target_path" ]] || fail "目标不是目录：$target_path"
+  ((force == 1)) || fail "目标已存在：$target_path。未做任何覆盖；确认更新时请显式添加 --force。"
+fi
+stage_path="$(mktemp -d "$skills_root/.$skill_name.install.XXXXXX")"
 
 printf '正在验证并暂存 Skill：%s\n' "$source_dir"
 cp -R -- "$source_dir"/. "$stage_path"/
@@ -121,15 +148,18 @@ cp -R -- "$source_dir"/. "$stage_path"/
 
 if [[ -e "$target_path" || -L "$target_path" ]]; then
   backup_root="$(dirname -- "$skills_root")/external/$skill_name/backups"
+  assert_no_links "$backup_root"
   mkdir -p -- "$backup_root"
-  backup_path="$backup_root/$(date '+%Y%m%d-%H%M%S')-$$"
+  backup_slot="$(mktemp -d "$backup_root/$(date '+%Y%m%d-%H%M%S').XXXXXX")"
+  backup_path="$backup_slot/$skill_name"
   mv -- "$target_path" "$backup_path"
+  backup_moved=1
   printf '旧版本已备份到：%s\n' "$backup_path"
 fi
 
+[[ ! -e "$target_path" && ! -L "$target_path" ]] || fail "目标在安装期间出现，停止覆盖：$target_path"
 mv -- "$stage_path" "$target_path"
 stage_path=""
-trap - EXIT
 
 printf '安装完成：%s\n' "$target_path"
 printf '请重启或刷新 Agent 的 Skills 列表后使用 %s。\n' "$skill_name"

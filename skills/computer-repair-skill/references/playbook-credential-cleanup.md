@@ -2,7 +2,7 @@
 name: credential-cleanup
 description: Audit and clean up stored credentials on a device — for offboarding or post-incident response
 platform: all
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 🔑
@@ -21,15 +21,15 @@ Employee offboarding, device being reassigned, compromised credential response, 
 
 ### 1. Check browser saved passwords
 Count saved passwords in each installed browser (don't dump the actual passwords):
-- **Chrome**: Copy `~/Library/Application Support/Google/Chrome/Default/Login Data` to
-  a unique temporary file and run `sqlite3 <copy> "SELECT COUNT(*) FROM logins;"`.
-  Never use file size as a proxy: the SQLite database has a fixed schema and remains
-  non-empty with zero saved passwords. Remove the copy with a `trap` even on failure.
+- **Chrome**: prefer the password-management UI. Only with explicit authorization,
+  use `sqlite3 -readonly` against the verified profile and `SELECT COUNT(*) FROM logins;`.
+  Follow [browser-security-audit](playbook-browser-security-audit.md); never copy a
+  credential database into temporary storage or infer a count from file size.
 - **Firefox**: Check `~/Library/Application Support/Firefox/Profiles/*/logins.json` for entry count.
-- **Edge**: Use the same unique-copy and `COUNT(*)` method for
+- **Edge**: Use the same authorized read-only `COUNT(*)` method for
   `~/Library/Application Support/Microsoft Edge/Default/Login Data`.
 
-Paths vary by OS and profile. If the database cannot be copied or `sqlite3` is not
+Paths vary by OS and profile. If the database cannot be read or `sqlite3` is not
 available, report the count as unknown rather than inferring it from existence or size.
 
 Report: "Chrome has ~N saved passwords" etc. If any are found, note they should be cleared for offboarding.
@@ -48,7 +48,7 @@ Report the count and network names. Corporate Wi-Fi credentials are especially i
 
 ### 3. Check for cached authentication tokens
 - **Kerberos**: Run `klist` to check for cached Kerberos tickets (Active Directory environments).
-- **macOS Keychain**: Check for entries related to corporate services — look for entries matching the company domain in `security dump-keychain` (metadata only).
+- **macOS Keychain**: use Keychain Access to inspect entries matching the approved company domain. Return only necessary counts/categories; do not dump the entire keychain into the tool output.
 - **Windows**: Check Credential Manager for cached Windows/domain credentials.
 
 Report what's cached. Kerberos tickets expire on their own but can be cleared immediately with `kdestroy`.
@@ -62,14 +62,14 @@ Check `~/.ssh/` for key files:
 Report count and types. SSH keys that grant access to company servers should be revoked server-side (not just deleted locally) during offboarding.
 
 ### 5. Check keychain / credential store
-- **macOS**: Summarize keychain contents by category using `security dump-keychain` (metadata only — kind, service name, account, not passwords).
+- **macOS**: summarize only the approved service categories through Keychain Access; do not expose account attributes or unrestricted store contents.
 - **Windows**: Summarize Credential Manager entries.
 
 Focus on entries related to corporate services, VPN credentials, and API tokens.
 
 ### 6. Guide selective removal
 Present all findings and ask the user which credential stores to clear. For each:
-- **Browser passwords**: Guide to browser settings → passwords → clear all. Or delete the Login Data file directly.
+- **Browser passwords**: use the browser's password-management UI to remove only approved entries after reviewing sync and recovery implications. Never delete the Login Data file directly or clear an entire store as a shortcut.
 - **Wi-Fi passwords**: Remove specific networks via System Settings → Network → Wi-Fi → known networks, or `security delete-generic-password`.
 - **Kerberos tickets**: Run `kdestroy`.
 - **SSH keys**: Delete specific key files from `~/.ssh/`. Remind user to also revoke the public key on any servers it was added to.
@@ -83,7 +83,7 @@ Always confirm before each deletion action.
 - **Some credentials regenerate automatically.** iCloud Keychain syncs back, Chrome syncs passwords if signed in. Sign out of sync services before clearing.
 - **Don't delete the SSH directory itself** — just the key files. The directory and `config` file structure should remain.
 
-> Steps 1-6 cover ~90% of locally stored credentials. Most commonly missed: cached Kerberos tickets and browser-synced passwords.
+> Most commonly missed: cached Kerberos tickets and browser-synced passwords.
 
 ## Key signals
 - **"Employee is leaving the company"** → full offboarding. Run all steps and remind about server-side revocation.

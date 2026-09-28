@@ -84,6 +84,28 @@ function Copy-SkillToStage {
     }
 }
 
+function Assert-NoLinkedAncestor {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    # Get-Item also finds dangling junctions; Test-Path alone does not.
+    $cursor = $Path
+    while ($cursor) {
+        $item = Get-Item -LiteralPath $cursor -Force -ErrorAction SilentlyContinue
+        if ($item -and ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+            throw "安装路径包含链接或 Junction：$cursor。请使用实际目录，链接安装应由原管理工具更新。"
+        }
+        $parent = Split-Path $cursor -Parent
+        if ($parent -eq $cursor) { break }
+        $cursor = $parent
+    }
+}
+
+function Test-PathWithin {
+    param([string]$Path, [string]$Root)
+    $base = $Root.TrimEnd([char[]]"\/")
+    return $Path.Equals($base, [StringComparison]::OrdinalIgnoreCase) -or
+        $Path.StartsWith($base + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)
+}
+
 $sourcePath = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\skills\$SkillName"))
 if (-not (Test-Path -LiteralPath (Join-Path $sourcePath "SKILL.md") -PathType Leaf)) {
     throw "找不到 Skill 源目录：$sourcePath"
@@ -91,42 +113,71 @@ if (-not (Test-Path -LiteralPath (Join-Path $sourcePath "SKILL.md") -PathType Le
 
 $skillsRoot = Get-SkillsRoot -AgentTarget $Target -CustomDestination $Destination
 $targetPath = Join-Path $skillsRoot $SkillName
-$targetExists = Test-Path -LiteralPath $targetPath
-
-if ($targetExists -and -not $Force) {
-    throw "目标已存在：$targetPath。未做任何覆盖；确认更新时请显式添加 -Force。"
+Assert-NoLinkedAncestor $targetPath
+Assert-NoLinkedAncestor $sourcePath
+if ((Test-PathWithin $skillsRoot $sourcePath) -or (Test-PathWithin $sourcePath $targetPath)) {
+    throw "安装目录与 Skill 源目录重叠，已停止：$targetPath"
+}
+foreach ($required in @("SKILL.md", "LICENSE", "NOTICE", "agents\openai.yaml", "references\playbook-index.md")) {
+    if (-not (Test-Path -LiteralPath (Join-Path $sourcePath $required) -PathType Leaf)) {
+        throw "Skill 源目录缺少必需文件：$required"
+    }
 }
 
 New-Item -ItemType Directory -Path $skillsRoot -Force | Out-Null
+$lockPath = Join-Path $skillsRoot ".computer-repair-skill.install.lock"
+# CreateNew is atomic; Directory.CreateDirectory (used by New-Item) is idempotent.
+# Bash's mkdir lock also refuses this existing file, so both installers coordinate.
+$installLock = [IO.File]::Open($lockPath, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
 $stagePath = Join-Path $skillsRoot (".{0}.install-{1}" -f $SkillName, [Guid]::NewGuid().ToString("N"))
 $backupPath = $null
+$backupMoved = $false
 $installed = $false
 
 try {
+    Assert-NoLinkedAncestor $targetPath
+    $targetExists = Test-Path -LiteralPath $targetPath
+    if ($targetExists -and -not (Test-Path -LiteralPath $targetPath -PathType Container)) {
+        throw "目标不是目录，已停止：$targetPath"
+    }
+    if ($targetExists -and -not $Force) {
+        throw "目标已存在：$targetPath。未做任何覆盖；确认更新时请显式添加 -Force。"
+    }
     Write-Host "正在验证并暂存 Skill：$sourcePath"
     Copy-SkillToStage -Source $sourcePath -Stage $stagePath
 
     if ($targetExists) {
         $backupRoot = Join-Path (Split-Path $skillsRoot -Parent) "external\$SkillName\backups"
+        Assert-NoLinkedAncestor $backupRoot
         New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null
-        $backupPath = Join-Path $backupRoot (Get-Date -Format "yyyyMMdd-HHmmssfff")
+        $backupPath = Join-Path $backupRoot ("{0}-{1}" -f (Get-Date -Format "yyyyMMdd-HHmmssfff"), [Guid]::NewGuid().ToString("N"))
         Move-Item -LiteralPath $targetPath -Destination $backupPath
+        $backupMoved = $true
         Write-Host "旧版本已备份到：$backupPath"
     }
 
+    if (Test-Path -LiteralPath $targetPath) { throw "目标在安装期间出现，停止覆盖：$targetPath" }
     Move-Item -LiteralPath $stagePath -Destination $targetPath
     $installed = $true
 }
 catch {
-    if ($backupPath -and -not (Test-Path -LiteralPath $targetPath) -and (Test-Path -LiteralPath $backupPath)) {
+    if ($backupMoved -and -not (Test-Path -LiteralPath $targetPath) -and (Test-Path -LiteralPath $backupPath)) {
         Move-Item -LiteralPath $backupPath -Destination $targetPath
         Write-Warning "安装失败，已恢复原版本：$targetPath"
     }
     throw
 }
 finally {
-    if (-not $installed -and (Test-Path -LiteralPath $stagePath)) {
-        Remove-Item -LiteralPath $stagePath -Recurse -Force
+    try {
+        if (-not $installed -and (Test-Path -LiteralPath $stagePath)) {
+            Assert-NoLinkedAncestor $stagePath
+            if (-not (Test-PathWithin $stagePath $skillsRoot)) { throw "暂存目录越界，拒绝清理。" }
+            Remove-Item -LiteralPath $stagePath -Recurse -Force
+        }
+    }
+    finally {
+        $installLock.Dispose()
+        Remove-Item -LiteralPath $lockPath -Force
     }
 }
 

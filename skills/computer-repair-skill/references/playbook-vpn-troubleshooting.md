@@ -51,7 +51,7 @@ Run `mac_process_list` — look for the VPN client process.
 - **Running but VPN won't connect** → the client may have a stale state. Quit the VPN app completely, then relaunch.
 - If the VPN system extension was disabled after a macOS update: System Settings → Privacy & Security → Network Extensions — re-enable it.
 
-> Steps 1-4 resolve ~75% of VPN issues. Success rate improves significantly with client-specific knowledge (see below).
+> Success rate improves significantly with client-specific knowledge (see below).
 
 ## Client-specific notes
 **These are most useful when grounded with the user's actual VPN setup from knowledge.**

@@ -1,7 +1,7 @@
 name: Release
 
 # SKILL.md 的 version 变化后自动打 tag 并发布，说明正文从 CHANGELOG 摘录。
-# 只在版本或变更记录改动时触发；tag 已存在就跳过，所以重复触发是安全的。
+# Release 已存在才跳过；tag 存在而发布失败时，从该 tag 恢复发布。
 on:
   push:
     branches: [main]
@@ -39,16 +39,36 @@ jobs:
       - name: Resolve version
         id: version
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           version="$(python tools/release_notes.py --print-version)"
           echo "value=$version" >> "$GITHUB_OUTPUT"
-          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null 2>&1; then
+          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/v$version" > /dev/null 2> "$RUNNER_TEMP/release-check.err"; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
             echo "v$version 已发布，跳过。"
           else
+            if ! grep -q 'HTTP 404' "$RUNNER_TEMP/release-check.err"; then
+              cat "$RUNNER_TEMP/release-check.err" >&2
+              exit 1
+            fi
             echo "exists=false" >> "$GITHUB_OUTPUT"
             echo "准备发布 v$version。"
           fi
+          if git show-ref --verify --quiet "refs/tags/v$version"; then
+            echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore tagged source for a release retry
+        if: steps.version.outputs.exists == 'false' && steps.version.outputs.tag_exists == 'true'
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          git checkout --detach "refs/tags/v$VERSION"
+          test "$(python tools/release_notes.py --print-version)" = "$VERSION"
 
       - name: Validate before releasing
         if: steps.version.outputs.exists == 'false'
@@ -57,6 +77,7 @@ jobs:
           python tools/extract_data.py --check
           python tools/build_site.py --check
           python tests/validate_skill.py
+          python -m unittest discover -s tests -p "test_*.py"
 
       - name: Build release notes
         if: steps.version.outputs.exists == 'false'
@@ -64,7 +85,7 @@ jobs:
         run: python tools/release_notes.py --output "$RUNNER_TEMP/release-notes.md"
 
       - name: Create annotated tag
-        if: steps.version.outputs.exists == 'false'
+        if: steps.version.outputs.exists == 'false' && steps.version.outputs.tag_exists == 'false'
         shell: bash
         env:
           VERSION: ${{ steps.version.outputs.value }}

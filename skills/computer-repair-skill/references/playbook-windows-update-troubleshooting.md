@@ -2,7 +2,7 @@
 name: windows-update-troubleshooting
 description: Fix stuck Windows Updates, failed installations, and update service errors
 platform: windows
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 🔄
@@ -97,7 +97,7 @@ sfc /scannow
 - Run DISM first, then SFC. This order matters.
 - DISM can take 15-30 minutes. Warn the user.
 
-> Steps 1-3 resolve ~80% of Windows Update issues. #1 cause: pending reboot blocking new updates.
+> #1 cause: pending reboot blocking new updates.
 
 ## Caveats
 - **Error code 0x80070057** — invalid parameter. Usually caused by corrupted update cache. Step 3 fixes it.
@@ -107,7 +107,7 @@ sfc /scannow
 - **Update loops (install → reboot → install again)** — a broken update is being retried. Built-in options first: uninstall it from Settings → Update History → Uninstall updates, or `wusa /uninstall /kb:XXXXXXX` for older packages. To *block* it from returning there is no built-in cmdlet — use Microsoft's `wushowhide.diagcab` tool, or install the third-party module and tell the user you are doing so: `Install-Module PSWindowsUpdate -Scope CurrentUser` then `Hide-WindowsUpdate -KBArticleID 'KBXXXXXXX'`.
 
 ## Key signals
-- **"Stuck at a percentage for hours"** → if actively downloading/installing, wait up to 2 hours. If truly stuck, force-reboot and retry. Step 3 to clear cache.
+- **"Stuck at a percentage for hours"** → inspect progress, logs, disk activity and the update phase. Elapsed time alone does not justify a forced reboot. Keep AC power connected; if unresponsive, explain data/boot risks and use the vendor-supported recovery path after approval. Never reset caches while servicing is active.
 - **"Blue screen after update"** → boot to Safe Mode (hold Shift + click Restart), uninstall the problematic update from Settings → Recovery → Advanced startup.
 - **"Not enough space"** → run `win_disk_usage`. Clear temp files with `win_clear_caches`. Windows Update needs 10-20 GB free.
 - **"Updates disabled by admin"** → check `win_service_list` for `wuauserv`. If disabled, it's likely a policy decision — contact IT.

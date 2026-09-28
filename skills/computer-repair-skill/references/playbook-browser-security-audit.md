@@ -2,7 +2,7 @@
 name: browser-security-audit
 description: Audit browser extensions, saved passwords, and update status for security risks
 platform: all
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 🔍
@@ -40,35 +40,29 @@ Count the entries — do not infer from file size. `Login Data` is a SQLite data
 fixed schema, so it is several kilobytes even with zero saved passwords, and "file exists
 and is nonzero" always reports true.
 
-- **Chrome**: `~/Library/Application Support/Google/Chrome/Default/Login Data`. Chrome holds
-  a lock on the live file, so copy it first and query a unique temporary copy:
+- Default to the browser's password-management UI and let the user report the count.
+  Do not inspect a credential database as part of a routine metadata audit.
+- **Chrome**, only when the user explicitly authorizes a local aggregate count:
+  verify the exact profile and query it read-only. Do not copy the credential store
+  into a temporary directory; copying only the main file can miss committed WAL data.
   ```bash
   login_db="$HOME/Library/Application Support/Google/Chrome/Default/Login Data"
-  if ! query_db=$(mktemp "${TMPDIR:-/tmp}/computer-repair-login-data.XXXXXX"); then
-    echo "Could not create a temporary database copy" >&2
-    exit 1
-  fi
-  cleanup() { rm -f "$query_db"; }
-  trap cleanup EXIT HUP INT TERM
-  if ! cp "$login_db" "$query_db"; then
-    echo "Could not copy Login Data; count is unknown" >&2
-    exit 1
-  fi
-  sqlite3 "$query_db" "SELECT COUNT(*) FROM logins;"
+  sqlite3 -readonly -cmd '.timeout 1000' "$login_db" 'SELECT COUNT(*) FROM logins;'
   ```
-  The `trap` removes only the file created by this run, including on failure. This
-  returns a count only. Never select `password_value` — read no credential material.
+  Return only the aggregate. If the database is locked, unavailable or has a different
+  schema, report unknown. Never select `password_value` or put database contents in chat.
 - **Firefox**: `logins.json` in the Firefox profile. It is JSON; count the `logins` array
   length rather than checking existence, because the file is created empty.
-- **Edge**: use the same unique-copy method, under `~/Library/Application Support/Microsoft Edge/Default/Login Data`.
+- **Edge**: use the same authorized read-only aggregate under its verified profile.
 
 If `sqlite3` is unavailable, say the count could not be determined rather than guessing
 from file size.
 
-If saved passwords are found, warn the user: browser password storage is less secure than a dedicated password manager. Recommend migrating to 1Password, Bitwarden, or similar. Don't be preachy — just note the finding and the recommendation.
+Saved passwords alone are not a vulnerability. Review device access, account protection,
+sync and organizational policy before recommending a password-management change.
 
 ### 4. Check browser auto-update status
-- **Chrome**: Check `com.google.Keystone` launch agent exists and is loaded (macOS). Chrome self-updates via Keystone.
+- **Chrome**: Check its About page, installed version and managed update policy; updater names vary by version. A missing legacy Keystone agent alone does not prove updates are disabled.
 - **Firefox**: Check Preferences → General → Updates setting (or `prefs.js` for `app.update.enabled`).
 - **Edge**: Similar to Chrome, uses a Microsoft update agent.
 
@@ -82,12 +76,12 @@ Flag if auto-updates are disabled. Browsers are a primary attack vector — keep
 Flag if the default search engine has been changed to something unusual (not Google, Bing, DuckDuckGo, or Yahoo). Adware commonly changes the search engine to ad-supported alternatives.
 
 ## Caveats
-- Browser profile paths vary by OS. The paths above are macOS — adjust for Windows (`%APPDATA%`) and Linux (`~/.config/`).
+- Browser profile paths vary by OS. The paths above are macOS — on Windows Chromium browsers generally use `%LOCALAPPDATA%` and Firefox uses `%APPDATA%`; verify each profile rather than guessing. Linux paths vary by package format.
 - Don't dump or display actual saved passwords — just report that they exist and how many.
 - Some enterprise environments manage extensions via policy. Policy-installed extensions are expected and shouldn't be flagged.
 - Multiple browser profiles (personal/work) each have their own extensions and settings. Check all profiles.
 
-> Steps 1-5 catch ~85% of browser-level security issues. Most common finding: suspicious or unused extensions.
+> Most common finding: suspicious or unused extensions.
 
 ## Key signals
 - **"I keep getting redirected to weird sites"** → search engine hijack (step 5) or malicious extension (step 2).

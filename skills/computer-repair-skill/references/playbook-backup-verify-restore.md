@@ -2,7 +2,7 @@
 name: backup-verify-restore
 description: Verify backup integrity by checking status, timestamps, and testing a real file restore
 platform: all
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 💾
@@ -52,21 +52,29 @@ Verify the backup destination is accessible:
 Report: destination type (local drive, network, cloud), available space, and connectivity status.
 
 ### 4. Test restore of a known file
-Perform an actual restore test:
-- Create a small test file in a known location (e.g., `~/Desktop/computer-repair-skill-backup-test.txt` with a timestamp).
-- Wait briefly, then verify it's included in the backup (or use the latest backup).
-- Attempt to restore a known file from the most recent backup to a temporary location.
-  - **Time Machine**: `tmutil restore <backup_path> /tmp/restore-test/`
-  - **Borg**: `borg extract --path <file> <repo>::<archive>`
-  - **Restic**: `restic restore <snapshot> --target /tmp/restore-test/ --include <file>`
-- Verify the restored file matches the original (compare size and content).
+Obtain approval for the restore write and select a known file from a completed backup.
+If creating a new probe, use a unique name in an approved backed-up location without
+overwriting an existing file, and wait for confirmed backup completion.
+- Allocate a unique, private, empty restore directory on a verified destination with
+  enough space; on macOS/Linux use `mktemp -d`, on Windows a GUID directory with a
+  current-user-only ACL. Reject links and never reuse a fixed `/tmp/restore-test/`.
+- **Time Machine**: `tmutil restore <backup_path> <unique_destination>`.
+- **Borg 1.x**: change to that empty destination, then use
+  `borg extract <repo>::<archive> <relative_path_in_archive>`. Confirm the installed
+  major version's help first; archive syntax differs across versions. Borg extracts
+  into the current directory, and has no generic `--path` extraction option.
+- **Restic**: `restic restore <snapshot> --target <unique_destination> --include <file>`.
+- Verify hashes against the selected backup version or a recorded baseline. A current
+  source file may have changed since that snapshot; a mismatch is not automatically corruption.
 
 Report: restore succeeded/failed, time taken, file integrity check result.
 
 ### 5. Document RPO/RTO
 Based on the findings, calculate and report:
-- **RPO (Recovery Point Objective)**: Maximum data loss = time since last backup.
-- **RTO (Recovery Time Objective)**: Estimated restore time based on backup size and destination speed.
+- **RPO (Recovery Point Objective)** is the agreed acceptable data-loss window. Report
+  the age of the last verified backup as observed exposure and compare it to that target.
+- **RTO (Recovery Time Objective)** is the agreed recovery-time target. Report measured
+  sample restore time separately; one file test does not establish full-system recovery time.
 - **Backup frequency**: How often backups run (continuous, hourly, daily).
 - **Retention**: How far back can you restore (if detectable).
 
@@ -74,16 +82,16 @@ Present this as a summary the admin can use for compliance documentation.
 
 ### 6. Clean up
 Remove any test files created during the verification:
-- Delete `~/Desktop/computer-repair-skill-backup-test.txt` if created.
-- Delete the temporary restore directory (`/tmp/restore-test/`).
+- Revalidate the recorded paths and remove only this run's probe and restore directory
+  after approval. Preserve restored evidence if the user requests it; do not sweep a shared temp root.
 
 ## Caveats
-- **Restore test writes to /tmp** — this is safe and doesn't affect user data.
+- **Restore tests write potentially sensitive data** — use a private isolated destination and verify it cannot overwrite live files.
 - **Time Machine restore requires the backup disk to be connected.** If it's a network backup, ensure the network is available.
 - **Full system restore cannot be tested this way.** This only verifies file-level restore. Full bare-metal recovery requires booting from recovery media.
 - **Encrypted backups** may require a password to restore. If the password is unknown, the backup is effectively unusable — flag this to the admin.
 
-> Steps 1-5 cover ~90% of backup verification needs. Most commonly missed: verifying the backup destination has enough free space for continued backups.
+> Most commonly missed: verifying the backup destination has enough free space for continued backups.
 
 ## Key signals
 - **"When was the last backup?"** → run steps 1-2 only. Quick check.

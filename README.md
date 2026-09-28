@@ -169,6 +169,8 @@ macOS / Linux：
 
 目标目录已存在时，安装器默认拒绝覆盖；确认升级时显式加 `-Force` 或 `--force`，旧版本会先备份到相邻的 `external/computer-repair-skill/backups`。
 
+安装器会拒绝与源码重叠的路径、文件目标，以及包含符号链接或 Junction 的安装路径。由 Skills CLI 或其他管理工具维护的链接安装，请通过原工具更新。并发安装会被锁阻止；若进程被强制中止，先确认没有安装进程、检查备份与暂存状态，再移除提示中的锁文件或锁目录重试。
+
 </details>
 
 <details>
@@ -416,10 +418,14 @@ PYTHONUTF8=1 python tests/validate_skill.py
 
 验证器会检查 Skill frontmatter、Agent 元数据、64 个 Playbook 的描述唯一性与复核日期、工具契约与 platform 一致性、路由索引、README 与官网的分类数量、官网条目与 frontmatter/触发词的一致性、无 JS 回退表格、官网英文文案覆盖、Markdown 表格转义、本地 Markdown 链接、许可证一致性、占位符和疑似凭据。GitHub Actions 会在 Windows 和 Ubuntu 上重复验证，并测试安装器的首次安装、拒绝覆盖、备份和强制更新路径。
 
-改动 `docs/assets/js/playbooks.js` 后，先重建官网的无 JavaScript 回退表格再验证：
+站点数据由 Playbook 元数据与 `tools/site_catalog.json` 生成，不要直接编辑 `docs/assets/js/playbooks.js`。修改来源后按顺序重建并验证（Python 3.10+）：
 
 ```bash
+python tools/extract_data.py
 python scripts/sync_docs_table.py
+python tools/build_site.py
+python tests/validate_skill.py
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
 新增或修改 Playbook 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。

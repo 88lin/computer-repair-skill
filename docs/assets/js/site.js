@@ -18,6 +18,7 @@ function esc(s) {
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+var hasPlaybookData = !!(window.CRS_DATA && Array.isArray(window.CRS_DATA.playbooks));
 var DATA  = window.CRS_DATA || { total: 0, categories: [], platform_counts: {}, playbooks: [] };
 var I18N  = window.CRS_I18N || { ui: { zh: {}, en: {} } };
 var LANG  = "zh";
@@ -279,22 +280,27 @@ function toast(msg) {
 }
 
 function writeClipboard(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    return navigator.clipboard.writeText(text);
-  }
-  return new Promise(function (res, rej) {
+  function fallback() { return new Promise(function (res, rej) {
+    var ta = null, active = document.activeElement;
     try {
-      var ta = document.createElement("textarea");
+      ta = document.createElement("textarea");
       ta.value = text;
       ta.setAttribute("readonly", "");
       ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
       document.body.appendChild(ta);
       ta.select();
       var ok = document.execCommand && document.execCommand("copy");
-      document.body.removeChild(ta);
       ok ? res() : rej(new Error("execCommand failed"));
     } catch (e) { rej(e); }
-  });
+    finally {
+      if (ta && ta.parentNode) ta.parentNode.removeChild(ta);
+      if (active && active.focus) active.focus({ preventScroll: true });
+    }
+  }); }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return Promise.resolve().then(function () { return navigator.clipboard.writeText(text); }).catch(fallback);
+  }
+  return fallback();
 }
 
 function initCopy() {
@@ -311,12 +317,13 @@ function initCopy() {
     writeClipboard(text).then(function () {
       btn.classList.add("is-done");
       var lab = $("span", btn);
-      var prev = lab ? lab.textContent : "";
+      if (btn._copyLabel === undefined) btn._copyLabel = lab ? lab.textContent : "";
+      clearTimeout(btn._copyTimer);
       if (lab) lab.textContent = UI().copied;
       toast(UI().copied);
-      setTimeout(function () {
+      btn._copyTimer = setTimeout(function () {
         btn.classList.remove("is-done");
-        if (lab) lab.textContent = prev;
+        if (lab) lab.textContent = btn._copyLabel;
       }, 1600);
     }).catch(function () { toast(UI().copyFail); });
   });
@@ -327,7 +334,8 @@ function initCopy() {
    ======================================================================= */
 var sayLoop = {
   root: null, track: null, loopWidth: 0, frame: 0, last: 0,
-  paused: false, visible: false, active: false, observer: null
+  paused: false, hovered: false, focused: false, dragging: false,
+  visible: false, active: false, observer: null
 };
 
 function cloneSayCards(track, originals) {
@@ -378,6 +386,7 @@ function stopSayLoop() {
   sayLoop.last = 0;
   sayLoop.active = false;
   sayLoop.paused = false;
+  sayLoop.hovered = false; sayLoop.focused = false; sayLoop.dragging = false;
   sayLoop.loopWidth = 0;
   if (!sayLoop.root || !sayLoop.track) return;
   $$(".say-card[data-say-clone]", sayLoop.track).forEach(function (card) { card.remove(); });
@@ -438,24 +447,22 @@ function initSayAutoScroll() {
   });
 
   root.addEventListener("scroll", normalizeSayScroll, { passive: true });
-  root.addEventListener("pointerenter", function () { if (sayLoop.active) sayLoop.paused = true; });
+  function syncPause() {
+    sayLoop.paused = sayLoop.hovered || sayLoop.focused || sayLoop.dragging;
+    sayLoop.last = performance.now();
+  }
+  root.addEventListener("pointerenter", function () { sayLoop.hovered = true; syncPause(); });
   root.addEventListener("pointerleave", function () {
-    if (sayLoop.active) { sayLoop.paused = false; sayLoop.last = performance.now(); }
+    sayLoop.hovered = false; syncPause();
   });
-  root.addEventListener("focusin", function () { if (sayLoop.active) sayLoop.paused = true; });
+  root.addEventListener("focusin", function () { sayLoop.focused = true; syncPause(); });
   root.addEventListener("focusout", function (ev) {
-    if (sayLoop.active && !root.contains(ev.relatedTarget)) {
-      sayLoop.paused = false;
-      sayLoop.last = performance.now();
-    }
+    sayLoop.focused = root.contains(ev.relatedTarget); syncPause();
   });
-  root.addEventListener("pointerdown", function () { if (sayLoop.active) sayLoop.paused = true; });
-  addEventListener("pointerup", function () {
-    if (sayLoop.active) {
-      sayLoop.paused = false;
-      sayLoop.last = performance.now();
-    }
-  });
+  root.addEventListener("pointerdown", function () { sayLoop.dragging = true; syncPause(); });
+  function endDrag() { sayLoop.dragging = false; syncPause(); }
+  addEventListener("pointerup", endDrag);
+  addEventListener("pointercancel", endDrag);
 
   syncMode();
   if (desktop.addEventListener) desktop.addEventListener("change", syncMode);
@@ -684,6 +691,8 @@ function initModal() {
 /* --- wire the playbook section ----------------------------------------- */
 var searchTimer = 0;
 function initPlaybooks() {
+  // A failed data download must not erase the complete static index.
+  if (!hasPlaybookData) return;
   renderCatTable();
   renderPlatGrid();
   renderChips();
@@ -703,7 +712,14 @@ function initPlaybooks() {
       var pl = b.getAttribute("data-plat");
       filter.plat = (filter.plat === pl) ? "" : pl;
     } else return;
+    var focusAttr = b.hasAttribute("data-cat") ? "data-cat" :
+      (b.hasAttribute("data-plat") ? "data-plat" : "data-clear");
+    var focusValue = b.getAttribute(focusAttr);
     renderChips(); renderTable();
+    var nextFocus = $$("button", chips).filter(function (candidate) {
+      return candidate.getAttribute(focusAttr) === focusValue;
+    })[0] || $("button", chips);
+    if (nextFocus) nextFocus.focus({ preventScroll: true });
   });
 
   var input = $("#pbSearch");

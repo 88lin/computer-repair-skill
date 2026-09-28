@@ -40,7 +40,7 @@ If steps 1-3 didn't fix it, remove the printer in System Settings → Printers &
 - For AirPrint printers, select the "AirPrint" driver instead of manufacturer-specific. AirPrint drivers are more reliable on modern macOS.
 - This forces a fresh connection and clears any corrupted driver state.
 
-> Steps 1-2 fix ~80% of print issues. The most common cause is a stuck job that paused the queue.
+> The most common cause is a stuck job that paused the queue.
 
 ## Caveats
 - **"Filter failed" error** in CUPS logs → the print filter (document converter) crashed. This is almost always a driver issue. Delete the printer and re-add with the AirPrint or generic PostScript driver.

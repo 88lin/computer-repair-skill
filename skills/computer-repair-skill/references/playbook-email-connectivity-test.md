@@ -66,7 +66,7 @@ Summarize in a table format:
 - **Corporate firewalls** often restrict which email servers can be reached. If only company email servers are reachable, this is by design.
 - **Connection success doesn't mean authentication will work** — this test only checks network reachability, not credentials.
 
-> Steps 1-6 isolate ~85% of email connectivity problems. Most common cause: firewall or VPN blocking port 587.
+> Most common cause: firewall or VPN blocking port 587.
 
 ## Key signals
 - **"Can receive but can't send"** → SMTP ports blocked. Focus on step 2, especially port 587.

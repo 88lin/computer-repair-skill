@@ -803,7 +803,8 @@ def validate_review_regressions(validation: Validation) -> None:
 
     browser = read_text(REFERENCES_DIR / "playbook-browser-security-audit.md", validation)
     validation.check("/tmp/ld.db" not in browser, "浏览器审计不能使用固定的 /tmp/ld.db。")
-    validation.check("mktemp" in browser and "trap" in browser, "浏览器审计必须使用唯一临时文件并注册清理 trap。")
+    validation.check("sqlite3 -readonly" in browser and 'cp "$login_db"' not in browser,
+                     "浏览器密码计数必须显式授权并只读聚合，不能复制秘密数据库。")
 
     credentials = read_text(REFERENCES_DIR / "playbook-credential-cleanup.md", validation)
     validation.check("Check size of" not in credentials, "凭据清理不能通过 Login Data 文件大小推断密码数量。")
@@ -957,7 +958,7 @@ def validate_release_files(validation: Validation) -> None:
     for path in sorted(REPO_ROOT.rglob("*")):
         if not path.is_file() or ".git" in path.parts:
             continue
-        if path.suffix.lower() not in {"", ".md", ".py", ".ps1", ".sh", ".yaml", ".yml"}:
+        if path.suffix.lower() not in {"", ".md", ".py", ".ps1", ".sh", ".yaml", ".yml", ".json", ".js", ".html"}:
             continue
         text = read_text(path, validation)
         # NOTICE preserves required attribution. This validator contains the

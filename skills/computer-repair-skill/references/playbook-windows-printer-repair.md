@@ -63,7 +63,7 @@ If the printer shows "Driver is unavailable":
   "drivers" are a common malware delivery vector. Never download from a driver-aggregator
   site.
 
-> Steps 1-2 fix ~80% of Windows print issues. The most common cause is a stuck job that crashed the spooler.
+> The most common cause is a stuck job that crashed the spooler.
 
 ## Caveats
 - **"Printer offline" but it's on** → right-click the printer in Settings → Printers & scanners → open print queue → Printer menu → uncheck "Use Printer Offline." Windows sometimes flips this flag after a failed job.

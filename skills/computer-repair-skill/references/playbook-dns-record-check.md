@@ -61,7 +61,7 @@ Present a clear summary:
 - DKIM selectors vary by provider and can be custom. If the user doesn't know the selector, try the common ones listed above.
 - Some domains use third-party email services (Mailchimp, SendGrid) that require additional SPF includes and DKIM records. These are separate from the primary email provider's records.
 
-> Steps 1-6 identify ~90% of email DNS misconfigurations. Most common issue: missing or duplicate SPF records.
+> Most common issue: missing or duplicate SPF records.
 
 ## Key signals
 - **"Emails going to spam"** → likely missing or misconfigured SPF/DKIM/DMARC. Start at step 3.

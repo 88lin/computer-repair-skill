@@ -88,6 +88,8 @@ def main() -> int:
     args = parser.parse_args()
 
     version = args.version or read_skill_version()
+    if not SEMVER.fullmatch(version):
+        parser.error("--version 必须是 MAJOR.MINOR.PATCH")
     if args.print_version:
         print(version)
         return 0

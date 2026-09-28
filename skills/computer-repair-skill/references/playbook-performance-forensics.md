@@ -2,7 +2,7 @@
 name: performance-forensics
 description: Diagnose slowness, high CPU, memory pressure, and hangs
 platform: macos
-last_reviewed: 2026-06-08
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: ⚡
@@ -26,34 +26,30 @@ say *specifically* what and why, then **verify after** they confirm — never
 leave the session dangling on a `WAIT_FOR_USER` with no follow-up.
 
 ## Quick check
-Run **`mac_performance_diagnose`** — one call returns the `primary` cause
-(memory / cpu / disk / thermal / healthy), the raw signals, RAM/swap/disk/
-uptime, and the top memory + CPU processes (each flagged `system: true` if it's
-protected). Use its `primary` to pick the path below. Don't fan out
-`mac_system_info` + `mac_process_list` + `mac_disk_usage` separately — the
-diagnose tool already gathered all of it in one pass.
+Map **`mac_performance_diagnose`** through `tool-contract.md` and `tools-macos.md`.
+It is a semantic alias, not a guaranteed installed tool or fixed JSON schema. Gather
+CPU samples, memory pressure, swap activity, free space and process ownership using
+available host capabilities. Treat any `primary` classification as a hypothesis and
+verify the underlying signals; never assume a tool automatically protects system PIDs.
 
 ## The diagnoses (try in order)
 
 ### D1 — `primary: cpu` — Runaway process (most common single cause)
 The diagnose tool's top `top_cpu` entry is pinning the CPU.
-- Offer to force-quit it with `mac_kill_process` (it isn't a `system: true`
-  process — the tool already excluded those).
+- Verify the PID, owner and role. Ask the user to save work and prefer the app's normal
+  Quit action; terminating a process requires specific approval and unsaved-work warning.
 - **Close the loop:** re-run `mac_performance_diagnose`, confirm CPU dropped,
   report it in a `ui_done`.
 
 ### D2 — `primary: memory` — Memory pressure (the dangling-loop trap)
-`signals.memory_pressure` is true (swap in use). Read `top_memory` for the hogs.
-- **The host Agent quits them itself** (one approval), naming each from `top_memory`:
-  "Firefox is using 2.3 GB and TextNow another 760 MB — I'll quit both to free
-  ~3 GB. OK?" → quit via `mac_kill_process`.
-- **Safe-quit rule:** ALWAYS use `mac_kill_process` (graceful SIGTERM, signal
-  15) so the app saves its session/tabs. **Never** `shell_run` a `kill -9` /
-  `killall -9` on a user's app — SIGKILL loses unsaved work.
-- Then **relieve and verify**: `shell_run` `sudo purge`, re-run
-  `mac_performance_diagnose`, report freed memory in a `ui_done`.
-- **Never** end on "close some tabs yourself." If a browser must stay open,
-  quit the *other* hogs and still verify.
+Swap being allocated is not itself proof of current pressure. Check pressure and
+swap-in/out over a sampling interval before identifying sustained consumers.
+- Prefer normal application Quit after the user saves work. SIGTERM (signal 15) does
+  not guarantee a save prompt or preserved tabs/documents; never describe it as safe.
+- If normal Quit fails, explain data-loss risk and obtain approval for the exact PID
+  before `mac_kill_process`. Do not substitute force-kill for an app the user needs open.
+- Re-measure pressure, swap activity and the actual symptom. Do not run `sudo purge`;
+  discarding reclaimable cache can increase I/O and reduce performance.
 - **Normal, not a problem:** high *Compressed Memory* and *Cached Files* are
   healthy macOS behavior — don't alarm the user about them.
 
@@ -68,12 +64,12 @@ The diagnose tool's top `top_cpu` entry is pinning the CPU.
 - `primary: thermal` (`kernel_task` holding CPU) → the Mac is hot and throttling
   itself. Fix is physical: improve ventilation, don't use on a soft surface.
 
-> Resolves ~80% of performance complaints. **Durable advice (don't skip):** for
+> **Durable advice (don't skip):** for
 > the common case — an 8 GB Mac with many browser tabs — quitting apps is only a
 > band-aid; it recurs. Tell the user plainly and give prevention: keep tabs
 > modest, restart weekly, and offer the **`mac-tune-up`** sweep. If they want it
-> hands-off, mention the host Agent can run a scheduled cleanup so it doesn't keep coming
-> back.
+> hands-off, offer scheduled read-only reports. Unattended deletion is not a routine
+> performance measure; each new cleanup batch needs a current preview and approval.
 
 ## Caveats — DO NOT kill these (they look suspicious but are normal)
 - **`kernel_task`** — thermal throttling. High CPU = the Mac is hot and
@@ -107,8 +103,8 @@ rather than failing the flow. Don't assume a specific macOS version.
 ## Tools referenced
 - `mac_performance_diagnose` — one-call diagnosis: primary cause + signals +
   top memory/CPU processes (use this first; re-run it to verify after a fix)
-- `mac_kill_process` — graceful force-quit (SIGTERM/15) (NeedsApproval tier)
-- `shell_run` — `sudo purge` (memory relief)
+- `mac_kill_process` — terminate a verified process after approval; SIGTERM may lose unsaved work
+- `shell_run` — scoped native performance measurements
 - `mac_system_info` / `mac_process_list` / `mac_disk_usage` — only if you need
   raw detail the diagnose tool didn't surface
 

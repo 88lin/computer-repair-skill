@@ -6,7 +6,7 @@
 > nothing until you confirm.
 
 - Version: 1.2.0
-- Last updated: 2026-09-09
+- Last updated: 2026-09-28
 - Repository: https://github.com/88lin/computer-repair-skill
 - License: GNU AGPL-3.0 (https://www.gnu.org/licenses/agpl-3.0.html)
 - Website: https://repair.88lin.eu.org/ (Chinese) · https://repair.88lin.eu.org/en/ (English)
@@ -14,7 +14,7 @@
 ## What it is
 
 Computer Repair Skill is a Markdown/YAML Skill package, not a desktop application.
-It ships no installer, no background process and no bundled model. The agent that
+It ships no desktop application, background process or bundled model. The agent that
 reads it supplies the execution capability. 64 on-demand playbooks are routed by
 symptom, platform and trigger words, so only the relevant procedure enters context.
 
@@ -72,7 +72,7 @@ downloaders, force-removing Edge or unaudited one-click tuning bundles.
 - `performance-forensics` — Performance Forensics / macOS 性能取证 [macOS]: Diagnose slowness, high CPU, memory pressure, and hangs
 - `windows-performance-forensics` — Windows Performance Forensics / Windows 性能取证 [Windows]: Diagnose Windows slowness, CPU saturation, memory pressure, disk bottlenecks, startup load, and application hangs
 - `linux-performance-forensics` — Linux Performance Forensics / Linux 性能取证 [Linux]: Diagnose Linux load, CPU, memory pressure, swapping, IO waits, disk bottlenecks, cgroup limits, and process hangs
-- `mac-tune-up` — Mac Tune-Up / Mac 调优 [macOS]: Safe maintenance sweep for a generally-sluggish Mac — refresh caches and reclaim memory without risk
+- `mac-tune-up` — Mac Tune-Up / Mac 调优 [macOS]: Diagnose a sluggish Mac and apply only symptom-matched maintenance with approval and rollback
 - `disk-space-recovery` — Disk Space Recovery / macOS 磁盘恢复 [macOS]: Reclaim disk space on macOS — measure, audit, clean cache-class data, report freed bytes
 - `windows-disk-space-recovery` — Windows Disk Space Recovery / Windows 磁盘恢复 [Windows]: Reclaim Windows disk space by measuring volumes, preserving user data, and verifying freed space
 - `windows-storage-inventory` — Windows Storage Inventory / Windows 存储盘点 [Windows]: Build a privacy-preserving Windows storage inventory that explains large paths before any cleanup

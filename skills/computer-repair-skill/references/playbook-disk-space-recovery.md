@@ -2,7 +2,7 @@
 name: disk-space-recovery
 description: Reclaim disk space on macOS — measure, audit, clean cache-class data, report freed bytes
 platform: macos
-last_reviewed: 2026-06-05
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 💾
@@ -22,49 +22,32 @@ Explicit: "clean up my storage", "free disk space", "find space hogs", "check st
 - 10–20% → tight, cleanup recommended.
 - <10% → critical; APFS performance degrades.
 - macOS major updates need 15–30 GB free regardless of percent.
-- One batch confirmation per session; accept any affirmative reply.
+- Approval covers only the displayed targets and actions; newly discovered targets require a new preview.
 - ~0 bytes freed → run the holder diagnostic, surface the process, ask user to quit. Don't auto-quit. Don't loop.
 
 ## Pipeline
 1. **Measure**: `mac_disk_usage` + `disk_audit`. If healthier than target AND the prompt was symptom-driven (not explicit), say so and stop.
-2. **Propose** in SPA findings: group as auto-safe, ask-once (Simulator full reset, Docker prune, old installers), won't-touch (held by a running app, or on Critical exclusions). One batch confirm.
-3. **Execute**: `mac_clear_caches` for `~/Library/Caches/`; recipes below via `shell_run` for the rest. The host Agent's shell policy gates destructive `rm`/`sudo`.
+2. **Propose**: read [cleanup-protocol.md](cleanup-protocol.md) and [macOS application cleanup](playbook-macos-application-cleanup.md). List each literal target, ownership evidence, size, exclusions, impact and recovery path. No cache category is automatically authorized.
+3. **Execute**: after approval, recheck each target and move only the approved items to Trash or a same-volume quarantine with a manifest. Stop that item if backup or path verification fails. Native cache-clean commands can permanently discard data; explain that limitation and obtain specific approval before using one.
 4. **Verify**: re-run `mac_disk_usage`; compute delta vs step 1.
 5. **Report** via SPA findings: starting free, ending free, per-category freed, items skipped with reason. If target not met, ONE concrete next move — not a list.
 
 ## Recipes
 
-**Cache workhorses** (run as one block; do NOT `set -e` — each line may fail benignly when a tool isn't installed):
-```bash
-command -v npm && npm cache clean --force && rm -rf ~/.npm/_cacache ~/.npm/_npx ~/.npm/_logs
-command -v pnpm && pnpm store prune
-command -v yarn && yarn cache clean && rm -rf ~/Library/Caches/Yarn
-command -v uv && uv cache prune
-command -v pip3 && pip3 cache purge
-command -v cargo && rm -rf ~/.cargo/registry/cache ~/.cargo/registry/src ~/.cargo/git/checkouts
-command -v go && go clean -modcache && go clean -cache
-command -v brew && brew cleanup --prune=30 && brew autoremove
-rm -rf ~/Library/Application\ Support/Slack/{Cache,Code\ Cache,GPUCache}/*
-rm -rf ~/Library/Application\ Support/discord/{Cache,Code\ Cache,GPUCache}/*
-rm -rf ~/Library/Application\ Support/Microsoft/Teams/{Cache,Code\ Cache,GPUCache,tmp}/*
-rm -rf ~/Library/Application\ Support/{Code,Cursor,Zed}/{Cache,CachedData,CachedExtensions,Code\ Cache,GPUCache,logs}/*
-rm -rf ~/Library/Caches/com.spotify.client/*   # never ~/Library/Application Support/Spotify (offline music)
-find ~/.Trash -mindepth 1 -maxdepth 1 -exec rm -rf {} +
-find ~/Library/Logs -mindepth 1 -maxdepth 1 -mtime +7 -exec rm -rf {} +
-pgrep -x Mail || find ~/Library/Containers/com.apple.mail/Data/Library/Mail\ Downloads -type f -mtime +30 -delete
-pgrep -x Xcode || rm -rf ~/Library/Developer/Xcode/DerivedData/* ~/Library/Developer/Xcode/{iOS,watchOS,tvOS}\ DeviceSupport/* ~/Library/Caches/com.apple.dt.Xcode/*
-find /Applications -maxdepth 1 -name 'Install macOS*.app' -mtime +14 -exec rm -rf {} +
-```
-The macOS installer line is in the ask-once group; user confirms before this runs.
+**Candidate inventory, not a batch deletion script:**
+- Package managers: discover their actual cache roots using their current CLI. Preview a native cleanup's scope; do not chain multiple managers or run `brew autoremove` as cache cleanup (it uninstalls packages).
+- Slack, Discord, Teams and editors: confirm the installed version and profile, close the app normally, and inspect exact cache children. Preserve `User`, databases, sessions and credentials; do not infer a target from a brace-expanded list of app names.
+- Xcode: inspect individual DerivedData projects. DeviceSupport, archives and simulator devices may contain needed debugging or test data; treat them separately and preserve a recovery copy.
+- Logs: age alone does not make a log disposable. Preserve incident evidence and current logs, then preview individual archived files.
+- Mail downloads and incomplete downloads may be the only copy of user data. Use the owning app's Storage UI after review; do not treat them as caches.
+- Old macOS installers: review the exact app bundle and whether it is a needed recovery installer before moving it to Trash.
+- Trash: never empty it in a cleanup batch that relies on Trash for rollback. Emptying Trash is a separate irreversible action with its own review.
 
-**iOS Simulator full reset** (lock-prone; do in order, do not loop):
-```bash
-pgrep -fl 'Simulator|CoreSimulator|com.apple.iphonesimulator' || echo clear
-xcrun simctl delete unavailable
-xcrun simctl shutdown all 2>/dev/null; xcrun simctl delete all
-rm -rf ~/Library/Developer/CoreSimulator/Caches/*
-```
-On `currently in use` / `Failed to eject`: run the holder diagnostic, surface the process name, STOP. Don't `launchctl bootout`, don't `killall`.
+**iOS Simulator:** first run `xcrun simctl list devices` and identify the exact devices,
+availability, ownership and data to retain. Prefer Xcode's device management UI. Do not
+reset all simulators or stop active devices as a disk cleanup shortcut. Removal of a
+reviewed device requires its exact UDID, a recovery plan and separate approval.
+On `currently in use` / `Failed to eject`, report the holding process and stop that item.
 
 **Holder diagnostic** (use when a row returns ~0 freed; replace the path with the actual cleanup target):
 ```bash
@@ -95,7 +78,7 @@ Deletes inside protected trees (Application Support, Containers, Messages, etc.)
 
 ## Caveats
 - **Purgeable space** is freed automatically (real available = free + purgeable). **System Data** in About This Mac is mostly auto-managed.
-- A background scanner feeds `disk_audit` when idle; trigger a fresh scan from Diagnostics if results look stale.
+- `disk_audit` is a semantic alias, not a guaranteed background scanner or Diagnostics UI. Map it through `tool-contract.md` and record the scan time and scope.
 
 ## Key signals
 - "Can't install macOS update" → needs 15–30 GB free; run pipeline, retry update.

@@ -108,11 +108,11 @@
       "title_zh": "Mac 调优",
       "title_en": "Mac Tune-Up",
       "detail_zh": "缓存、权限和基础安全维护",
-      "detail_en": "Safe maintenance sweep for a generally-sluggish Mac — refresh caches and reclaim memory without risk",
+      "detail_en": "Diagnose a sluggish Mac and apply only symptom-matched maintenance with approval and rollback",
       "triggers_zh": "Mac 普遍变慢、安全维护、缓存刷新",
       "prompt_zh": "Mac 变慢了，先做低风险维护，不要删我的个人文件。",
       "prompt_en": "My Mac got slow. Do low-risk maintenance only, and do not delete my personal files.",
-      "when_en": "- User asks to \"tune up\", \"optimize\", \"speed up\", or \"clean up\" their Mac in"
+      "when_en": "Use for a generally sluggish Mac after checking for a specific CPU, memory, or disk bottleneck."
     },
     "playbook-disk-space-recovery.md": {
       "emoji": "💾",

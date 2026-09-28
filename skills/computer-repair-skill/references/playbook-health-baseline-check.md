@@ -86,7 +86,7 @@ Give an overall assessment: healthy, needs attention, or needs immediate action.
 - **High memory usage isn't always bad.** macOS aggressively caches files in RAM. "Memory pressure" is a better indicator than raw usage. Check for swap usage as the real signal.
 - **No Time Machine** isn't necessarily a problem if the user uses another backup solution (Backblaze, CrashPlan, iCloud). Ask before flagging.
 
-> The full baseline covers ~90% of common device health issues. Most frequent finding: pending OS updates and stale backups.
+> Most frequent finding: pending OS updates and stale backups.
 
 ## Key signals
 - **"My computer feels slow"** → focus on steps 2 (memory) and 3 (uptime). A reboot often helps.

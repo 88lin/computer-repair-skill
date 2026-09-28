@@ -38,6 +38,9 @@ jobs:
       - name: Verify generated website pages
         run: python tools/build_site.py --check
 
+      - name: Test generators and installer failure paths
+        run: python -m unittest discover -s tests -p "test_*.py"
+
       - name: Test Bash installer
         if: runner.os == 'Linux'
         shell: bash

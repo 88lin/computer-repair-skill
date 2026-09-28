@@ -16,7 +16,7 @@
   `main` 后自动打 annotated tag 并发布 GitHub Release，说明正文从本文件对应版本条目摘录。
   发布前会先跑 `tools/extract_data.py --check`、`tools/build_site.py --check` 与
   `tests/validate_skill.py`，任一失败就不发布；
-  对应 tag 已存在时跳过，因此重复触发是安全的。
+  对应 Release 已存在时跳过；仅有 tag 时从该 tag 验证并补发，因此可重试中断的发布。
 - 新增 `tools/build_site.py`：由中文页 `docs/index.html` 和 `tools/i18n_en.json` 的译文
   生成静态英文页 `docs/en/index.html`，以及两个页面的 JSON-LD、`docs/sitemap.xml` 和
   `docs/llms.txt`；`--check` 已接入 `Validate` 与 `Release` 工作流。
@@ -42,6 +42,11 @@
 
 ### Fixed
 
+- 安装器拒绝源码重叠、文件目标和链接路径；增加独占安装锁、完整分发文件检查及失败恢复测试，修复 Bash 对带引号 `~/...` 路径的展开。
+- 发布失败但 tag 已存在时可从该 tag 补发 Release；API 错误不再当作版本不存在。
+- 官网筛选后保留键盘焦点，连续复制后正确恢复按钮文字，剪贴板权限失败时尝试回退，提示卡片在焦点仍停留时保持暂停；数据加载失败时保留静态索引。
+- 数据生成器支持重建缺失产物并拒绝重复索引；英文纯文本译文进行 HTML 转义。
+- 修正 macOS 清理与调优、浏览器凭据审计、CUDA 和 OpenClaw 清理中的破坏性捷径或错误说明；移除缺少证据来源的修复成功率数字。
 - 首屏徽标上的 Playbook 总数此前只有 `scripts/sync_docs_table.py` 会同步，而该脚本不在
   CI 中运行，数字可能静默过期；现在由 `tools/build_site.py --check` 把关。
 - `scripts/sync_docs_table.py` 与新生成器显式以 LF 写文件，不再在 Windows 上产出与

@@ -74,7 +74,7 @@ Present findings with recommended actions for any yellow or red items.
 - Some corporate endpoint protection tools may not appear in standard process lists. Check with `launchctl list` on macOS for LaunchDaemons.
 - Unusual network connections are not necessarily malicious. Many dev tools, sync services, and VPNs produce unusual-looking traffic.
 
-> Steps 1-6 resolve ~80% of endpoint security concerns. Most common finding: pending OS updates.
+> Most common finding: pending OS updates.
 
 ## Key signals
 - **"My computer is slow and showing pop-ups"** → likely adware or unwanted software. Focus on steps 4 and 5.

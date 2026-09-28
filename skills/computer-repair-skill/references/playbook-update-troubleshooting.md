@@ -42,7 +42,7 @@ If the update downloads but fails to install:
 - Restart in Safe Mode: hold Shift during boot (Intel) or hold power button → select Safe Mode (Apple Silicon).
 - In Safe Mode, retry the update. Safe Mode disables third-party extensions that can interfere.
 
-> Steps 1-3 resolve ~85% of update issues. #1 cause: insufficient disk space.
+> #1 cause: insufficient disk space.
 
 ## Caveats
 - **Don't force-shutdown during an update** unless truly stuck for >2 hours. The progress bar is often inaccurate — macOS updates can legitimately take 30-90 minutes.

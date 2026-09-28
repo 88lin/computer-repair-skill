@@ -2,7 +2,7 @@
 name: setup-cuda
 description: Install NVIDIA CUDA Toolkit on Linux (Ubuntu/Debian, RHEL/Fedora)
 platform: linux
-last_reviewed: 2026-07-28
+last_reviewed: 2026-09-28
 author: upstream-maintainers
 source: bundled
 emoji: 🎮
@@ -21,7 +21,7 @@ Run `shell_run` with `lspci | grep -i nvidia` to verify an NVIDIA GPU is present
 ## Step 1: Check existing installation
 Run `shell_run` with `nvidia-smi` and `nvcc --version`.
 - If both work and versions are satisfactory → skip to Step 6 (verify).
-- If `nvidia-smi` works but `nvcc` missing → skip to Step 4 (toolkit only).
+- If `nvidia-smi` works but `nvcc` is missing → verify the distro, architecture and configured repository in Steps 2-3, then install only a compatible toolkit in Step 4. Preserve the working driver.
 - If neither works → continue with Step 2.
 
 ## Step 2: Detect distro and install prerequisites
@@ -38,7 +38,12 @@ sudo apt update && sudo apt install -y build-essential linux-headers-$(uname -r)
 sudo dnf install -y gcc kernel-devel-$(uname -r)
 ```
 
-## Step 3: Add NVIDIA repository and install driver
+## Step 3: Add the matching repository and plan the driver separately
+Check the current official support matrix for the exact distro, architecture, GPU and
+toolkit version before using the examples below. They illustrate x86_64 only. Adding
+the repository does not install a driver. If a driver is missing, use the distro/vendor
+documented signed-driver procedure, preview exact packages and rollback, and obtain
+approval before changing it. Stop on unsupported combinations.
 **Ubuntu/Debian:**
 ```
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
@@ -66,7 +71,9 @@ sudo apt install -y cuda-toolkit
 sudo dnf install -y cuda-toolkit
 ```
 
-This installs the compiler (nvcc), libraries, and headers. The driver is pulled in as a dependency if not already installed.
+The `cuda-toolkit` package installs the compiler, libraries and headers; it does not
+install the NVIDIA driver. Check the package-manager transaction preview and verify a
+compatible driver independently. Do not replace a working driver to obtain `nvcc`.
 
 Use WAIT_FOR_USER — installation downloads ~2–4 GB and takes 5–15 minutes.
 
@@ -98,11 +105,10 @@ nvcc --version
 - `nvidia-smi` should show the GPU model and driver version.
 - `nvcc` should show the CUDA compiler version.
 
-> This sequence resolves ~90% of CUDA setup issues on supported Linux distributions.
 
 ## Caveats
-- If the system uses **Secure Boot**, the NVIDIA kernel module may fail to load. The user needs to either disable Secure Boot in BIOS or enroll a MOK signing key during installation.
-- If **nouveau** (open-source NVIDIA driver) is loaded, it must be blacklisted first: `echo 'blacklist nouveau' | sudo tee /etc/modprobe.d/blacklist-nouveau.conf && sudo update-initramfs -u` (Ubuntu) or `sudo dracut --force` (RHEL).
+- If **Secure Boot** prevents loading the driver, use the distro's signed packages and documented MOK enrollment. Keep Secure Boot enabled; escalate unknown signing or enterprise policy constraints.
+- If **nouveau** is loaded, follow the matching vendor/distro driver procedure. Do not blindly blacklist a display driver or rebuild initramfs without a verified recovery path and approval.
 - On **Fedora 41+** with GCC version mismatches, install the compatibility GCC package and set `NVCC_CCBIN` accordingly.
 
 ## Tools referenced
@@ -111,4 +117,8 @@ nvcc --version
 - `ui_user_question` — ask which distro if auto-detection fails
 
 ## Escalation
-If the GPU is too old (compute capability < 5.0), CUDA 12+ won't support it — suggest an older CUDA version. If driver installation causes black screen/boot failure, advise booting to recovery mode and running `sudo apt remove --purge 'nvidia-*'` or equivalent.
+Check the exact GPU's support in the selected CUDA release rather than assuming a
+single compute-capability cutoff works for every version. For black screens or boot
+failure, use recovery mode and the recorded package transaction to restore only the
+changed driver packages. Do not purge wildcard-matched NVIDIA packages; preserve
+the previously working driver, display stack and kernel recovery entry.
