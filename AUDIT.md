@@ -39,12 +39,13 @@
 - 发布判定使用本地模拟的 Git/GitHub 响应覆盖已发布、仅有 tag、全新版本、API 403 四种状态，未调用远端发布接口。
 - `python tests/browser_site.py --channel chrome --output artifacts/site-audit`：中英文交互、390px 移动端、禁用 JS、数据文件缺失、滚动暂停均通过；没有页面脚本异常。移动端截图已目视检查。
 - `node --check docs/assets/js/site.js` 与 `git diff --check`：通过。
+- 实现提交 `8137479` 推送后，[GitHub Actions](https://github.com/88lin/computer-repair-skill/actions/runs/36421241444) 的 Ubuntu、Windows 两个作业均通过；[Release 工作流](https://github.com/88lin/computer-repair-skill/actions/runs/36421241418) 正常识别已发布的 `v1.2.0` 并跳过重复发布。
 
 浏览器测试只读取本地页面、屏蔽 HTTP(S)，安装器测试只写临时目录。核心行为测试使用 Python 标准库；浏览器测试单独依赖 Playwright。
 
 ## 验证边界与维护注意事项
 
-- 本轮没有在 macOS/Linux 真机执行维修动作，没有执行真实卸载、凭据清理、驱动安装、系统更新或分区操作。Bash 安装器在 Windows Git Bash 验证；原生 Ubuntu 检查已接入 CI，尚未获得本轮远端运行结果。
+- 本轮没有在 macOS/Linux 真机执行维修动作，没有执行真实卸载、凭据清理、驱动安装、系统更新或分区操作。Bash 安装器已在 Windows Git Bash 与 GitHub Actions 的原生 Ubuntu 环境验证；macOS 安装器尚未实机验证。
 - 未对外部供应商当前下载地址、包版本和所有联网流程逐项复核；执行时仍需依据当前官方文档与实际设备状态确认。
 - 本地验证没有调用 GitHub Release 发布接口。保留当前版本号，变更记入 `Unreleased`；提交和推送状态以 Git 记录为准。
 - 安装器有意拒绝包含符号链接或 Junction 的安装路径。由其他工具管理的链接安装应由原工具更新；自定义安装请选择实际目录。
