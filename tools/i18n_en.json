@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Computer Repair Skill — turn your agent into a careful computer repair engineer",
-    "ogtitle": "Computer Repair Skill — turn your agent into a careful computer repair engineer",
+    "title": "Computer Repair Skill — Careful AI Computer Repair",
+    "ogtitle": "Computer Repair Skill — Careful AI Computer Repair",
     "desc": "A C: drive turning red, a sluggish PC, unwanted software that will not stay gone, relentless pop-ups, network trouble or an app to move — describe the symptom in plain language. The agent gathers evidence, lays out a plan and waits for your approval before making changes. 64 on-demand playbooks cover Windows, macOS, Linux and focused repair scenarios. Open source under AGPL-3.0.",
     "imgalt": "Computer Repair Skill — cross-platform computer diagnosis and repair Agent Skill"
   },
