@@ -2,7 +2,7 @@
 name: windows-application-cleanup
 description: Audit and clean regenerable Windows app caches or duplicates while preserving profiles, chat data, and credentials
 platform: windows
-last_reviewed: 2026-09-09
+last_reviewed: 2026-09-29
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -37,6 +37,8 @@ Separate `cache`, `logs`, `thumbnails`, `shader/download cache` and other regene
 
 If the application is not running, still check for helper processes and background sync. Never force-kill a process as an implicit cleanup step.
 
+For Git projects, dependencies/build outputs, model stores, service databases or virtual disks, first read [windows-storage-data-guards.md](windows-storage-data-guards.md). Ignored files may contain unique data; a clean working tree or stopped service does not prove that a target is disposable.
+
 ### 2. Detect duplicate files conservatively
 When the request is duplicate cleanup, group candidates by size, then compare a bounded prefix hash, then a full SHA-256 hash with `win_file_hash`. Only equal size and full hash make a duplicate candidate. Show every path, timestamp, owner and hash; never choose “shortest path” or “oldest file” as an irreversible rule without user approval.
 
@@ -54,6 +56,8 @@ Re-check each path and hash immediately before moving it. Stop the item if it ch
 
 ## Verification
 Re-scan the same scopes, compare byte counts and duplicate groups, and launch the application or its relevant workflow. Verify that the undo manifest and Recycle Bin/quarantine entries exist. Report skipped locked files instead of retrying with force.
+
+Use [windows-storage-scan.md](windows-storage-scan.md) to report processed bytes separately from the measured volume free-space delta. Same-volume Recycle Bin/quarantine entries still consume space; do not empty them as an implicit verification step.
 
 ## Caveats
 - Browser `Login Data`, `Cookies`, `Web Data`, profile preferences and extension stores are not caches.

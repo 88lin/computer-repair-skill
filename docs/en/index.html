@@ -106,7 +106,7 @@
         "@id": "https://repair.88lin.eu.org/#author"
       },
       "datePublished": "2026-07-26",
-      "dateModified": "2026-09-28",
+      "dateModified": "2026-09-29",
       "mainEntity": [
         {
           "@type": "Question",
@@ -179,7 +179,7 @@
       "applicationSubCategory": "Agent Skill",
       "operatingSystem": "Windows, macOS, Linux",
       "softwareVersion": "1.3.0",
-      "dateModified": "2026-09-28",
+      "dateModified": "2026-09-29",
       "codeRepository": "https://github.com/88lin/computer-repair-skill",
       "programmingLanguage": [
         "Markdown",
@@ -411,7 +411,7 @@
           <tr>
             <td class="vs-n" aria-hidden="true">2</td>
             <td class="vs-y"><b data-i18n="what.r2y">Files you copy into a Skills directory</b><span data-i18n="what.r2yd">&lt;code&gt;~/.codex/skills/&lt;/code&gt;, &lt;code&gt;~/.claude/skills/&lt;/code&gt;, &lt;code&gt;~/.agents/skills/&lt;/code&gt;.</span></td>
-            <td class="vs-no"><b data-i18n="what.r2n">A companion program, model or cloud API</b><span data-i18n="what.r2nd">The Skill itself is Markdown and YAML — there is nothing extra to install.</span></td>
+            <td class="vs-no"><b data-i18n="what.r2n">A companion program, model or cloud API</b><span data-i18n="what.r2nd">Core workflows use Markdown and YAML; optional Git auditing uses an existing Python and Git installation.</span></td>
           </tr>
           <tr>
             <td class="vs-n" aria-hidden="true">3</td>
@@ -787,11 +787,11 @@ cd computer-repair-skill
 <tr class="pb-row" data-id="mac-tune-up"><td class="pb-i">05</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🧹</span><button type="button" class="pb-open">Mac Tune-Up</button><span class="pb-t-d">Diagnose a sluggish Mac and apply only symptom-matched maintenance with approval and rollback</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">mac-tune-up</td></tr>
 <tr class="pb-row" data-id="disk-space-recovery"><td class="pb-i">06</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">💾</span><button type="button" class="pb-open">Disk Space Recovery</button><span class="pb-t-d">Reclaim disk space on macOS — measure, audit, clean cache-class data, report freed bytes</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">disk-space-recovery</td></tr>
 <tr class="pb-row" data-id="windows-disk-space-recovery"><td class="pb-i">07</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Disk Space Recovery</button><span class="pb-t-d">Reclaim Windows disk space by measuring volumes, preserving user data, and verifying freed space</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-disk-space-recovery</td></tr>
-<tr class="pb-row" data-id="windows-storage-inventory"><td class="pb-i">08</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Storage Inventory</button><span class="pb-t-d">Build a privacy-preserving Windows storage inventory that explains large paths before any cleanup</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-storage-inventory</td></tr>
+<tr class="pb-row" data-id="windows-storage-inventory"><td class="pb-i">08</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Storage Inventory</button><span class="pb-t-d">Drill into large paths, disclose scan coverage, and identify Git or model data before cleanup</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-storage-inventory</td></tr>
 <tr class="pb-row" data-id="windows-large-folder-management"><td class="pb-i">09</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Large Folder Management</button><span class="pb-t-d">Discover, lazily size, and safely offload selected Windows system or application folders</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-large-folder-management</td></tr>
 <tr class="pb-row" data-id="windows-application-migration"><td class="pb-i">10</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Application Migration</button><span class="pb-t-d">Migrate an application or selected data folder to local NTFS storage with junction rollback</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-migration</td></tr>
 <tr class="pb-row" data-id="windows-migration-history-recovery"><td class="pb-i">11</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Migration History and Recovery</button><span class="pb-t-d">Audit Windows migration Junctions, detect ghost records, and restore data safely</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-migration-history-recovery</td></tr>
-<tr class="pb-row" data-id="windows-application-cleanup"><td class="pb-i">12</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Application Cleanup</button><span class="pb-t-d">Audit and clean regenerable Windows app caches or duplicates while preserving profiles, chat data, and credentials</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-cleanup</td></tr>
+<tr class="pb-row" data-id="windows-application-cleanup"><td class="pb-i">12</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Application Cleanup</button><span class="pb-t-d">Audit app caches, duplicates and rebuildable artifacts while preserving profiles, Git state, chat data and credentials</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-cleanup</td></tr>
 <tr class="pb-row" data-id="macos-application-cleanup"><td class="pb-i">13</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">macOS Application Cleanup</button><span class="pb-t-d">Audit and clean regenerable macOS app caches or duplicates while preserving containers, chat data, and keychains</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">macos-application-cleanup</td></tr>
 <tr class="pb-row" data-id="linux-application-cleanup"><td class="pb-i">14</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Linux Application Cleanup</button><span class="pb-t-d">Audit and clean regenerable Linux app caches or duplicates across XDG, Flatpak, and Snap data roots</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-lin">Linux</span></td><td class="pb-r">linux-application-cleanup</td></tr>
 <tr class="pb-row" data-id="windows-application-lifecycle-audit"><td class="pb-i">15</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows Application Lifecycle Audit</button><span class="pb-t-d">Audit Windows app install/uninstall candidates by exact package ID, publisher, source, and reversible verification</span></td><td class="pb-c">Health, performance, storage &amp; backup</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-lifecycle-audit</td></tr>
@@ -1029,7 +1029,7 @@ cd computer-repair-skill
 
     <p class="foot-legal">
       <span data-i18n-html="foot.legal">Computer Repair Skill is built by <a href="https://github.com/88lin" target="_blank" rel="noopener">88lin</a> and open source under <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">GNU AGPL-3.0</a>.</span>
-      <span class="foot-updated"><span data-i18n="foot.updated">Last updated</span> <!-- site-updated:start --><time datetime="2026-09-28">2026-09-28</time><!-- site-updated:end --></span>
+      <span class="foot-updated"><span data-i18n="foot.updated">Last updated</span> <!-- site-updated:start --><time datetime="2026-09-29">2026-09-29</time><!-- site-updated:end --></span>
     </p>
   </div>
 </footer>

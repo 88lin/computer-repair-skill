@@ -79,8 +79,9 @@
 - **按需加载**：64 个专项 Playbook 通过路由索引按问题加载，减少无关上下文，也方便维护和扩展。
 - **跨平台**：覆盖 Windows、macOS、Linux，并提供 DNS、邮件、身份、SSH、Wi-Fi 和 OpenClaw 等跨平台流程。
 - **适合真实维修**：包含新机验收、BitLocker/PE 前置分诊、WinRE、数据恢复、拆机安全和设备回收等维修现场边界。
-- **不绑定桌面应用**：Skill 本身是 Markdown/YAML 资源，不需要安装配套桌面程序、额外模型或专用云端 API。
+- **不绑定桌面应用**：Skill 以 Markdown/YAML 资源为主，不需要配套桌面程序、额外模型或专用云端 API；可选的 Git 存储审计脚本使用宿主已有的 Python 3.10+ 和 Git。
 - **可审计可回滚**：命令会映射到宿主 Agent 的终端、文件和网络工具；需要改变状态时保留计划和验证步骤。
+- **存储结论可核对**：大目录逐层下钻并说明扫描覆盖范围；区分 Git 本地数据、可重建产物与模型/数据库，清理后分别报告处理量和实测释放空间。
 
 ## 🖥️ 能力范围
 
@@ -184,7 +185,7 @@ macOS / Linux：
 ~/.agents/skills/computer-repair-skill/
 ```
 
-目录中必须保留 `SKILL.md`、`agents/` 和 `references/`，不要只复制某一个 Playbook。
+目录中必须保留 `SKILL.md`、`agents/`、`references/` 和 `scripts/`，不要只复制某一个 Playbook。
 
 </details>
 
@@ -381,6 +382,7 @@ skills/computer-repair-skill/
 ├── SKILL.md                 # 核心路由与强制安全工作流
 ├── agents/openai.yaml       # Codex 展示元数据
 ├── references/              # 平台工具映射与 64 个专项 Playbook
+├── scripts/git_storage_audit.py  # 可选的只读 Git 存储审计，输出 JSON
 ├── LICENSE                  # 随 Skill 分发的 AGPL-3.0 许可证
 └── NOTICE                   # 来源与归属记录
 assets/

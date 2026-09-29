@@ -54,7 +54,7 @@ Get-PrintJob -PrinterName '<PRINTER>' |
 | `win_system_info` | 查询 `Win32_OperatingSystem`、`Win32_ComputerSystem`、`Win32_Processor` | 只读 |
 | `win_process_list` | `Get-Process`，分别按 CPU 和工作集排序 | 只读 |
 | `win_disk_usage` | 优先查询 `Win32_LogicalDisk`；`Storage` 模块可用时补充 `Get-Volume` | 只读 |
-| `win_directory_size` | 对已确认的字面目录做有深度/时间预算的递归大小扫描，跳过 Junction 和其他 reparse point | 只读但可能较慢 |
+| `win_directory_size` | 对已确认的字面目录做有深度/时间预算的递归大小扫描，跳过 Junction 和其他 reparse point；返回完整度、跳过范围及 logical/allocated 指标，测不到则标未知 | 只读但可能较慢 |
 | `win_kill_process` | `Stop-Process -Id <PID>` | 高影响，确认 PID 和用途 |
 | `win_clear_caches` | 先测量并枚举具体缓存目录，再删除明确条目 | 高影响，读取安全策略 |
 
@@ -77,12 +77,14 @@ Get-Process |
     @{n='WorkingSetMB';e={[math]::Round($_.WorkingSet64 / 1MB, 1)}}
 
 Get-CimInstance Win32_LogicalDisk -Filter 'DriveType=3' |
-  Select-Object DeviceID, VolumeName, FileSystem,
+  Select-Object DeviceID, VolumeName, FileSystem, Size, FreeSpace,
     @{n='SizeGB';e={[math]::Round($_.Size / 1GB, 1)}},
     @{n='FreeGB';e={[math]::Round($_.FreeSpace / 1GB, 1)}}
 ```
 
 需要卷健康、BitLocker 或分区细节时再尝试 `Get-Volume`。若 `Storage` 模块加载失败，继续使用 CIM 结果并明确缺少的字段。
+
+大目录分析按 [windows-storage-scan.md](windows-storage-scan.md) 区分扫描/展示限制、复用本地索引和核算实际释放量。`Size` / `FreeSpace` 的原始字节用于比较，GB 仅供展示。普通枚举不是 NTFS MFT/ReFS 原始扫描；已安装且经过审查的扫描器可作为可选能力，先核对后端、版本、权限与读取范围，失败时明确披露降级，不能假设宿主自带该工具。
 
 CPU 字段通常是进程累计 CPU 时间，不等同于瞬时百分比。需要瞬时负载时使用性能计数器并标注采样窗口。
 
@@ -158,6 +160,8 @@ Shell。先列出精确 ID、发布者、版本、来源和卸载字符串，再
 | `win_bitlocker_status` | `Get-BitLockerVolume`；家庭版或命令不可用时记录缺失并使用设置界面核对 | 只读 |
 
 目录清单只报告路径、类型、大小、时间、扩展名比例和计数。不要为了解释未知目录而读取文件正文；如需外部模型分析，只发送去标识化元数据和最多 20 条相对路径样本。
+
+Git 仓库、构建目录、模型和服务持久数据按 [windows-storage-data-guards.md](windows-storage-data-guards.md) 追加只读检查。已安装 Python 3.10+ 和 Git 时可调用随 Skill 分发的 [git_storage_audit.py](../scripts/git_storage_audit.py)，获取有界 JSON、逐项退出状态和本地数据风险；缺少依赖时按参考中的原生命令回退，不自动安装。`complete` 只表示本地检查完成，不证明远端备份或允许删除。
 
 ## 系统诊断与服务
 

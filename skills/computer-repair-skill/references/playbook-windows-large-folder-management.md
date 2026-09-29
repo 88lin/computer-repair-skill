@@ -2,7 +2,7 @@
 name: windows-large-folder-management
 description: Discover, lazily size, and safely offload selected Windows system or application folders
 platform: windows
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-29
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -25,12 +25,16 @@ Never add the whole user profile, `AppData`, `ProgramData`, `Windows`, a drive r
 ### 2. Lazy-size expensive paths
 After the initial list is visible, run bounded asynchronous size scans with `win_directory_size` and report progress, errors, permission skips, and reparse points separately. Load application-data templates only when the user requests them; this avoids an unbounded HDD scan and prevents a stale scan from overwriting a refreshed result.
 
+Use [windows-storage-scan.md](windows-storage-scan.md) for coverage fields and snapshot drill-down. Scan limits and display limits are different: an unmeasured child remains `pending/unknown`, and a truncated tree cannot be used to verify the entire folder.
+
 For each folder classify it as `system-managed`, `application-state`, `regenerable-cache`, `synchronized-user-data`, `backup/VM`, or `unknown`. A large result remains report-only until the owner and desired action are clear.
 
 ### 3. Plan a move or cleanup
-For an offload, activate [windows-application-migration](playbook-windows-application-migration.md). Show exact source/target paths, bytes, filesystem, free-space reserve, process locks, backup status, link type, and rollback. For a cache cleanup, activate [windows-application-cleanup](playbook-windows-application-cleanup.md) instead of deleting by extension or size.
+For an offload that must preserve the original path, activate [windows-application-migration](playbook-windows-application-migration.md). Show exact source/target paths, bytes, filesystem, free-space reserve, process locks, backup status, link type, and rollback. Ordinary file offload without path preservation follows the copy/verify/confirm sequence in [windows-disk-space-recovery](playbook-windows-disk-space-recovery.md); do not impose a Junction. For a cache cleanup, activate [windows-application-cleanup](playbook-windows-application-cleanup.md) instead of deleting by extension or size.
 
 For synchronized folders, databases, mail stores, game libraries, VM disks, credentials, and chat data, require an owner-specific backup and application shutdown plan. Do not treat a template match as proof that a directory is safe to remove.
+
+For Git workspaces, build outputs, service data or models, apply [windows-storage-data-guards.md](windows-storage-data-guards.md) before proposing any move or cleanup. Preserve linked worktrees and shared Git metadata; ignored content is not automatically regenerable.
 
 ### 4. Maintain templates and reports
 Store custom-folder and application-template definitions as versioned, atomically written data. A template must include the literal path rule, owner, category, exclusions, last review date, and whether it is eligible for migration, cleanup, or inventory only. Keep reports privacy-preserving: paths may be redacted and file contents are never needed for sizing.

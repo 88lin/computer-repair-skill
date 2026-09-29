@@ -62,7 +62,7 @@
     "r2y": "Files you copy into a Skills directory",
     "r2yd": "<code>~/.codex/skills/</code>, <code>~/.claude/skills/</code>, <code>~/.agents/skills/</code>.",
     "r2n": "A companion program, model or cloud API",
-    "r2nd": "The Skill itself is Markdown and YAML — there is nothing extra to install.",
+    "r2nd": "Core workflows use Markdown and YAML; optional Git auditing uses an existing Python and Git installation.",
     "r3y": "Review the diff, the risk and the rollback path first",
     "r3yd": "Only after you confirm does it apply the smallest change that fixes the problem.",
     "r3n": "“One-click Windows optimization”",

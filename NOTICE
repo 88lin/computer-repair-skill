@@ -65,6 +65,10 @@ code, asset, binary, or installer source for this project.
   in-app-cleanup-first rule were used, plus two behaviors recorded as rejected
 - thedogecraft/sparkle v2 @ 966d3fb52bb6cd705402989bb4bfd3aa1efc6d41
   GPL-3.0; re-reviewed 2026-09-09 at cce02cd5517ee0f01e83d41a3c2fb7547e506352
+- std-microblock/windows-disk-cleaner-skill main @ ea986d425d50a7aacfc6ea6a3bdb0248ac045095
+  Apache-2.0; reviewed 2026-09-29; only scan coverage, bounded index drill-down,
+  Git local-state checks, persistent-data boundaries and measured space
+  accounting were used; no source code, binaries or UI assets copied
 
 Computer Repair Skill and the derivative playbooks are distributed under the GNU
 Affero General Public License, version 3. See LICENSE for the full license

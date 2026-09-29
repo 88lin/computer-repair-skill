@@ -106,7 +106,7 @@
         "@id": "https://repair.88lin.eu.org/#author"
       },
       "datePublished": "2026-07-26",
-      "dateModified": "2026-09-28",
+      "dateModified": "2026-09-29",
       "mainEntity": [
         {
           "@type": "Question",
@@ -179,7 +179,7 @@
       "applicationSubCategory": "Agent Skill",
       "operatingSystem": "Windows, macOS, Linux",
       "softwareVersion": "1.3.0",
-      "dateModified": "2026-09-28",
+      "dateModified": "2026-09-29",
       "codeRepository": "https://github.com/88lin/computer-repair-skill",
       "programmingLanguage": [
         "Markdown",
@@ -413,7 +413,7 @@
           <tr>
             <td class="vs-n" aria-hidden="true">2</td>
             <td class="vs-y"><b data-i18n="what.r2y">复制进 Skills 目录的资源</b><span data-i18n="what.r2yd"><code>~/.codex/skills/</code>、<code>~/.claude/skills/</code>、<code>~/.agents/skills/</code>。</span></td>
-            <td class="vs-no"><b data-i18n="what.r2n">配套程序、模型或云端 API</b><span data-i18n="what.r2nd">Skill 本身是 Markdown / YAML 资源，不需要额外装任何东西。</span></td>
+            <td class="vs-no"><b data-i18n="what.r2n">配套程序、模型或云端 API</b><span data-i18n="what.r2nd">核心流程以 Markdown / YAML 为主；可选 Git 审计使用已有的 Python 和 Git。</span></td>
           </tr>
           <tr>
             <td class="vs-n" aria-hidden="true">3</td>
@@ -790,11 +790,11 @@ cd computer-repair-skill
 <tr class="pb-row" data-id="mac-tune-up"><td class="pb-i">05</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🧹</span><button type="button" class="pb-open">Mac 调优</button><span class="pb-t-d">缓存、权限和基础安全维护</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">mac-tune-up</td></tr>
 <tr class="pb-row" data-id="disk-space-recovery"><td class="pb-i">06</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">💾</span><button type="button" class="pb-open">macOS 磁盘恢复</button><span class="pb-t-d">大文件、缓存和可释放空间审计</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">disk-space-recovery</td></tr>
 <tr class="pb-row" data-id="windows-disk-space-recovery"><td class="pb-i">07</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 磁盘恢复</button><span class="pb-t-d">系统盘爆满、更新空间不足和安全释放</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-disk-space-recovery</td></tr>
-<tr class="pb-row" data-id="windows-storage-inventory"><td class="pb-i">08</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 存储盘点</button><span class="pb-t-d">按路径和大小解释空间分配</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-storage-inventory</td></tr>
+<tr class="pb-row" data-id="windows-storage-inventory"><td class="pb-i">08</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 存储盘点</button><span class="pb-t-d">逐层下钻大目录，说明扫描覆盖和 Git/模型数据风险</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-storage-inventory</td></tr>
 <tr class="pb-row" data-id="windows-large-folder-management"><td class="pb-i">09</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 大文件夹管理</button><span class="pb-t-d">懒加载系统/应用数据/自定义目录和安全 offload</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-large-folder-management</td></tr>
 <tr class="pb-row" data-id="windows-application-migration"><td class="pb-i">10</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 应用迁移</button><span class="pb-t-d">复制校验后用 Junction 保留原路径，支持回滚</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-migration</td></tr>
 <tr class="pb-row" data-id="windows-migration-history-recovery"><td class="pb-i">11</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 迁移历史恢复</button><span class="pb-t-d">检查 Junction、幽灵记录并安全还原</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-migration-history-recovery</td></tr>
-<tr class="pb-row" data-id="windows-application-cleanup"><td class="pb-i">12</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 应用清理</button><span class="pb-t-d">微信重复文件、浏览器缓存和包缓存</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-cleanup</td></tr>
+<tr class="pb-row" data-id="windows-application-cleanup"><td class="pb-i">12</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 应用清理</button><span class="pb-t-d">微信重复文件、浏览器/包缓存和已确认的构建产物</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-cleanup</td></tr>
 <tr class="pb-row" data-id="macos-application-cleanup"><td class="pb-i">13</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">macOS 应用清理</button><span class="pb-t-d">容器与缓存边界、微信重复文件和开发者缓存</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-mac">macOS</span></td><td class="pb-r">macos-application-cleanup</td></tr>
 <tr class="pb-row" data-id="linux-application-cleanup"><td class="pb-i">14</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Linux 应用清理</button><span class="pb-t-d">XDG/Flatpak/Snap 数据根、重复文件和包缓存</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-lin">Linux</span></td><td class="pb-r">linux-application-cleanup</td></tr>
 <tr class="pb-row" data-id="windows-application-lifecycle-audit"><td class="pb-i">15</td><td class="pb-t"><span class="pb-t-e" aria-hidden="true">🩺</span><button type="button" class="pb-open">Windows 应用生命周期审计</button><span class="pb-t-d">WinGet、Chocolatey、Appx、来源、发布者和残留</span></td><td class="pb-c">健康、性能、存储与备份</td><td class="pb-p"><span class="tagp tagp-win">Windows</span></td><td class="pb-r">windows-application-lifecycle-audit</td></tr>
@@ -1032,7 +1032,7 @@ cd computer-repair-skill
 
     <p class="foot-legal">
       <span data-i18n-html="foot.legal">Computer Repair Skill 由 <a href="https://github.com/88lin" target="_blank" rel="noopener">88lin</a> 开发，按 <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">GNU AGPL-3.0</a> 开源。</span>
-      <span class="foot-updated"><span data-i18n="foot.updated">最后更新</span> <!-- site-updated:start --><time datetime="2026-09-28">2026-09-28</time><!-- site-updated:end --></span>
+      <span class="foot-updated"><span data-i18n="foot.updated">最后更新</span> <!-- site-updated:start --><time datetime="2026-09-29">2026-09-29</time><!-- site-updated:end --></span>
     </p>
   </div>
 </footer>

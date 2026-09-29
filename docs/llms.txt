@@ -6,7 +6,7 @@
 > nothing until you confirm.
 
 - Version: 1.3.0
-- Last updated: 2026-09-28
+- Last updated: 2026-09-29
 - Repository: https://github.com/88lin/computer-repair-skill
 - License: GNU AGPL-3.0 (https://www.gnu.org/licenses/agpl-3.0.html)
 - Website: https://repair.88lin.eu.org/ (Chinese) · https://repair.88lin.eu.org/en/ (English)
@@ -75,11 +75,11 @@ downloaders, force-removing Edge or unaudited one-click tuning bundles.
 - `mac-tune-up` — Mac Tune-Up / Mac 调优 [macOS]: Diagnose a sluggish Mac and apply only symptom-matched maintenance with approval and rollback
 - `disk-space-recovery` — Disk Space Recovery / macOS 磁盘恢复 [macOS]: Reclaim disk space on macOS — measure, audit, clean cache-class data, report freed bytes
 - `windows-disk-space-recovery` — Windows Disk Space Recovery / Windows 磁盘恢复 [Windows]: Reclaim Windows disk space by measuring volumes, preserving user data, and verifying freed space
-- `windows-storage-inventory` — Windows Storage Inventory / Windows 存储盘点 [Windows]: Build a privacy-preserving Windows storage inventory that explains large paths before any cleanup
+- `windows-storage-inventory` — Windows Storage Inventory / Windows 存储盘点 [Windows]: Drill into large paths, disclose scan coverage, and identify Git or model data before cleanup
 - `windows-large-folder-management` — Windows Large Folder Management / Windows 大文件夹管理 [Windows]: Discover, lazily size, and safely offload selected Windows system or application folders
 - `windows-application-migration` — Windows Application Migration / Windows 应用迁移 [Windows]: Migrate an application or selected data folder to local NTFS storage with junction rollback
 - `windows-migration-history-recovery` — Windows Migration History and Recovery / Windows 迁移历史恢复 [Windows]: Audit Windows migration Junctions, detect ghost records, and restore data safely
-- `windows-application-cleanup` — Windows Application Cleanup / Windows 应用清理 [Windows]: Audit and clean regenerable Windows app caches or duplicates while preserving profiles, chat data, and credentials
+- `windows-application-cleanup` — Windows Application Cleanup / Windows 应用清理 [Windows]: Audit app caches, duplicates and rebuildable artifacts while preserving profiles, Git state, chat data and credentials
 - `macos-application-cleanup` — macOS Application Cleanup / macOS 应用清理 [macOS]: Audit and clean regenerable macOS app caches or duplicates while preserving containers, chat data, and keychains
 - `linux-application-cleanup` — Linux Application Cleanup / Linux 应用清理 [Linux]: Audit and clean regenerable Linux app caches or duplicates across XDG, Flatpak, and Snap data roots
 - `windows-application-lifecycle-audit` — Windows Application Lifecycle Audit / Windows 应用生命周期审计 [Windows]: Audit Windows app install/uninstall candidates by exact package ID, publisher, source, and reversible verification

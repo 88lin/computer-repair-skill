@@ -30,11 +30,11 @@
 | `mac-tune-up` | macOS | Mac 普遍变慢、安全维护、缓存刷新 | [playbook-mac-tune-up.md](playbook-mac-tune-up.md) |
 | `disk-space-recovery` | macOS | 磁盘爆满、释放空间、大文件与缓存审计 | [playbook-disk-space-recovery.md](playbook-disk-space-recovery.md) |
 | `windows-disk-space-recovery` | Windows | 系统盘爆满、更新空间不足、安全释放空间 | [playbook-windows-disk-space-recovery.md](playbook-windows-disk-space-recovery.md) |
-| `windows-storage-inventory` | Windows | 大目录盘点、陌生路径、网盘虚拟盘、清理前空间分布 | [playbook-windows-storage-inventory.md](playbook-windows-storage-inventory.md) |
+| `windows-storage-inventory` | Windows | 大目录盘点、逐层下钻、扫描不完整、Git 仓库/模型占用、网盘虚拟盘 | [playbook-windows-storage-inventory.md](playbook-windows-storage-inventory.md) |
 | `windows-large-folder-management` | Windows | 懒加载大文件夹、应用数据模板、自定义目录和安全 offload | [playbook-windows-large-folder-management.md](playbook-windows-large-folder-management.md) |
 | `windows-application-migration` | Windows | 应用或选定数据目录迁移到本地 NTFS 磁盘并保留原路径 | [playbook-windows-application-migration.md](playbook-windows-application-migration.md) |
 | `windows-migration-history-recovery` | Windows | Junction 健康、幽灵链接、迁移历史审计和恢复 | [playbook-windows-migration-history-recovery.md](playbook-windows-migration-history-recovery.md) |
-| `windows-application-cleanup` | Windows | 应用缓存、微信重复文件、浏览器或包缓存 | [playbook-windows-application-cleanup.md](playbook-windows-application-cleanup.md) |
+| `windows-application-cleanup` | Windows | 应用缓存、微信重复文件、浏览器或包缓存、已确认的构建产物 | [playbook-windows-application-cleanup.md](playbook-windows-application-cleanup.md) |
 | `macos-application-cleanup` | macOS | 容器/缓存膨胀、微信重复文件、开发者缓存 | [playbook-macos-application-cleanup.md](playbook-macos-application-cleanup.md) |
 | `linux-application-cleanup` | Linux | XDG/Flatpak/Snap 应用缓存、重复文件、包缓存 | [playbook-linux-application-cleanup.md](playbook-linux-application-cleanup.md) |
 | `windows-application-lifecycle-audit` | Windows | 应用安装/卸载、WinGet/Chocolatey/Appx、残留审计 | [playbook-windows-application-lifecycle-audit.md](playbook-windows-application-lifecycle-audit.md) |

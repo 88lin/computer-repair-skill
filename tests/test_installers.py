@@ -35,7 +35,8 @@ class InstallerTests(unittest.TestCase):
         shutil.copytree(ROOT / "scripts", self.repo / "scripts")
         self.source = self.repo / "skills" / SKILL
         self.source.mkdir(parents=True)
-        for name in ("SKILL.md", "LICENSE", "NOTICE", "agents/openai.yaml", "references/playbook-index.md"):
+        for name in ("SKILL.md", "LICENSE", "NOTICE", "agents/openai.yaml",
+                     "references/playbook-index.md", "scripts/git_storage_audit.py"):
             file = self.source / name
             file.parent.mkdir(parents=True, exist_ok=True)
             file.write_text("fixture " + name, encoding="utf-8")
@@ -100,6 +101,8 @@ source "$installer" "$@"
                 self.assertEqual(len(backups), 1)
                 self.assertEqual(backups[0].read_text(), "keep this")
                 self.assertEqual((dest / SKILL / "SKILL.md").read_bytes(), (self.source / "SKILL.md").read_bytes())
+                self.assertEqual((dest / SKILL / "scripts/git_storage_audit.py").read_bytes(),
+                                 (self.source / "scripts/git_storage_audit.py").read_bytes())
                 self.assertFalse(list(dest.glob(".computer-repair-skill.install*")))
 
     def test_overlapping_source_refused(self):

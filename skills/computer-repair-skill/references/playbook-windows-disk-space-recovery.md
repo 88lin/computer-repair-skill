@@ -2,7 +2,7 @@
 name: windows-disk-space-recovery
 description: Reclaim Windows disk space by measuring volumes, preserving user data, and verifying freed space
 platform: windows
-last_reviewed: 2026-08-05
+last_reviewed: 2026-09-29
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -35,7 +35,7 @@ Do not begin deletion from a drive-level percentage alone. Measure categories fi
 ## Standard diagnostic path
 
 ### 0. Preserve data and classify the request
-Separate “free space”, “move data”, “resize a partition” and “delete data” as different goals. If a move or resize is being considered, route to `windows-partition-resize-audit` before cleaning. Use 3-2-1 as the target for important files; a USB drive is not a sufficient sole backup.
+Separate “free space”, “move data”, “resize a partition” and “delete data” as different goals. For ordinary file offload, use the copy/verify/confirm sequence in step 6 without creating a Junction or requiring NTFS solely for a link. Route application/data moves that must preserve the original path to `windows-application-migration`; route only partition-layout changes to `windows-partition-resize-audit`. Use 3-2-1 as the target for important files; a USB drive is not a sufficient sole backup.
 
 ### 1. Establish the baseline
 Query `Win32_LogicalDisk` for fixed volumes. Record bytes, not only rounded GB. Check whether the low-space volume contains Windows, user profiles, applications, VMs, containers, or synchronized folders.
@@ -44,6 +44,8 @@ Query `Win32_LogicalDisk` for fixed volumes. Record bytes, not only rounded GB. 
 Measure specific directories one level at a time. Start with user-approved roots such as the affected profile, `C:\ProgramData`, application caches, package caches, VM images, and container data.
 
 Use PowerShell enumeration with a narrow literal path. Set a time budget; recursive scans of the full system drive can be slow and permission-limited.
+
+Follow [windows-storage-scan.md](windows-storage-scan.md) to separate scan coverage from displayed rows, disclose backend fallbacks and reuse local snapshots for drill-down. Missing or inaccessible scopes are unknown, not zero bytes.
 
 Do not follow reparse points blindly. Treat OneDrive and other synchronized roots as user data.
 
@@ -60,6 +62,8 @@ Common large but intentional locations include IDE caches, package managers, Doc
 
 Identify owner, last use, regeneration path, and whether the data is synchronized or backed up. A large directory is evidence, not permission to remove it.
 
+For repositories, build outputs, service databases, models and VM disks, use [windows-storage-data-guards.md](windows-storage-data-guards.md). A pushed HEAD, ignored path or stopped service is insufficient evidence of recoverability.
+
 ### 5. Propose a tiered cleanup
 Show exact measured targets and expected recovery:
 1. Recycle Bin and confirmed temporary artifacts.
@@ -72,13 +76,19 @@ Keep user files, mail stores, browser profiles, credentials, cloud roots, and un
 
 For every tier, produce a fixed target manifest with exact paths, measured bytes, owner, rule/source, exclusion checks, backup or quarantine destination, and rollback. Re-check size, hash and application state immediately before each approved action.
 
+Separate processed bytes, estimated recoverable bytes and expected impact on the target volume. Same-volume Recycle Bin/quarantine moves do not free that volume. If the space goal requires offloading, plan verified cross-volume storage; do not silently empty the rollback location to meet the goal.
+
 ### 6. Execute with checkpoints
 Obtain approval for the listed targets. Before each delete, follow `safety-policy.md`: inspect the literal path, enumerate concrete entries, and record recovery.
 
 For offload requests, copy to the target, compare size/file count or hashes, let the user confirm the copy, then propose local cleanup separately.
 
+Check target capacity and file-size/metadata support before copying; verify important files with hashes, not size alone. Ordinary archives or media do not need a Junction. Application state uses the owner's export/migration workflow, or the dedicated path-preserving migration Playbook when appropriate.
+
 ## Verification
 Re-run `win_disk_usage` and report exact before/after free bytes. Verify Windows Update or the original blocked workflow, plus the applications whose caches were touched.
+
+Report the observed free-space delta separately from file sizes, with timestamps and concurrent-write caveats. Do not clamp negative deltas to zero or count same-volume quarantine as recovered space.
 
 Re-run the same inventory and cleanup rules, report residual/locked items, and keep the batch manifest readable. A successful command without a post-clean scan is not a successful recovery.
 
