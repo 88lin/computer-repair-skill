@@ -10,6 +10,7 @@
 - Repository: https://github.com/88lin/computer-repair-skill
 - License: GNU AGPL-3.0 (https://www.gnu.org/licenses/agpl-3.0.html)
 - Website: https://repair.88lin.eu.org/ (Chinese) · https://repair.88lin.eu.org/en/ (English)
+- Author: 88lin — https://dev.88lin.eu.org · GitHub: https://github.com/88lin
 
 ## What it is
 

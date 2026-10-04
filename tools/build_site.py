@@ -36,7 +36,9 @@ SKILL_MANIFEST = REPO_ROOT / "skills" / "computer-repair-skill" / "SKILL.md"
 
 ORIGIN = "https://repair.88lin.eu.org"
 REPO_URL = "https://github.com/88lin/computer-repair-skill"
-AUTHOR_URL = "https://github.com/88lin"
+AUTHOR_URL = "https://dev.88lin.eu.org"
+# 作者的 GitHub 主页：不再作 url，但保留在 sameAs 里，别把这段身份关联弄丢。
+GITHUB_PROFILE_URL = "https://github.com/88lin"
 LICENSE_URL = "https://www.gnu.org/licenses/agpl-3.0.html"
 OG_IMAGE = f"{ORIGIN}/assets/img/og-image.png"
 PUBLISHED = "2026-07-26"
@@ -489,7 +491,7 @@ def build_graph(lang: str, data: dict, texts: dict[str, str], updated: str, vers
                 "@id": author,
                 "name": "88lin",
                 "url": AUTHOR_URL,
-                "sameAs": [AUTHOR_URL, REPO_URL],
+                "sameAs": [GITHUB_PROFILE_URL, REPO_URL],
             },
             {
                 "@type": "ImageObject",
@@ -610,6 +612,7 @@ def render_llms_txt(data: dict, texts: dict[str, str], updated: str, version: st
         f"- Repository: {REPO_URL}",
         f"- License: GNU AGPL-3.0 ({LICENSE_URL})",
         f"- Website: {ORIGIN}/ (Chinese) · {ORIGIN}/en/ (English)",
+        f"- Author: 88lin — {AUTHOR_URL} · GitHub: {GITHUB_PROFILE_URL}",
         "",
         "## What it is",
         "",

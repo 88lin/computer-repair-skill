@@ -21,7 +21,7 @@
 > [!NOTE]
 > C 盘爆满、电脑卡顿、应用与数据迁移、流氓软件、弹窗广告、网路问题、OpenClaw 配置问题……直接用自然语言描述，Agent 会按平台和风险选择合适的修复流程。
 > 
-> 🧑🏻‍💻 作者：[88lin](https://github.com/88lin) · 📦 仓库：[github.com/88lin/computer-repair-skill](https://github.com/88lin/computer-repair-skill)
+> 🧑🏻‍💻 作者：[88lin](https://dev.88lin.eu.org) · [GitHub](https://github.com/88lin) · 📦 仓库：[github.com/88lin/computer-repair-skill](https://github.com/88lin/computer-repair-skill)
 
 ## 💖 赞助商
 
