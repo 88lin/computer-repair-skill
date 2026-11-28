@@ -28,7 +28,7 @@
 - `RegKeyN`：`HKCU\Software\App\MRU` 形式删除整棵键树，`HKCU\Software\App|LastRun` 形式只删单个值。预览必须显式区分这两者。
 - `ExcludeKeyN`：`FILE|<目录>|<名称>` 只保护该目录的直接子项，嵌套同名文件不受保护；`PATH|<目录>|<模式>` 才覆盖整棵子树。当同一条目里 `FileKey` 带 `RECURSE` 而排除项写成 `FILE` 时，视为排除项失效并降级为 `report-only`。
 - 路径变量与通配符会放大作用域：`%ProgramFiles%` 通常会连带尝试 x86 目录，`%LocalAppData%\Vendor*\User Data\*\Cache` 这类段内通配符在扫描时展开成多条真实路径。预览必须展开成字面绝对路径后再计数。
-- `Default=False` 与 `Warning` 是上游给出的风险信号。上游默认不勾选的条目不要在本地默认勾选，`Warning` 文本必须原样展示给用户。
+- `Default=False`、缺少 `Default` 或其值无法识别时，条目一律默认不勾选。有效的上游勾选状态只用于预览，`Warning` 文本原样展示给用户。
 
 ## 规则库更新审查
 

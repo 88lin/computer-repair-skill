@@ -2,7 +2,7 @@
 name: windows-application-migration
 description: Migrate a Windows application or selected data folder to another local NTFS volume with junction rollback
 platform: windows
-last_reviewed: 2026-08-05
+last_reviewed: 2026-11-29
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -35,6 +35,8 @@ Read [safety-policy.md](safety-policy.md). For cache-only requests also read [cl
 ### 1. Validate the source and risk class
 Use literal paths with `win_path_metadata` and `win_path_inventory`; do not follow junctions or scan outside the approved root. Confirm the source is a real directory, not already a reparse point, and that the target path does not exist or is an explicitly empty staging directory.
 
+Resolve source and target aliases and record both volume identities. For an absent target, resolve its nearest existing parent. Apply the path restrictions to the resolved locations and reject identical or nested roots. If the inventory finds cloud placeholders or unsupported reparse points, pause and resolve their data dependencies before copying.
+
 Block migration of Windows, `System32`, `SysWOW64`, `WinSxS`, `WindowsApps`, the `C:\Users` root, `WPSystem`, Edge/Chrome/WebView2 installation directories, Office Click-to-Run, GPU driver directories, `.NET` runtime directories, security drivers, and system-managed components. Warn and require an explicit item-level confirmation for `ProgramData`, database directories, VMware/VirtualBox/Hyper-V data, development toolchains, WeChat/Tencent data, Steam libraries, security software, services, and folders with hard-coded paths.
 
 Check `win_process_list` and `win_path_lock_check`. Ask the user to close the application normally; never force-kill a process as an implicit migration step. If lock evidence is unavailable, report the uncertainty and stop before cutover.
@@ -45,17 +47,19 @@ Use `win_disk_usage` and `win_volume_inventory` to verify that both paths are on
 Show the source size, target free bytes, estimated copy time if available, required elevation, restart impact, and the exact rollback path in `ui_spa`. Do not continue to a state change until the user confirms this single migration.
 
 ### 3. Copy to an isolated target and verify
-Create a unique target directory on the approved volume. Use `win_copy_verify` with reparse-point exclusion and preservation of file data, timestamps, and directory structure. Record the copy result, file count, byte total, skipped/locked files, and exit code.
+Hold an exclusive lock shared by migration and restore. Create a unique target directory on the approved volume. Use `win_copy_verify` with reparse-point exclusion and preservation of file data, timestamps, and directory structure. Record the copy result, file count, byte total, skipped/locked files, and exit code.
 
 Compare source and target byte totals and file counts. For critical application data, sample or fully compare SHA-256 values with `win_file_hash`; a size-only match is not proof of integrity. If any source file changes during the copy, is skipped, or cannot be verified, keep the original untouched and report the incomplete target.
 
-### 4. Cut over atomically
-After a successful copy, rename the source directory to a unique sibling backup name on the same volume. Confirm the source path is now free, create an NTFS Junction at the original path pointing to the verified target with `win_junction_create`, then inspect the link with `win_junction_inspect`.
+### 4. Switch the original path
+Before the first rename, atomically write a `cutover_pending` record outside the source, target and backup trees. Record the operation ID, original/target paths and volume identities, planned sibling backup, and copy verification evidence. Stop at the verified copy if the record cannot be saved.
 
-Never delete the sibling backup during the same unattended step. Retain it until the user confirms the application launches and the target remains readable. If link creation or verification fails, remove only the newly created link, restore the sibling backup to the original path, and preserve the target for inspection. Do not recursively delete an unknown target.
+Recheck the source and verified target, then rename the source to the recorded sibling backup on the same volume. Confirm the original path is free, create the Junction with `win_junction_create`, and verify its exact target with `win_junction_inspect`.
+
+Retain the sibling backup until the application is verified and the user separately approves cleanup. If cutover fails, remove only a verified Junction created by this operation and restore the backup only when the original path is free. Keep both copies and the pending record if rollback cannot be verified.
 
 ### 5. Record the migration
-Write an atomic manifest with `win_json_atomic_write` containing a unique ID, application/folder name, original path, target path, source and target volume, byte total, verification method, timestamp, link type, backup path, status (`active`, `restored`, or `failed`), and warnings. Do not store passwords, tokens, cookies, or file contents.
+Use `win_json_atomic_write` to mark the record `active` after verifying the Junction and its target, or `failed` after verifying rollback. Also record the application/folder name, byte total, verification method, timestamp, link type, and warnings. If saving fails, retain the pending record and report the live state for reconciliation.
 
 For custom or large folders, reuse this engine rather than inventing a second move procedure. Link the record to `windows-migration-history-recovery` for later health checks and restoration.
 
@@ -82,6 +86,7 @@ Escalate filesystem errors, BitLocker or enterprise management restrictions, unk
 - `win_file_hash`
 - `win_junction_create`
 - `win_junction_inspect`
+- `win_junction_remove`
 - `win_json_atomic_write`
 - `ui_spa`
 - `shell_run`

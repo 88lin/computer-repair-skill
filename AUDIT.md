@@ -1,5 +1,27 @@
 # 项目审计与修复记录
 
+## 2026-11-29：参考项目增量复核
+
+核对 `NOTICE` 所列 18 个仓库的分支头。主上游、RogueCleaner、pinkbin、WxCleaner、ZyperWinOptimize、disk-raccoon 和 windows-disk-cleaner-skill 的复核提交仍是当前分支头。viap 的旧样本没有 Git 元数据，以 2026-08-05 当日公开提交作为时间锚点。
+
+| 参考项目 | 复核证据 | 本轮判断 |
+|---|---|---|
+| WindowsCleaner | [e953870 → 6e7c133](https://github.com/darkmatter2048/WindowsCleaner/compare/e953870f554665841ef2c94aeddc4742ea320415...6e7c133768a61f2d5facecace1226c1251ed2e5a) | 合并重叠的清理命中，保留各条规则的证据和排除项。 |
+| FluentCleaner | [9df539c → 3462547](https://github.com/builtbybel/FluentCleaner/compare/9df539ca504ab0ec38f550fa53b07148bc93ce75...34625475a08445ae8f5e1aecf51db9fdbe7f84bd) | 外部规则缺少或无法识别默认值时保持未勾选。 |
+| viap | [68da856 → d0611a7](https://github.com/Chunyu33/viap/compare/68da8564fdcacf167d4883217e454747353cc175...d0611a7fadaca1afaaeb81b46938339556babecf) | 补强迁移中断、目标卷离线、缺失记录和卸载完成判定。 |
+| just-the-browser | [ec96b1b → 312caf3](https://github.com/corbindavenport/just-the-browser/compare/ec96b1b4b6d387e32ad23341fb086ee57ccd338c...312caf3e9e248ba81dbc79ae093dcb9fe566ae8d) | 按 [Chrome](https://chromeenterprise.google/policies/autofill-gen-ai-settings/) 和 [Edge](https://learn.microsoft.com/en-us/deployedge/microsoft-edge-browser-policies/edgeautofillmlenabled) 文档补充只读审计。 |
+| optimizerDuck | [5aea652 → 4c33b61](https://github.com/itsfatduck/optimizerDuck/compare/5aea6522248e71ef30765a3f8a9693adb8a95224...4c33b61371594ff66740cf1c280414c1390d7c63) | 版本适用性、状态核查和回滚已有独立流程，保留按设备逐项评估。 |
+| Winhance | [f23d554 → 60f60cb](https://github.com/memstechtips/Winhance/compare/f23d554eb2d6400b1827bcc46b91294ffa53fbc9...60f60cbf0cce10b10344cc04db96eeba3823d50b) | 配置差异预览已覆盖，安装镜像工作流与本 Skill 的维修范围不同。 |
+| Atlas | [1ed9630 → a78dd07](https://github.com/Atlas-OS/Atlas/compare/1ed9630616b29f0c7974e8bd76a94fc06f60388c...a78dd0710cb927043967a0de9ed81b508bb177d7) | 升级保留偏好针对 Atlas 自有预设，现有 Windows 配置流程已有逐项状态记录。 |
+| windows-update-disabler | [bd98afc → 440e873](https://github.com/tsgrgo/windows-update-disabler/compare/bd98afcfcbd6ed50480bc70d32e5a5ca8265a34d...440e8735fc2d5b88d5e30f3664ff4571a8fb8816) | 变更只涉及 README 下载说明。 |
+| Malware-Patch | [d7018e5 → b390e8b](https://github.com/the1812/Malware-Patch/compare/d7018e5c2d404ccef294ef4f61a5bc6bffa1510e...b390e8b4dbda060fd601c86d98a077346bc2428b) | 更新证书清单，本 Skill 继续按现场签名及独立身份信号判定。 |
+| digler | [2f62fc7 → fedd1a9](https://github.com/ostafen/digler/compare/2f62fc7e90f5c4123e0f0fa9a31c0128bfffc32c...fedd1a9496c3daaccf9dd434c32d100fd2a65827) | 修复 macOS 原始设备读取和工具输出参数，当前 Windows 镜像恢复流程不依赖该 CLI。 |
+| Sparkle | [cce02cd → d1721a3](https://github.com/thedogecraft/sparkle/compare/cce02cd5517ee0f01e83d41a3c2fb7547e506352...d1721a326e1a1d8622980ee18dd43027474c6ab5) | 新增更新模式预设，现有 Windows Update 流程继续以诊断和保留更新能力为主。 |
+
+大型差异按与 Skill 相关的文件、提交和发布说明抽查。采纳项均为工作流改进，来源记录同步到随包分发的 `NOTICE`。
+
+仓库校验、两项生成检查和 25 项核心测试通过。PowerShell 5.1 与 7 的临时目录实验验证了先复制普通文件和零字节文件、仅移除目录联接、再同卷切换路径的步骤。
+
 ## 2026-09-29：Windows 存储流程增量复核
 
 参考 `std-microblock/windows-disk-cleaner-skill` 的提交

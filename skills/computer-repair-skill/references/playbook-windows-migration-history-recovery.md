@@ -2,7 +2,7 @@
 name: windows-migration-history-recovery
 description: Audit Windows Junction migration history, detect ghost links, and restore data with conflict-safe rollback
 platform: windows
-last_reviewed: 2026-09-09
+last_reviewed: 2026-11-29
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -26,35 +26,38 @@ Use when a migrated application or folder no longer opens, a Junction may be bro
 完整分流表见 [playbook-index.md](playbook-index.md)。
 
 ## Quick check
-Locate the migration manifest, make a read-only backup, and record active operations. Treat history as untrusted metadata until the original path, link target, owner, and target contents are checked on disk. Acquire one restore lock for the entire operation; do not run concurrent restores.
+Locate and read the migration manifest and note active or pending operations. Treat history as untrusted metadata until the original path, link target, owner, volume identity, and target contents are checked on disk. Export the relevant record before approved changes and use the same exclusive lock as migration.
 
 ## Standard diagnostic path
 
 ### 1. Audit every active record
-Use `win_json_atomic_write` only for the final update; read the manifest with `shell_run` or `win_read_file`. For each record use `win_junction_inspect` and `win_path_metadata` to classify:
+Read the manifest with `shell_run` or `win_read_file`. Use `win_junction_inspect`, `win_path_metadata`, and `win_volume_inventory` to classify each record:
 
-- `healthy`: original path is a Junction and its target exists;
-- `target_missing`: the link is valid but the target no longer exists;
+- `healthy`: the original Junction points to the approved directory, which exists on the expected volume;
+- `target_unavailable`: the expected volume is offline, locked, or its identity cannot be confirmed;
+- `target_missing`: the original Junction points to the recorded path, and that path is verified absent on the correct online volume;
 - `junction_broken`: original path exists but is an ordinary directory or points elsewhere;
-- `original_missing`: the original path and link are gone, with no recoverable target;
+- `original_missing`: the original path and link are gone. Record the target and sibling backup separately as possible recovery sources;
 - `unknown`: permissions, path changes, or filesystem errors prevent a conclusion.
 
 Show the record ID, original/target paths, link type, target existence, byte total, last verification time, and proposed action. Do not trust a cached UI status.
 
 ### 2. Preview ghost-link cleanup
-For `target_missing`, remove only a confirmed orphaned Junction and mark the record `ghost_cleaned`; never delete a target path that still contains data. For `original_missing`, mark the record only when the target is absent or provably empty. For `junction_broken`, refuse automatic deletion: an ordinary directory may contain newer user data and must be compared or reviewed first.
+Only a confirmed `target_missing` Junction qualifies for a cleanup preview. Recheck the volume and exact Junction target after approval, remove only the link, then mark the record `ghost_cleaned`. Preserve records with unavailable drives or unknown volume identity, and check sibling backups before declaring data lost. An ordinary directory or Junction pointing elsewhere needs a separate review.
 
 Export the before-state and a per-record preview. An import must validate JSON schema, deduplicate IDs, normalize paths, and remain inactive until each path is verified on the current machine.
 
 ### 3. Restore one record
-After explicit confirmation, stop the owning application normally and acquire the restore lock. Verify the record is active, the target exists and is non-empty, the original path is a Reparse Point, and the destination volume has at least `1.1 × recorded_bytes` free using `win_disk_usage`.
+After explicit confirmation, acquire the shared lock and stop the owning application normally. Verify the original path is a Junction pointing to the exact recorded target on the expected volume. Use `win_directory_size` to measure the current target and confirm at least `1.1 × current logical bytes` is free for the staged copy on the original volume using `win_disk_usage`. An incomplete measurement cannot authorize cutover.
 
-Remove only the original Junction with `win_junction_remove`; never use recursive deletion on a link. Then bring the data back with a copy-first sequence: `win_copy_verify` from the target into the original path, compare byte totals and selected/full hashes with `win_file_hash`, and only then recycle the now-redundant target with `win_recycle_path`. Do not use a single `win_move_file` across volumes — `Move-Item` degrades to copy-then-delete there, so an interruption can leave a partial copy with the source already gone. `win_move_file` is acceptable only when the manifest shows the target is on the same volume as the original path. Update the manifest atomically to `restored` only after the data and original workflow are verified.
+Use `win_copy_verify` to copy the target into a unique sibling staging directory while the original Junction remains intact. Compare relative paths, byte totals, and selected/full hashes with `win_file_hash`. Leave the Junction and target intact if copying or verification fails.
 
-If the copy or verification fails, stop with the target still intact and recreate the Junction to it when possible. If both paths contain data, do not merge automatically; preserve both and request a file-level comparison or backup restore.
+Save an atomic `restore_pending` record outside the affected trees with all three paths, both volume identities, and the verification evidence. Right before unlinking, recheck the Junction, target, volumes, and application locks. Remove only the verified Junction with `win_junction_remove`, then rename the staging directory into the vacant original path on the same volume. If the rename fails, recreate the verified Junction only if the original path is still free. Otherwise preserve the conflicting data, target, staging directory, and record for review.
+
+Mark the record `restored` only after the data and original workflow are verified. Retain the migration target for a separate cleanup decision.
 
 ### 4. Reconcile interrupted operations
-A sibling backup, temporary target, or `.tmp` manifest is evidence of an interrupted operation, not a cleanup target. Compare paths, sizes, timestamps, and hashes; keep the newest verified copy only after an explicit user decision. Record the outcome and any retained artifacts in the operation log.
+Reconcile `cutover_pending` and `restore_pending` records against live paths, volume identities, and verification evidence before retrying. Preserve sibling backups, partial copies, and pending records until rollback or restore is verified. If history is missing, inspect Junctions only within a user-selected original-side directory without traversing them. Treat any recovered history as a candidate and verify its exact target and ownership before asking to import it.
 
 ## Verification
 Re-scan the restored path, confirm it is an ordinary directory with the expected bytes, launch the application or open the folder workflow, and verify the history status and backup/export file. Report all records left in `unknown`, `target_missing`, or `junction_broken` state.
@@ -65,17 +68,19 @@ Re-scan the restored path, confirm it is an ordinary directory with the expected
 - History JSON is not a backup of the migrated data. Keep independent backups and do not expose paths containing credentials or personal data in reports.
 
 ## Escalation
-Escalate filesystem errors, conflicting ordinary directories, encrypted or synchronized data, missing manifests, target data that changed after migration, or any restore that would overwrite newer files.
+Escalate filesystem errors, conflicting ordinary directories, encrypted or synchronized data, missing history without a verified recovery candidate, or any restore that would overwrite newer files.
 
 ## Tools referenced
 - `win_path_metadata`
 - `win_junction_inspect`
+- `win_junction_create`
 - `win_junction_remove`
 - `win_disk_usage`
+- `win_volume_inventory`
 - `win_process_list`
+- `win_path_lock_check`
 - `win_read_file`
 - `win_copy_verify`
-- `win_recycle_path`
 - `win_move_file`
 - `win_directory_size`
 - `win_file_hash`

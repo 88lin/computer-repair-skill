@@ -2,7 +2,7 @@
 name: windows-browser-policy-audit
 description: Audit Chrome, Edge, Firefox, and Brave policies, including AI and extension controls, without weakening security
 platform: windows
-last_reviewed: 2026-09-09
+last_reviewed: 2026-11-29
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -22,6 +22,8 @@ Inspect documented policy locations under HKLM/HKCU and the browser's own policy
 
 ### 2. Cover the AI, sharing, and extension-availability policies
 Recent browser releases moved several data-sharing and assistant features behind their own policies, so a policy audit from an older baseline is incomplete. Read the current value and management source of at least: Chrome's page-sharing and DevTools GenAI controls (`SearchContentSharingSettings`, `DevToolsGenAiSettings`), Edge's Copilot browser-action control (`CopilotCoworkToolActionsEnabled`), and Edge's extension-manifest control (`ExtensionManifestV2Availability`). Verify each name and its accepted values against current vendor documentation before proposing a change — policy names, defaults, and removal timelines change between releases.
+
+For AI-assisted form filling, check Chrome's [`AutofillGenAiSettings`](https://chromeenterprise.google/policies/autofill-gen-ai-settings/) or its older [`AutofillPredictionSettings`](https://chromeenterprise.google/policies/autofill-prediction-settings/), whichever is supported by the installed version, and Edge's [`EdgeAutofillMlEnabled`](https://learn.microsoft.com/en-us/deployedge/microsoft-edge-browser-policies/edgeautofillmlenabled). Distinguish an unconfigured or ignored policy from the feature's effective state. Inspect policy metadata without reading saved form values or browser data stores.
 
 Treat `ExtensionManifestV2Availability` as a compatibility bridge, not a fix: it only keeps Manifest v2 extensions working while the vendor still supports them, so record the vendor's announced removal date and tell the user their content blocker will need a Manifest v3 replacement. Do not present an AI/telemetry policy as a security control, and do not enumerate policies from a cached list without reading the browser's own policy page.
 

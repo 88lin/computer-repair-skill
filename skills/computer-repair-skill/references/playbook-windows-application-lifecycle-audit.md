@@ -2,7 +2,7 @@
 name: windows-application-lifecycle-audit
 description: Audit Windows app install/uninstall candidates by exact package ID, publisher, source, and reversible verification
 platform: windows
-last_reviewed: 2026-08-05
+last_reviewed: 2026-11-29
 author: computer-repair-skill-maintainers
 source: local
 ---
@@ -55,7 +55,9 @@ without approval. For Appx, distinguish removing the current user's package
 from provisioning changes that affect future users.
 
 Before removal, export relevant uninstall metadata and snapshot persistence
-entries. Before installation, record the pre-install package list and available
+entries. To estimate directory changes, measure the app's verified install root
+before removal. Keep shared, aggregate, and unverified paths out of that estimate.
+Before installation, record the pre-install package list and available
 disk space. If the application stores user data, use
 `windows-application-cleanup` or a verified application backup first; uninstall
 does not equal data migration.
@@ -64,6 +66,11 @@ does not equal data migration.
 After explicit confirmation, use the verified native uninstaller or package
 manager. Capture the exit code and output, report whether a reboot is pending,
 and stop on a failed or ambiguous result instead of retrying with force.
+
+An uninstaller can exit its launcher or remove the main executable while a
+worker is still deleting files. Before scanning residue, use bounded checks of
+related processes and changes to the app directory. Report the verification as
+pending if activity continues or completion requires a reboot.
 
 Re-enumerate the package by exact ID, inspect services/startup/tasks and the
 uninstall registry entry, then test the user's stated workflow. Do not delete

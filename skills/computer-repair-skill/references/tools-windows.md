@@ -102,7 +102,7 @@ CPU 字段通常是进程累计 CPU 时间，不等同于瞬时百分比。需�
 | `win_copy_verify` | `robocopy.exe '<SOURCE>' '<TARGET>' /E /COPY:DAT /DCOPY:DAT /XJ /R:1 /W:1`，再比较文件数、字节和抽样/全量哈希 | 状态变更，先确认 |
 | `win_junction_create` | `New-Item -ItemType Junction -Path '<LINK>' -Target '<TARGET>'`，随后读取并核对目标 | 状态变更，先确认 |
 | `win_junction_inspect` | 读取 `Attributes`/`LinkType`/`Target`，必要时对字面路径执行 `fsutil reparsepoint query` | 只读 |
-| `win_junction_remove` | 仅在确认目标是 Junction/reparse point 后使用 `Remove-Item -LiteralPath '<LINK>' -Force` | 状态变更，先确认 |
+| `win_junction_remove` | 复核字面路径确为已批准的目录联接，且仍指向该批次记录的目标后，用 `[System.IO.Directory]::Delete($linkPath, $false)` 仅移除联接本身 | 状态变更，先确认 |
 
 `Move-Item` 只有在同一卷内才是重命名。跨卷时它退化为“复制后删除源”，中断或断电会留下部分副本；跨卷搬迁一律按 `win_copy_verify` → 校验字节/哈希 → 再回收源目录的顺序执行，不要用单条 `win_move_file` 承担跨卷数据搬迁。
 

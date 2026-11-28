@@ -6,7 +6,7 @@
 > nothing until you confirm.
 
 - Version: 1.3.0
-- Last updated: 2026-09-29
+- Last updated: 2026-11-29
 - Repository: https://github.com/88lin/computer-repair-skill
 - License: GNU AGPL-3.0 (https://www.gnu.org/licenses/agpl-3.0.html)
 - Website: https://repair.88lin.eu.org/ (Chinese) · https://repair.88lin.eu.org/en/ (English)

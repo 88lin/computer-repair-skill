@@ -35,6 +35,7 @@
 ## 分析阶段
 
 - 只解析具体且可追溯的规则；对每个目标展开环境变量和通配符，列出字面绝对路径、类型、大小、时间、所有者和来源规则。
+- 多条规则命中同一目标路径时只预览和执行一次，保留全部来源规则并采用最严格的排除项和风险级别。目录与子项范围交叠时重新核对操作清单，单个子项获批不会扩大到父目录。
 - 不跟随 junction、symlink 或其他 reparse point；锁定、拒绝访问、已消失或哈希变化的项目标记为 `skipped`，不要用强制句柄或重试掩盖问题。
 - 区分注册表“值”和“键树”，区分“文件移动到隔离”与“永久删除”，区分“禁用”与“删除”。浏览器 profile、凭据、邮件/聊天数据库、同步根目录和主程序默认仅报告。
 - 显示命中数量、总字节、预计权限、警告、排除数量和无法确认的项目。证据不足或多个厂商强证据冲突时只能 `report-only`，不能靠 GUID、哈希、PID、系统宿主名或路径子串单独认定归属。
@@ -75,8 +76,8 @@
 以下项目仅作为行为与安全边界参考，不复制其代码或运行时。括号内是本 Skill 最近一次只读复核的上游版本：
 
 - RogueCleaner（v2.0.16，2026-09-09 复核）：<https://github.com/aakk007/RogueCleaner>
-- FluentCleaner（26.08.03 及 Classic 1.16.206，2026-09-09 复核）：<https://github.com/builtbybel/FluentCleaner>
-- WindowsCleaner（6.3.3，2026-09-09 复核）：<https://github.com/darkmatter2048/WindowsCleaner>
+- FluentCleaner（3462547，2026-11-29 复核）：<https://github.com/builtbybel/FluentCleaner/tree/34625475a08445ae8f5e1aecf51db9fdbe7f84bd>
+- WindowsCleaner（6e7c133，2026-11-29 复核）：<https://github.com/darkmatter2048/WindowsCleaner/tree/6e7c133768a61f2d5facecace1226c1251ed2e5a>
 - WxCleaner（跨平台版本，2026-09-09 复核）：<https://github.com/yqxie1991/WxCleaner>
 - disk-raccoon（c44ef19，2026-09-09 复核）：<https://github.com/orange2ai/disk-raccoon>
 - windows-disk-cleaner-skill（ea986d4，2026-09-29 复核）：<https://github.com/std-microblock/windows-disk-cleaner-skill>
@@ -85,7 +86,7 @@ RogueCleaner 的多信号身份确认、清理前备份/清理后复扫/恢复�
 
 FluentCleaner 的规则解析、检测与清理分离、排除项、Dry Run、可插拔数据库和 CLI 可观测性适合迁移；其 Inspector 展示的“本地打开规则库、汇总递归/警告/重复规则、对比两个版本”思路适合作为规则更新前的审查方式。FluentCleaner 的静默自动清理与自动关机不属于本 Skill 的默认能力。
 
-WindowsCleaner 作为反面边界：按扩展名递归遍历整个系统盘删除 `*.log`/`*.tmp`、直接删除 `$Recycle.Bin` 内容、以及把上次自定义勾选记忆成下次可直接执行的选择，这三类行为都不进入本 Skill 的执行阶段。
+WindowsCleaner 新版把重叠规则合并到同一次遍历。本 Skill 在预览与执行时按目标去重，保留规则来源和排除项。早期复核记录的拒绝项仍适用，包括按扩展名递归清盘、直接删除 `$Recycle.Bin` 内容和把历史勾选当作执行授权。
 
 WxCleaner 的“按大小分组 → 前缀哈希 → 全量 SHA-256”三级去重和跨平台回收站删除适合迁移，`windows-application-cleanup`、`macos-application-cleanup` 和 `linux-application-cleanup` 都按此执行。它在 Linux 上刻意不提供默认数据路径，这条同样保留：Linux 侧的应用数据根必须从运行进程、包文件清单和用户配置实际发现，不从 Windows 或 macOS 布局推断。
 

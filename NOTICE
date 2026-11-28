@@ -26,17 +26,21 @@ code, asset, binary, or installer source for this project.
 
 - darkmatter2048/WindowsCleaner v2 @ 37b4dfacdec71393990f1a2eae9807bfec0daf48
   CC BY-NC-SA 4.0; re-reviewed 2026-09-09 at
-  e953870f554665841ef2c94aeddc4742ea320415 (6.3.3)
+  e953870f554665841ef2c94aeddc4742ea320415 (6.3.3); re-reviewed 2026-11-29 at
+  6e7c133768a61f2d5facecace1226c1251ed2e5a for overlapping cleanup rules
 - aakk007/RogueCleaner main @ e498db393a1ceabad85a5750315d9a9e072cf6fa
   MIT; current supplied working tree reviewed 2026-08-04 (no Git metadata);
   re-reviewed 2026-09-09 at 683fe9c7b025099951acb655f9b1181a4bd0c01e (v2.0.16)
 - builtbybel/FluentCleaner supplied working tree reviewed 2026-08-04
   (no Git metadata available)
   MIT; re-reviewed 2026-09-09 at 9df539ca504ab0ec38f550fa53b07148bc93ce75
-  (26.08.03, Classic 1.16.206)
+  (26.08.03, Classic 1.16.206); re-reviewed 2026-11-29 at
+  34625475a08445ae8f5e1aecf51db9fdbe7f84bd for rules without selection defaults
 - Chunyu33/viap supplied working tree reviewed 2026-08-05 (no Git metadata available)
   MIT; only migration, recovery, folder-management, and residue-cleanup
-  behavior and safety boundaries were used; no source code or assets copied
+  behavior and safety boundaries were used; no source code or assets copied.
+  Re-reviewed 2026-11-29 at d0611a7fadaca1afaaeb81b46938339556babecf (v1.3.4)
+  for interrupted migration, unavailable target volumes, and uninstall verification
 - cccyd2003-qwq/pinkbin main @ dc5585560f4e87a016853097573baa43699d4e3f
   MIT
 - yqxie1991/WxCleaner main @ 359013fb2da473f2a7ef123f420acf699eb4ec30
@@ -50,7 +54,9 @@ code, asset, binary, or installer source for this project.
 - ZyperWave/ZyperWinOptimize main @ d20e78bbd906fa179e4cc9f5107b502da5967aa9
   No license file found in the reviewed tree
 - corbindavenport/just-the-browser main @ 182c93fa777a9cdf46b4d66f399147810580c28e
-  MIT; re-reviewed 2026-09-09 at ec96b1b4b6d387e32ad23341fb086ee57ccd338c
+  MIT; re-reviewed 2026-09-09 at ec96b1b4b6d387e32ad23341fb086ee57ccd338c;
+  re-reviewed 2026-11-29 at 312caf3e9e248ba81dbc79ae093dcb9fe566ae8d for
+  autofill policy changes, checked against current browser vendor documentation
 - Atlas-OS/Atlas main @ 1ed9630616b29f0c7974e8bd76a94fc06f60388c
   GPL-3.0
 - tsgrgo/windows-update-disabler main @ bd98afcfcbd6ed50480bc70d32e5a5ca8265a34d
