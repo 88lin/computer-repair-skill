@@ -30,9 +30,9 @@
     "viewSource": "View this playbook on GitHub&nbsp;↗"
   },
   "hero": {
-    "h1": "<span class=\"hero-title-line\">Turn your agent into a <span class=\"hl\">careful</span></span><br><span class=\"hero-title-line\">computer repair engineer</span>",
+    "h1": "Turn your agent into a <span class=\"hl\">careful</span> computer repair engineer",
     "lead": "Evidence before conclusions; a plan before any change.",
-    "sub": "A cross-platform computer diagnosis and repair Skill for Codex, Claude Code, OpenClaw and other agents. Application and data migration, a C: drive turning red, a sluggish PC, unwanted software, recurring pop-up ads, network trouble or OpenClaw configuration issues — describe the symptom in one sentence. The agent gathers evidence, proposes a plan and changes nothing until you confirm; updates, printers, boot repair, recovery, BitLocker/PE checks and other workflows remain covered too.",
+    "sub": "A cross-platform repair Skill for Codex, Claude Code, OpenClaw and other agents. Describe a full C: drive, a slow PC, stubborn apps, pop-ups, network trouble or a data migration. Your agent gathers evidence and asks before making changes.",
     "cta1": "Four ways to install",
     "cta2": "Browse 64 playbooks",
     "pill1": "focused playbooks",
@@ -46,6 +46,20 @@
     "t4": "Propose a repair plan",
     "t4d": "Nothing runs until you confirm",
     "t1d": "Platform: Windows · constraint: do not delete anything"
+  },
+  "service": {
+    "jump": "Tech services",
+    "title": "Tech services by <span class=\"hl\">88lin</span>",
+    "repair": "Computer repair",
+    "skill": "Custom Agent Skills",
+    "development": "Software development and customization",
+    "visit": "Explore tech services",
+    "wechat": "WeChat",
+    "copyWechat": "Copy WeChat ID",
+    "coffee": "Buy a coffee",
+    "xhs": "RedNote",
+    "douyin": "Douyin",
+    "license": "<strong>Licensing and commercial use</strong> This project is licensed under <a href=\"https://www.gnu.org/licenses/agpl-3.0.html\">GNU AGPL-3.0</a>. Do not resell encrypted copies of this Skill without providing the corresponding source."
   },
   "what": {
     "title": "What it is,<br>what it is not",

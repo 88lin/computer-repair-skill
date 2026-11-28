@@ -23,6 +23,19 @@
 > 
 > 🧑🏻‍💻 作者：[88lin](https://dev.88lin.eu.org) · [GitHub](https://github.com/88lin) · 📦 仓库：[github.com/88lin/computer-repair-skill](https://github.com/88lin/computer-repair-skill)
 
+## 🔧 找 88lin 做技术服务
+
+我接电脑维修、Agent Skill 定制和项目开发，也可以帮你跑通现有项目、排查问题或做二次开发。联系时可以带上故障现象、想做的 Skill 或项目链接。
+
+**联系微信 `Zenvoin`**
+
+[![查看技术服务](https://img.shields.io/badge/%E6%9F%A5%E7%9C%8B%E6%8A%80%E6%9C%AF%E6%9C%8D%E5%8A%A1-1E5BA8?style=for-the-badge)](https://dev.88lin.eu.org/#services)
+[![请我喝杯咖啡](https://img.shields.io/badge/%E8%AF%B7%E6%88%91%E5%96%9D%E6%9D%AF%E5%92%96%E5%95%A1-835711?style=for-the-badge&logo=buymeacoffee&logoColor=white)](https://blog.88lin.eu.org/coffee)
+[![小红书](https://img.shields.io/badge/%E5%B0%8F%E7%BA%A2%E4%B9%A6-AF244A?style=for-the-badge)](https://www.xiaohongshu.com/user/profile/6a9a3ba20000000013032c00)
+[![抖音](https://img.shields.io/badge/%E6%8A%96%E9%9F%B3-5B4A8B?style=for-the-badge)](https://www.douyin.com/user/MS4wLjABAAAAIC5glfOILZlHQDMcIKF0c3o2-BKTivu0BEOdaiLJP0pDQSssB9mlXCxY-M42BD9L)
+
+> **许可与商用**　本项目按 [GNU AGPL-3.0](LICENSE) 授权。禁止将本 Skill 加密后闭源转售。
+
 ## 💖 赞助商
 
 > 想出现在这里？联系 [bytevian@qq.com](mailto:bytevian@qq.com)

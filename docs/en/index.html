@@ -174,7 +174,7 @@
       "@id": "https://repair.88lin.eu.org/#skill",
       "name": "Computer Repair Skill",
       "url": "https://repair.88lin.eu.org/",
-      "description": "A cross-platform computer diagnosis and repair Skill for Codex, Claude Code, OpenClaw and other agents. Application and data migration, a C: drive turning red, a sluggish PC, unwanted software, recurring pop-up ads, network trouble or OpenClaw configuration issues — describe the symptom in one sentence. The agent gathers evidence, proposes a plan and changes nothing until you confirm; updates, printers, boot repair, recovery, BitLocker/PE checks and other workflows remain covered too.",
+      "description": "A cross-platform repair Skill for Codex, Claude Code, OpenClaw and other agents. Describe a full C: drive, a slow PC, stubborn apps, pop-ups, network trouble or a data migration. Your agent gathers evidence and asks before making changes.",
       "applicationCategory": "DeveloperApplication",
       "applicationSubCategory": "Agent Skill",
       "operatingSystem": "Windows, macOS, Linux",
@@ -331,11 +331,11 @@
   <div class="hero-in">
 
     <div class="hero-copy">
-      <h1 class="hero-h1 rv rv-d1" id="heroTitle" data-i18n-html="hero.h1"><span class="hero-title-line">Turn your agent into a <span class="hl">careful</span></span><br><span class="hero-title-line">computer repair engineer</span></h1>
+      <h1 class="hero-h1 rv rv-d1" id="heroTitle" data-i18n-html="hero.h1">Turn your agent into a <span class="hl">careful</span> computer repair engineer</h1>
 
       <p class="hero-lead rv rv-d2" data-i18n="hero.lead">Evidence before conclusions; a plan before any change.</p>
 
-      <p class="hero-sub rv rv-d2" data-i18n="hero.sub">A cross-platform computer diagnosis and repair Skill for Codex, Claude Code, OpenClaw and other agents. Application and data migration, a C: drive turning red, a sluggish PC, unwanted software, recurring pop-up ads, network trouble or OpenClaw configuration issues — describe the symptom in one sentence. The agent gathers evidence, proposes a plan and changes nothing until you confirm; updates, printers, boot repair, recovery, BitLocker/PE checks and other workflows remain covered too.</p>
+      <p class="hero-sub rv rv-d2" data-i18n="hero.sub">A cross-platform repair Skill for Codex, Claude Code, OpenClaw and other agents. Describe a full C: drive, a slow PC, stubborn apps, pop-ups, network trouble or a data migration. Your agent gathers evidence and asks before making changes.</p>
 
       <div class="hero-cmd rv rv-d3">
         <code class="hero-cmd-code" id="heroCmd">npx skills add 88lin/computer-repair-skill</code>
@@ -345,6 +345,29 @@
       <div class="hero-acts rv rv-d4">
         <a class="btn btn-primary" href="#install" data-i18n="hero.cta1">Four ways to install</a>
         <a class="btn btn-ghost" href="#playbooks" data-i18n="hero.cta2">Browse 64 playbooks</a>
+      </div>
+
+      <div class="author-links">
+        <a class="btn author-link author-link-service" href="#services">
+          <span class="author-icon" aria-hidden="true"><svg viewbox="0 0 24 24" width="18" height="18"><rect x="3" y="7" width="18" height="13" rx="3" /><path d="M8 7V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1M3 12a21 21 0 0 0 18 0m-9 1v2" /></svg></span>
+          <span data-i18n="service.jump">Tech services</span>
+          <svg class="link-arrow" viewbox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" /></svg>
+        </a>
+        <a class="btn author-link author-link-coffee" href="https://blog.88lin.eu.org/coffee" target="_blank" rel="noopener">
+          <span class="author-icon" aria-hidden="true"><svg viewbox="0 0 24 24" width="17" height="17"><path d="M4 8h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8Zm12 1h2a2.5 2.5 0 0 1 0 5h-2M3 21h16M7 3v2m4-2v2" /></svg></span>
+          <span data-i18n="service.coffee">Buy a coffee</span>
+          <svg class="link-arrow" viewbox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" /></svg>
+        </a>
+        <a class="btn author-link author-link-xhs" href="https://www.xiaohongshu.com/user/profile/6a9a3ba20000000013032c00" target="_blank" rel="noopener">
+          <span class="author-icon"><img src="../assets/img/xiaohongshu.svg" alt="" width="19" height="19"></span>
+          <span data-i18n="service.xhs">RedNote</span>
+          <svg class="link-arrow" viewbox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" /></svg>
+        </a>
+        <a class="btn author-link author-link-douyin" href="https://www.douyin.com/user/MS4wLjABAAAAIC5glfOILZlHQDMcIKF0c3o2-BKTivu0BEOdaiLJP0pDQSssB9mlXCxY-M42BD9L" target="_blank" rel="noopener">
+          <span class="author-icon" aria-hidden="true"><svg viewbox="0 0 24 24" width="15" height="15"><path d="M16 2h-4v13a3 3 0 1 1-3-3V8a7 7 0 1 0 7 7V8a9 9 0 0 0 5 1.5v-4A5 5 0 0 1 16 2Z" /></svg></span>
+          <span data-i18n="service.douyin">Douyin</span>
+          <svg class="link-arrow" viewbox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" /></svg>
+        </a>
       </div>
 
       <ul class="hero-pills rv rv-d5">
@@ -375,6 +398,33 @@
       </figure>
     </div>
 
+  </div>
+</section>
+
+<section class="services" id="services" aria-labelledby="servicesTitle">
+  <div class="wrap">
+    <div class="services-in">
+      <div>
+        <h2 id="servicesTitle" data-i18n-html="service.title">Tech services by <span class="hl">88lin</span></h2>
+        <ul class="services-list">
+          <li data-i18n="service.repair">Computer repair</li>
+          <li data-i18n="service.skill">Custom Agent Skills</li>
+          <li data-i18n="service.development">Software development and customization</li>
+        </ul>
+      </div>
+      <div class="services-contact">
+        <a class="btn btn-primary" href="https://dev.88lin.eu.org/#services" target="_blank" rel="noopener">
+          <span data-i18n="service.visit">Explore tech services</span>
+          <svg class="link-arrow" viewbox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" /></svg>
+        </a>
+        <div class="services-wechat">
+          <span data-i18n="service.wechat">WeChat</span>
+          <code id="serviceWechat">Zenvoin</code>
+          <button class="copybtn js-only" type="button" data-copy-from="#serviceWechat" aria-label="Copy WeChat ID" data-i18n-attr="aria-label|service.copyWechat"><span data-i18n="ui.copy">Copy</span></button>
+        </div>
+      </div>
+      <p class="services-license" data-i18n-html="service.license"><strong>Licensing and commercial use</strong> This project is licensed under <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL-3.0</a>. Do not resell encrypted copies of this Skill without providing the corresponding source.</p>
+    </div>
   </div>
 </section>
 
@@ -981,7 +1031,7 @@ cd computer-repair-skill
     </div>
 
     <div class="cta-acts">
-      <a class="btn btn-ink" href="https://github.com/88lin/computer-repair-skill" target="_blank" rel="noopener" data-i18n="cta.gh">GitHub repository</a>
+      <a class="btn btn-primary" href="https://github.com/88lin/computer-repair-skill" target="_blank" rel="noopener" data-i18n="cta.gh">GitHub repository</a>
       <a class="btn btn-outline" href="https://skills.sh/88lin/computer-repair-skill" target="_blank" rel="noopener" data-i18n="cta.sh">skills.sh page</a>
     </div>
   </div>
